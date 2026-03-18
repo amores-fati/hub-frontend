@@ -5,5 +5,5 @@ export interface LoaderProps {
 }
 
 export const Loader: React.FC<LoaderProps> = (props: LoaderProps) => {
-    return <div className={`loader ${props.styleLoader}`}></div>
+    return <div className={`loader ${props.styleLoader}`}>Loader</div>
 }
