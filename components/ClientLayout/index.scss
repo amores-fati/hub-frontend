@@ -1,0 +1,8 @@
+@use 'app/globals' as *;
+
+.layout-container {
+    main {
+        margin: 1rem;
+        display: flex;
+    }
+}
