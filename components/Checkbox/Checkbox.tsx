@@ -1,5 +1,5 @@
 import { Checkbox } from '@mui/material';
-import './index.css';
+import './index.scss';
 
 export type CheckboxProps = {
     checked: boolean;

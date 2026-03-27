@@ -1,8 +1,8 @@
 import { InputAdornment, TextField } from '@mui/material';
 import { ChangeEventHandler } from 'react';
-import './index.css';
+import './index.scss';
 
-export type ButtonProps = {
+export type InputProps = {
     onChange?: ChangeEventHandler<HTMLInputElement> | undefined;
     disabled?: boolean;
     placeholder: string;
@@ -19,7 +19,7 @@ function Icon({ children }: { children: React.ReactNode }) {
     )
 }
 
-export function InputComponent({ type = 'text', placeholder, disabled = false, onChange, icon, value }: ButtonProps) {
+export function InputComponent({ type = 'text', placeholder, disabled = false, onChange, icon, value }: InputProps) {
     return (
         <TextField
             id="outlined-password-input"

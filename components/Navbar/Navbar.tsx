@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '../../providers/Auth/AuthProvider';
-import { PAGES } from '../../providers/Route/pages';
+import { PAGES } from '../../providers/Route/pagesConfiguration';
 import './index.scss';
 
-function getInitials(name: string): string {
+function getInitials(name: string | null): string {
+    if (!name) return '';
     return name
         .trim()
         .split(/\s+/)
@@ -35,18 +36,19 @@ export default function Navbar() {
                 {/* Links desktop */}
                 <ul className="navbar__nav">
                     {PAGES.map((item) => {
-                        if (!item.navbarEnabled) return <></>;
-                        return (
-                            <Link
-                                key={item.name}
-                                href={item.path}
-                                className={`navbar__nav-link${pathname === item.path ? ' navbar__nav-link--active' : ''}`}
-                                onClick={() => setMobileOpen(false)}
-                            >
-                                {item.icon}
-                                {item.name}
-                            </Link>
-                        )
+                        if (item.navbarEnabled) {
+                            return (
+                                <Link
+                                    key={item.name}
+                                    href={item.path}
+                                    className={`navbar__nav-link${pathname === item.path ? ' navbar__nav-link--active' : ''}`}
+                                    onClick={() => setMobileOpen(false)}
+                                >
+                                    {item.icon}
+                                    {item.name}
+                                </Link>
+                            )
+                        }
                     })}
                 </ul>
 
@@ -77,7 +79,7 @@ export default function Navbar() {
             {/* Menu mobile */}
             <div className={`navbar__mobile-menu${mobileOpen ? '' : ' navbar__mobile-menu--hidden'}`}>
                 {PAGES.map((item) => {
-                    if (!item.navbarEnabled) return <></>;
+                    if (!item.navbarEnabled) return null;
                     return (
                         <Link
                             key={item.name}

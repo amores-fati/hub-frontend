@@ -1,4 +1,3 @@
-import { Loader } from '@/components/Loader'
 import { UserProfileDto } from '@/dtos/UserDto'
 import { STORE_KEYS } from '@/utils/contants/stores'
 import { getAuthToken, removeAuthToken, setAuthToken as setStoreAuthToken } from '@/utils/stores/auth'
@@ -56,10 +55,10 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({ children }: { childr
     }
 
     const logout = () => {
-        setToken('')
-        removeAuthToken()
+        setToken(undefined); // undefined em vez de string vazia
+        removeAuthToken();   // limpa localStorage
         router.push('/login');
-    }
+    };
 
     const value = {
         user,
@@ -71,7 +70,7 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({ children }: { childr
 
     return (
         <AuthContext.Provider value={value}>
-            {user || !isLogged() ? children : <Loader />}
+            {children}
         </AuthContext.Provider>
     )
 }

@@ -8,25 +8,29 @@ import { useRoute } from "../../providers/Route/RouteProvider";
 import "./index.scss";
 
 import { Navbar } from '@/components/Navbar';
+import { useRouter } from "next/navigation";
+import { P401, P403 } from "./Placeholders";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const router = useRouter();
     const { user, logout } = useAuth();
-    const { currentPage } = useRoute();
+    const { currentPage, setCurrentPage } = useRoute();
 
     useEffect(() => {
         if (currentPage?.requireAuth && !user) {
             toast.warning('Você precisa estar logado para acessar essa página.');
             logout();
         }
-    }, [user])
+    }, [currentPage]);
 
-    if (!user) {
-        return <></>;
+    // Redirecionar para o login se a página exigir autenticação e o usuário não estiver logado
+    if (!user && currentPage?.requireAuth) {
+        return <P401 />
     }
 
     if (currentPage?.requireRoles.length && !currentPage?.requireRoles.includes(user?.role as UserRole)) {
-        return <div>Você não tem permissão para acessar essa página.</div>;
+        return <P403 resourceName={currentPage.name} onGoBack={() => router.back()} />
     }
 
     return (

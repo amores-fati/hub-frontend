@@ -1,5 +1,6 @@
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './index.scss';
 
 export function Toast(): React.ReactElement {
     return (

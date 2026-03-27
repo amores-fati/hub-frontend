@@ -1,6 +1,6 @@
 import { Tooltip } from '@mui/material';
 import React from 'react';
-import './index.css';
+import './index.scss';
 
 export default function TooltipComponent({
     children,

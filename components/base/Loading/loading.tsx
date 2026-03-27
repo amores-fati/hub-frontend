@@ -1,4 +1,5 @@
 import CircularProgress from '@mui/material/CircularProgress';
+import './index.scss';
 
 export function Loading({ className }: { className?: string }) {
     return (
