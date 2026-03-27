@@ -1,5 +1,4 @@
 import { authApi } from '..';
+import { createHttpClient } from '../../http-client';
 
-export const loginApi = authApi;
-
-loginApi.defaults.baseURL += '/login';
+export const loginApi = createHttpClient('/login', authApi);

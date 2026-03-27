@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '../../providers/Auth/AuthProvider';
-import { PAGES } from '../../providers/Route/availablePages';
+import { PAGES } from '../../providers/Route/pagesConfiguration';
 import './index.scss';
 
 function getInitials(name: string | null): string {

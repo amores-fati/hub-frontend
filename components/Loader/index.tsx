@@ -1,4 +1,4 @@
-import './index.css'
+import './index.scss'
 
 export interface LoaderProps {
     styleLoader?: string

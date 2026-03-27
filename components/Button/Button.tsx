@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import './index.css';
+import './index.scss';
 
 export type ButtonProps = {
     onClick?: VoidFunction;

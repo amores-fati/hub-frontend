@@ -1,10 +1,11 @@
 'use client';
+import { Input } from '@/components/base';
 import { AuthPayload } from '@/dtos/AuthDto';
+import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
 import { useRouter } from 'next/navigation';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../providers/Auth/AuthProvider';
 import './index.scss';
 
 export default function Login() {
@@ -52,6 +53,7 @@ export default function Login() {
     return (
         <div className="login-page">
             <p>Login</p>
+            <Input placeholder='Email' onChange={() => console.log()} value={form.email} />
         </div>
     );
 }

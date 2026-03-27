@@ -1,6 +1,5 @@
-"use client"
-
 import { Tooltip } from '@mui/material';
+import './index.scss';
 
 export function CustomTooltip({ title, children }: { title: string; children: React.ReactElement }) {
     return (

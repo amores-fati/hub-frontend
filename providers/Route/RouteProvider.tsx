@@ -1,7 +1,7 @@
 import { Loader } from '@/components/Loader'
 import { usePathname } from 'next/navigation'
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { Page, PAGES } from './availablePages'
+import { Page, PAGES } from './pagesConfiguration'
 
 interface RouteProviderProps {
     currentPage: Page | null,
