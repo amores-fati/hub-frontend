@@ -28,4 +28,11 @@ export const PAGES: Page[] = [
         requireAuth: false,
         name: 'Login',
     },
+    {
+        path: '/teste',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Login',
+    },
 ];

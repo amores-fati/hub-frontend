@@ -19,7 +19,14 @@ function Icon({ children }: { children: React.ReactNode }) {
     )
 }
 
-export function InputComponent({ type = 'text', placeholder, disabled = false, onChange, icon, value }: InputProps) {
+export function InputComponent({
+    type = 'text',
+    placeholder,
+    disabled = false,
+    onChange,
+    icon,
+    value
+}: InputProps) {
     return (
         <TextField
             id="outlined-password-input"
