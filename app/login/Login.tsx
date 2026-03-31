@@ -1,5 +1,4 @@
 'use client';
-import { Input } from '@/components/base';
 import { AuthPayload } from '@/dtos/AuthDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
@@ -53,7 +52,6 @@ export default function Login() {
     return (
         <div className="login-page">
             <p>Login</p>
-            <Input placeholder='Email' onChange={() => console.log()} value={form.email} />
         </div>
     );
 }
