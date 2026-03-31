@@ -23,11 +23,13 @@ Serviços específicos de cada domínio devem ser criados a partir de `baseApi` 
 Fábrica de clientes HTTP baseada no **Axios**.
 
 **O que faz:**
+
 - Cria uma instância Axios com `baseURL`, headers padrão (`Content-Type: application/json`) e serialização de parâmetros com suporte a notação de ponto
 - Injeta automaticamente o **token de autenticação** em cada requisição via interceptor (`Authorization: Bearer <token>`)
 - Suporta criação de clientes aninhados (ex: `createHttpClient('/users', baseApi)`) que herdam a URL base do pai
 
 **Tipo exportado:**
+
 ```ts
 export type HttpClient = { url: string } & AxiosInstance;
 ```
@@ -38,11 +40,11 @@ export type HttpClient = { url: string } & AxiosInstance;
 
 Configura o **QueryClient** do React Query com comportamento padrão para toda a aplicação:
 
-| Configuração | Valor | Motivo |
-|---|---|---|
-| `retry` | até 3x, só em `Network Error` | Evita retentativas em erros de negócio (4xx) |
-| `staleTime` | 5 minutos | Reduz requisições desnecessárias para dados estáveis |
-| `refetchOnWindowFocus` | `false` | Evita refetches inesperados ao trocar de aba |
+| Configuração           | Valor                         | Motivo                                               |
+| ---------------------- | ----------------------------- | ---------------------------------------------------- |
+| `retry`                | até 3x, só em `Network Error` | Evita retentativas em erros de negócio (4xx)         |
+| `staleTime`            | 5 minutos                     | Reduz requisições desnecessárias para dados estáveis |
+| `refetchOnWindowFocus` | `false`                       | Evita refetches inesperados ao trocar de aba         |
 
 ---
 
@@ -57,7 +59,7 @@ import type { UserResponse } from '../../dtos/user.dto';
 const usersApi = createHttpClient('/users', baseApi);
 
 export const getUser = (id: string) =>
-    usersApi.get<UserResponse>(`/${id}`).then(r => r.data);
+    usersApi.get<UserResponse>(`/${id}`).then((r) => r.data);
 ```
 
 ## Convenções

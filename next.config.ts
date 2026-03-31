@@ -7,13 +7,13 @@ const nextConfig: NextConfig = {
     // envs
     env: {
         API_BASE_URL: process.env.API_BASE_URL,
-        ENVIRONMENT: process.env.ENVIRONMENT
+        ENVIRONMENT: process.env.ENVIRONMENT,
     },
 
     // Required if using `next/image` with static export
     images: {
-        unoptimized: true
-    }
+        unoptimized: true,
+    },
 };
 
 export default nextConfig;

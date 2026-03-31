@@ -1,17 +1,14 @@
-
 import Select, { SingleValue } from 'react-select';
 import './index.scss';
 
 export type Option = {
     value: string | number;
     label: string;
-}
+};
 
 export type SelectProps = {
-    isLoading?: boolean
-    onChange?: (
-        newValue: SingleValue<Option>
-    ) => void;
+    isLoading?: boolean;
+    onChange?: (newValue: SingleValue<Option>) => void;
     disabled?: boolean;
     placeholder: string;
     defaultValue?: Option;
@@ -30,13 +27,13 @@ export function CustomSelect({
     placeholder,
     isClearable,
     isSearchable,
-    isLoading
+    isLoading,
 }: SelectProps) {
     return (
         <Select
             onChange={onChange}
-            className="custom-single-select"
-            classNamePrefix="select"
+            className='custom-single-select'
+            classNamePrefix='select'
             defaultValue={defaultValue}
             value={value}
             placeholder={placeholder}
@@ -47,4 +44,4 @@ export function CustomSelect({
             options={options}
         />
     );
-};
+}

@@ -12,7 +12,11 @@ export default function TooltipComponent({
     placement?: 'top' | 'bottom' | 'left' | 'right';
 }) {
     return (
-        <Tooltip title={<p className='custom-tooltip'>{title}</p>} placement={placement} arrow={true}>
+        <Tooltip
+            title={<p className='custom-tooltip'>{title}</p>}
+            placement={placement}
+            arrow={true}
+        >
             <span>{children}</span>
         </Tooltip>
     );

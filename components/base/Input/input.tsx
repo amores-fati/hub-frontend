@@ -12,11 +12,7 @@ export type InputProps = {
 };
 
 function Icon({ children }: { children: React.ReactNode }) {
-    return (
-        <InputAdornment position="start">
-            {children}
-        </InputAdornment>
-    )
+    return <InputAdornment position='start'>{children}</InputAdornment>;
 }
 
 export function InputComponent({
@@ -25,18 +21,16 @@ export function InputComponent({
     disabled = false,
     onChange,
     icon,
-    value
+    value,
 }: InputProps) {
     return (
         <TextField
-            id="outlined-password-input"
-            className="custom-input"
+            id='outlined-password-input'
+            className='custom-input'
             label={placeholder}
             slotProps={{
                 input: {
-                    startAdornment: (
-                        icon && <Icon>{icon}</Icon>
-                    ),
+                    startAdornment: icon && <Icon>{icon}</Icon>,
                 },
             }}
             disabled={disabled}

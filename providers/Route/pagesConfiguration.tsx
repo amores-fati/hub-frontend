@@ -10,7 +10,7 @@ export type Page = {
     name: string;
     icon?: JSX.Element;
     topbarDisabled?: boolean;
-}
+};
 
 export const PAGES: Page[] = [
     {

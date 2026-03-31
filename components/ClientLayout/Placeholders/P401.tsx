@@ -1,5 +1,5 @@
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function P401() {
     const router = useRouter();
@@ -8,5 +8,5 @@ export default function P401() {
         router.push('/login');
     }, []);
 
-    return <></>
+    return <></>;
 }

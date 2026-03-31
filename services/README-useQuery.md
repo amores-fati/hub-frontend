@@ -33,11 +33,14 @@ export const useGetAllExamples = (payload: ExamplePayload) =>
         queryFn: () =>
             examplesApi
                 .get('')
-                .then((res) => (res.data as PaginatedDto<ExampleResponse>).data),
+                .then(
+                    (res) => (res.data as PaginatedDto<ExampleResponse>).data,
+                ),
     });
 ```
 
 **Consumindo na tela:**
+
 ```tsx
 const { data, isLoading, isError } = useGetExample(exampleId);
 
@@ -48,11 +51,11 @@ const { data: examples } = useGetAllExamples(payload);
 
 ## Propriedades
 
-| Propriedade | Descrição |
-|---|---|
-| `queryKey` | Identifica e agrupa o cache. Deve usar `QUERY_KEYS` + parâmetros que diferenciam a busca |
-| `queryFn` | Função que executa a requisição e retorna os dados |
-| `enabled` | Condição para a query executar. Use para depender de um valor que pode ser nulo/undefined |
+| Propriedade | Descrição                                                                                 |
+| ----------- | ----------------------------------------------------------------------------------------- |
+| `queryKey`  | Identifica e agrupa o cache. Deve usar `QUERY_KEYS` + parâmetros que diferenciam a busca  |
+| `queryFn`   | Função que executa a requisição e retorna os dados                                        |
+| `enabled`   | Condição para a query executar. Use para depender de um valor que pode ser nulo/undefined |
 
 ---
 
@@ -73,9 +76,9 @@ export default QUERY_KEYS;
 Sempre combine a constante com os parâmetros que diferenciam a busca:
 
 ```ts
-[QUERY_KEYS.EXAMPLES]              // lista geral
-[QUERY_KEYS.EXAMPLES, exampleId]   // registro específico
-[QUERY_KEYS.EXAMPLES, payload.name] // lista filtrada por name
+[QUERY_KEYS.EXAMPLES][(QUERY_KEYS.EXAMPLES, exampleId)][ // lista geral // registro específico
+    (QUERY_KEYS.EXAMPLES, payload.name)
+]; // lista filtrada por name
 ```
 
 > Invalidar `[QUERY_KEYS.EXAMPLES]` afeta todas as queries que começam com essa chave.
