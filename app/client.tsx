@@ -11,12 +11,9 @@ import { AuthProvider } from '../providers/Auth/AuthProvider';
 import { RouteProvider } from '../providers/Route/RouteProvider';
 
 function QueryClient({ children }: { children: React.ReactNode }) {
-
     return (
         <main>
-            <ClientLayout>
-                {children}
-            </ClientLayout>
+            <ClientLayout>{children}</ClientLayout>
         </main>
     );
 }

@@ -19,20 +19,22 @@ dtos/
 
 - Nomear arquivos com sufixo `.dto.ts`
 - Separar DTOs de **request** e **response** quando diferirem:
-  ```ts
-  // Dado enviado para a API
-  export type CreateUserRequest = {
-    name: string;
-    email: string;
-  };
 
-  // Dado retornado pela API
-  export type CreateUserResponse = {
-    id: string;
-    name: string;
-    email: string;
-    createdAt: string;
-  };
-  ```
+    ```ts
+    // Dado enviado para a API
+    export type CreateUserRequest = {
+        name: string;
+        email: string;
+    };
+
+    // Dado retornado pela API
+    export type CreateUserResponse = {
+        id: string;
+        name: string;
+        email: string;
+        createdAt: string;
+    };
+    ```
+
 - DTOs **não contêm lógica**, apenas tipos
 - Importar DTOs nos `services/` para tipar as chamadas de API

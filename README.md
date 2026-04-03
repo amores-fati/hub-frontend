@@ -1,8 +1,3 @@
-# Execução (Atualizado)
-
-- make install
-- docker compose up
-
 # Executando com docker
 
 Instalar docker desktop (windows ou mac). Para ubuntu nao é necessário o docker desktop, apenas docker.
@@ -58,12 +53,6 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -71,22 +60,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-# Commits
-
-Os commits do projeto passam por verificação antes de sairem do local. Por isso, podem aparecer mensagens de erro ao tentar realizar commit. É importante
-que a versão do node esteja atualizada e que o código, sendo commitado, esteja formatado. Isso pode ser verificado através do comando:
-
-- npm run lint
-
-Qualquer dúvida, é só clicar em 'show command output' e enviar um print do erro no discord.
-
-## Extensões recomendadas para o VSCode
-
-- tailwind css intellisense
-- npm intellisense
-- prettier code formatter
-- eslint
 
 ## Formatação de código
 

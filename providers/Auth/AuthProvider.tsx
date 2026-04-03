@@ -1,29 +1,43 @@
-import { UserProfileDto } from '@/dtos/UserDto'
-import { STORE_KEYS } from '@/utils/contants/stores'
-import { getAuthToken, removeAuthToken, setAuthToken as setStoreAuthToken } from '@/utils/stores/auth'
-import { jwtDecode } from 'jwt-decode'
-import { useRouter } from 'next/navigation'
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
+import { UserProfileDto } from '@/dtos/UserDto';
+import { STORE_KEYS } from '@/utils/contants/stores';
+import {
+    getAuthToken,
+    removeAuthToken,
+    setAuthToken as setStoreAuthToken,
+} from '@/utils/stores/auth';
+import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
+import React, {
+    createContext,
+    ReactNode,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 
 interface AuthProviderProps {
-    user: UserProfileDto | null
-    isLogged: (() => boolean)
-    setAuthToken: ((token?: string, rememberMe?: boolean) => void)
-    logout: (() => void)
-    removeAuthToken: (() => void)
+    user: UserProfileDto | null;
+    isLogged: () => boolean;
+    setAuthToken: (token?: string, rememberMe?: boolean) => void;
+    logout: () => void;
+    removeAuthToken: () => void;
 }
 
 const AuthContext = createContext<AuthProviderProps>({
     user: null,
     isLogged: () => false,
-    setAuthToken: () => { },
-    logout: () => { },
-    removeAuthToken: () => { }
-})
+    setAuthToken: () => {},
+    logout: () => {},
+    removeAuthToken: () => {},
+});
 
-const AuthProvider: React.FC<{ children?: ReactNode }> = ({ children }: { children?: ReactNode }) => {
-    const [user, setUser] = useState<UserProfileDto | null>(null)
-    const [token, setToken] = useState<string | undefined>()
+const AuthProvider: React.FC<{ children?: ReactNode }> = ({
+    children,
+}: {
+    children?: ReactNode;
+}) => {
+    const [user, setUser] = useState<UserProfileDto | null>(null);
+    const [token, setToken] = useState<string | undefined>();
     const router = useRouter();
 
     useEffect(() => {
@@ -33,30 +47,29 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({ children }: { childr
         }
     }, []);
 
-
     useEffect(() => {
         if (token) {
-            const decoded = jwtDecode(token) as UserProfileDto
-            setUser({ ...decoded })
+            const decoded = jwtDecode(token) as UserProfileDto;
+            setUser({ ...decoded });
         } else {
-            setUser(null)
+            setUser(null);
         }
-    }, [token])
+    }, [token]);
 
-    const isLogged = () => !!getAuthToken()
+    const isLogged = () => !!getAuthToken();
 
     const setAuthToken = (token?: string, rememberMe?: boolean) => {
-        setToken(token)
+        setToken(token);
         if (token) {
-            setStoreAuthToken(token, rememberMe)
+            setStoreAuthToken(token, rememberMe);
         } else {
-            removeAuthToken()
+            removeAuthToken();
         }
-    }
+    };
 
     const logout = () => {
         setToken(undefined); // undefined em vez de string vazia
-        removeAuthToken();   // limpa localStorage
+        removeAuthToken(); // limpa localStorage
         router.push('/login');
     };
 
@@ -66,17 +79,15 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({ children }: { childr
         setAuthToken,
         logout,
         removeAuthToken,
-    }
+    };
 
     return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    );
+};
 
-export { AuthProvider }
+export { AuthProvider };
 
 export function useAuth() {
-    return useContext(AuthContext)
+    return useContext(AuthContext);
 }

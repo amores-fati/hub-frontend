@@ -10,7 +10,7 @@ export type Page = {
     name: string;
     icon?: JSX.Element;
     topbarDisabled?: boolean;
-}
+};
 
 export const PAGES: Page[] = [
     {
@@ -23,6 +23,13 @@ export const PAGES: Page[] = [
     },
     {
         path: '/login',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Login',
+    },
+    {
+        path: '/teste',
         navbarEnabled: false,
         requireRoles: [],
         requireAuth: false,

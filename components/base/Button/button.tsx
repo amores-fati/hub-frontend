@@ -7,7 +7,11 @@ export type ButtonProps = {
     children: React.ReactNode;
 };
 
-export function ButtonComponent({ onClick, disabled = false, children }: ButtonProps) {
+export function ButtonComponent({
+    onClick,
+    disabled = false,
+    children,
+}: ButtonProps) {
     return (
         <Button className='custom-button' onClick={onClick} disabled={disabled}>
             {children}

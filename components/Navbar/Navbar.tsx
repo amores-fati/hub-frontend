@@ -23,18 +23,17 @@ export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
-        <nav className="navbar">
-            <div className="navbar__inner">
-
+        <nav className='navbar'>
+            <div className='navbar__inner'>
                 {/* Logo */}
-                <Link href="/" className="navbar__logo">
-                    <span className="navbar__logo-text">
+                <Link href='/' className='navbar__logo'>
+                    <span className='navbar__logo-text'>
                         Amores<span>Fati</span>
                     </span>
                 </Link>
 
                 {/* Links desktop */}
-                <ul className="navbar__nav">
+                <ul className='navbar__nav'>
                     {PAGES.map((item) => {
                         if (item.navbarEnabled) {
                             return (
@@ -47,18 +46,24 @@ export default function Navbar() {
                                     {item.icon}
                                     {item.name}
                                 </Link>
-                            )
+                            );
                         }
                     })}
                 </ul>
 
                 {/* Ações */}
-                <div className="navbar__actions">
-
+                <div className='navbar__actions'>
                     {/* Avatar */}
-                    <button className="navbar__avatar" aria-label="Menu do usuário">
-                        <div className="navbar__avatar-img">{getInitials(user?.friendlyName || '')}</div>
-                        <span className="navbar__avatar-name">{user?.friendlyName}</span>
+                    <button
+                        className='navbar__avatar'
+                        aria-label='Menu do usuário'
+                    >
+                        <div className='navbar__avatar-img'>
+                            {getInitials(user?.friendlyName || '')}
+                        </div>
+                        <span className='navbar__avatar-name'>
+                            {user?.friendlyName}
+                        </span>
                         <KeyboardArrowDownIcon />
                     </button>
 
@@ -66,7 +71,7 @@ export default function Navbar() {
                     <button
                         className={`navbar__hamburger${mobileOpen ? ' navbar__hamburger--open' : ''}`}
                         onClick={() => setMobileOpen((prev) => !prev)}
-                        aria-label="Abrir menu"
+                        aria-label='Abrir menu'
                         aria-expanded={mobileOpen}
                     >
                         <span />
@@ -77,7 +82,9 @@ export default function Navbar() {
             </div>
 
             {/* Menu mobile */}
-            <div className={`navbar__mobile-menu${mobileOpen ? '' : ' navbar__mobile-menu--hidden'}`}>
+            <div
+                className={`navbar__mobile-menu${mobileOpen ? '' : ' navbar__mobile-menu--hidden'}`}
+            >
                 {PAGES.map((item) => {
                     if (!item.navbarEnabled) return null;
                     return (
@@ -90,7 +97,7 @@ export default function Navbar() {
                             {item.icon}
                             {item.name}
                         </Link>
-                    )
+                    );
                 })}
             </div>
         </nav>
