@@ -8,8 +8,19 @@ export type CheckboxProps = {
     indeterminate?: boolean;
 };
 
-export function CheckboxComponent({ onClick, disabled = false, checked, indeterminate = false }: CheckboxProps) {
+export function CheckboxComponent({
+    onClick,
+    disabled = false,
+    checked,
+    indeterminate = false,
+}: CheckboxProps) {
     return (
-        <Checkbox className='custom-checkbox' defaultChecked={checked} onClick={onClick} disabled={disabled} indeterminate={indeterminate} />
+        <Checkbox
+            className='custom-checkbox'
+            defaultChecked={checked}
+            onClick={onClick}
+            disabled={disabled}
+            indeterminate={indeterminate}
+        />
     );
 }

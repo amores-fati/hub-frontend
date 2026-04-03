@@ -1,15 +1,5 @@
-import HomePage from "./Home";
+import HomePage from './Home';
 
 export default function Index() {
-    return (
-        <HomePage />
-    );
+    return <HomePage />;
 }
-
-
-
-
-
-
-
-

@@ -9,55 +9,57 @@ export default function Teste() {
     const [form, setForm] = useState<any>({
         email: '',
         select: null,
-        multSelect: []
+        multSelect: [],
     });
 
     function onSelectChange(newValue: SingleValue<Option>) {
         setForm((prevState: any) => ({
             ...prevState,
-            select: newValue
-        }))
+            select: newValue,
+        }));
     }
 
     function onMultSelect(newValue: MultiValue<Option>) {
         setForm((prevState: any) => ({
             ...prevState,
-            multSelect: newValue
-        }))
+            multSelect: newValue,
+        }));
     }
 
     function onInput(newValue: ChangeEvent<HTMLInputElement> | undefined) {
-        console.log(newValue?.target?.value)
+        console.log(newValue?.target?.value);
         setForm((prevState: any) => ({
             ...prevState,
-            email: newValue?.target?.value
-        }))
+            email: newValue?.target?.value,
+        }));
     }
 
     function onClick() {
-        window.alert(JSON.stringify(form))
+        window.alert(JSON.stringify(form));
     }
 
     return (
-        <div className="login-page">
+        <div className='login-page'>
             <p>Teste</p>
             <MultSelect
-                options={[{ value: 1, label: 'Teste 1' }, { value: 2, label: 'Teste 2' }]}
+                options={[
+                    { value: 1, label: 'Teste 1' },
+                    { value: 2, label: 'Teste 2' },
+                ]}
                 value={form.multSelect}
                 placeholder='Seletor Multiplo Teste'
                 onChange={onMultSelect}
             />
             <Select
-                options={[{ value: 1, label: 'Teste 1' }, { value: 2, label: 'Teste 2' }]}
+                options={[
+                    { value: 1, label: 'Teste 1' },
+                    { value: 2, label: 'Teste 2' },
+                ]}
                 value={form.select}
                 onChange={onSelectChange}
                 placeholder='Seletor Teste'
             />
-            <Input
-                placeholder='Email'
-                onChange={onInput}
-                value={form.email}
-            />
+            <Input placeholder='Email' onChange={onInput} value={form.email} />
             <Button onClick={onClick}>
                 <span>Teste</span>
             </Button>

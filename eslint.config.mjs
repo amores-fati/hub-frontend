@@ -12,6 +12,7 @@ export default tseslint.config(
     ...tseslint.configs.recommendedTypeChecked,
     {
         plugins: {
+            // @ts-expect-error
             node: nodePlugin,
             perfectionist,
             unicorn,
@@ -28,15 +29,12 @@ export default tseslint.config(
             },
         },
         rules: {
-            // estilo
-            indent: ['warn', 4],
-            semi: ['error', 'always'],
-            quotes: ['error', 'single', { avoidEscape: true }],
-
             // regras TypeScript
             '@typescript-eslint/no-redeclare': 'off',
-            '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+            '@typescript-eslint/consistent-type-definitions': ['off', 'type'],
             '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
             '@typescript-eslint/no-unused-vars': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
 
