@@ -35,4 +35,11 @@ export const PAGES: Page[] = [
         requireAuth: false,
         name: 'Login',
     },
+    {
+        path: '/cadastro/aluno',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Login',
+    },
 ];
