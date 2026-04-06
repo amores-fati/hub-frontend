@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { Button } from '@/components/base';
 import Card from '@/components/base/Card/card';
-import { RegisterStep1 } from './RegisterStep1';
+import { RegisterStep1, validateFormStep1 } from './RegisterStep1';
 import { RegisterStep2 } from './RegisterStep2';
 import { RegisterStep3 } from './RegisterStep3';
 import { RegisterStep4 } from './RegisterStep4';
@@ -61,6 +61,15 @@ export default function CadastroAluno() {
     });
 
     const handleNext = () => {
+        try {
+            switch (activeStep) {
+                case 1:
+                    validateFormStep1(form);
+            }
+        } catch {
+            return null;
+        }
+
         setActiveStep((prevActiveStep) => Math.min(prevActiveStep + 1, StepperSteps.STEP4));
     };
 

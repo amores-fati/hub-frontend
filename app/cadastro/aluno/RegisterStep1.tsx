@@ -4,6 +4,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent } from "react";
 import { SingleValue } from "react-select";
+import { toast } from "react-toastify";
 import { Option } from "../../../components/base/Select/select";
 import { cpfRegex, dateRegex, phoneNumberRegex } from "../../../utils/regex";
 
@@ -184,4 +185,11 @@ export function RegisterStep1({ form, setForm }:
             </div>
         </div>
     );
+}
+
+export function validateFormStep1(form: UserRegisterPayload) {
+    if (!form.email) {
+        toast.error('Email é obrigatório')
+        throw ('Missing parameter');
+    }
 }
