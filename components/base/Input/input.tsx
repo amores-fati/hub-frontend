@@ -6,7 +6,7 @@ import './index.scss';
 export type InputProps = {
     onChange?: ChangeEventHandler<HTMLInputElement> | undefined;
     disabled?: boolean;
-    placeholder: string;
+    placeholder?: string;
     type?: 'password' | 'text' | 'email' | 'number';
     icon?: React.ReactNode;
     error?: boolean;
