@@ -5,6 +5,7 @@ import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent } from "react";
 import { SingleValue } from "react-select";
 import { Option } from "../../../components/base/Select/select";
+import { cpfRegex, dateRegex, phoneNumberRegex } from "../../../utils/regex";
 
 const GenderRadioOptions = [
     {
@@ -75,21 +76,18 @@ export function RegisterStep1({ form, setForm }:
     function onCpfChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
-            cpf: newValue?.target?.value ?? '',
+            cpf: cpfRegex(newValue?.target?.value ?? null) ?? '',
         }));
     }
 
     function onBirthDateChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
-        setForm((prevState: UserRegisterPayload) => ({
-            ...prevState,
-            birthDate: newValue?.target?.value ?? '',
-        }));
+        setForm({ ...form, birthDate: dateRegex(newValue?.target?.value ?? null) ?? '' });
     }
 
     function onPhoneNumberChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
-            phoneNumber: newValue?.target?.value ?? '',
+            phoneNumber: phoneNumberRegex(newValue?.target?.value ?? null) ?? '',
         }));
     }
 
@@ -164,19 +162,24 @@ export function RegisterStep1({ form, setForm }:
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Senha <span className='required'>*</span></p>
-                    <Input placeholder='Mínimo 8 caracteres' onChange={onPasswordChange} value={form.password} />
+                    <Input type="password" placeholder='Mínimo 8 caracteres' onChange={onPasswordChange} value={form.password} />
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Confirme a Senha <span className='required'>*</span></p>
-                    <Input placeholder='As senhas devem ser as mesmas' onChange={onPasswordConfirmationChange} value={form.passwordConfirmation} />
+                    <Input error={form.password !== form.passwordConfirmation} type='password' placeholder='As senhas devem ser as mesmas' onChange={onPasswordConfirmationChange} value={form.passwordConfirmation} />
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Gênero</p>
-                    <RadioGroup options={GenderRadioOptions} onChange={onGenderChange} />
+                    <RadioGroup value={form.gender} options={GenderRadioOptions} onChange={onGenderChange} />
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Cor/Raça</p>
-                    <Select placeholder="Cor/Raça" options={RaceRadioOptions} onChange={onRaceChange} />
+                    <Select
+                        value={RaceRadioOptions.find((option) => option.value === form.race)}
+                        placeholder="Cor/Raça"
+                        options={RaceRadioOptions}
+                        onChange={onRaceChange}
+                    />
                 </div>
             </div>
         </div>

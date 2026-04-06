@@ -11,9 +11,10 @@ export type RadioOption = {
     label: string;
 }
 
-export default function RadioGroup({ options, onChange }: {
+export default function RadioGroup({ options, onChange, value }: {
     options: RadioOption[];
     onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void
+    value?: string;
 }) {
     return (
         <FormControl>
@@ -28,6 +29,7 @@ export default function RadioGroup({ options, onChange }: {
                             className='custom-radio-control'
                             key={option.value}
                             value={option.value}
+                            checked={value === option.value}
                             control={<Radio className='custom-radio' />}
                             label={option.label}
                             disabled={option.disabled}

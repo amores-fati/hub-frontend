@@ -4,27 +4,31 @@
     box-shadow: var(--shadow);
     border-radius: var(--border-radius) !important;
 
-    span {
-        color: rgba(0, 0, 0, 0.8);
-        text-transform: none;
-    }
-
     &:hover {
         cursor: pointer;
         filter: brightness(1.15);
+    }
+
+    span {
+        text-transform: none;
     }
 
     &--primary {
         background: var(--tertiary-color) !important;
 
         span {
-            color: white;
+            color: var(--text-tertiary) !important;
         }
     }
 
     &--secondary {
         background: transparent;
-        border: 1px solid black;
+        border: 1px solid rgba(0, 0, 0, 0.25) !important;
+
+        span {
+            color: rgba(0, 0, 0, 0.8);
+            text-transform: none;
+        }
     }
 
     &.Mui-disabled {

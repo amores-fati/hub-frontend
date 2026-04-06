@@ -6,16 +6,20 @@ export type ButtonProps = {
     disabled?: boolean;
     variant?: 'primary' | 'secondary';
     children: React.ReactNode;
+    className?: string;
+    style?: object;
 };
 
 export function ButtonComponent({
     onClick,
     disabled = false,
     variant = 'primary',
+    className = "",
     children,
+    style = {}
 }: ButtonProps) {
     return (
-        <Button className={`custom-button custom-button--${variant}`}
+        <Button style={style} className={`custom-button custom-button--${variant} ${className}`}
             onClick={onClick}
             disabled={disabled}
             aria-label={variant}

@@ -24,6 +24,7 @@
     // Texto
     --text-primary: #1a1a1a;
     --text-secondary: #555555;
+    --text-tertiary: #f0f0f0;
     --text-muted: #9e9e9e;
     --text-on-primary: #1a1a1a; // texto sobre fundo amarelo (escuro p/ contraste)
     --text-on-dark: rgba(255, 255, 255, 0.9);
@@ -86,6 +87,7 @@
 
     --text-primary: #f0f0f0;
     --text-secondary: #bdbdbd;
+    --text-tertiary: #1a1a1a;
     --text-muted: #757575;
 
     --border-color: rgba(255, 255, 255, 0.1);
@@ -410,6 +412,9 @@ pre {
 
 .field-label {
     font-weight: 600 !important;
+}
+.hidden {
+    visibility: hidden;
 }
 
 // ------------------------------------------------------------
