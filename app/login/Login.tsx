@@ -1,4 +1,5 @@
 'use client';
+import { Button, Card, Checkbox, Input } from '@/components/base';
 import { AuthPayload } from '@/dtos/AuthDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
@@ -55,7 +56,65 @@ export default function Login() {
 
     return (
         <div className='login-page'>
-            <p>Login</p>
+            <div className='login-page__left'></div>
+            <div className='login-page__right'>
+                <div className='login-page__card'>
+                    <Card>
+                        <div className='login-page__content'>
+                            <h1 className='login-page__title'>
+                                Faça login na plataforma!
+                            </h1>
+
+                            <div className='login-page__field'>
+                                <label className='login-page__label'>
+                                    Email
+                                </label>
+                                <Input
+                                    value={form.email}
+                                    onChange={onEmailChange}
+                                    placeholder=''
+                                    type='email'
+                                />
+                            </div>
+
+                            <div className='login-page__field'>
+                                <label className='login-page__label'>
+                                    Senha
+                                </label>
+                                <Input
+                                    value={form.password}
+                                    onChange={onPasswordChange}
+                                    placeholder=''
+                                    type='password'
+                                />
+                            </div>
+
+                            <div className='login-page__remember'>
+                                <Checkbox
+                                    checked={rememberMe}
+                                    onChange={(e) =>
+                                        setRememberMe(e.target.checked)
+                                    }
+                                />
+                                <span
+                                    className='login-page__remember-label'
+                                    onClick={() => setRememberMe(!rememberMe)}
+                                >
+                                    Manter-me conectado
+                                </span>
+                            </div>
+
+                            <Button
+                                onClick={handleClick}
+                                disabled={disabled}
+                                variant='primary'
+                            >
+                                ENTRAR
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            </div>
         </div>
     );
 }

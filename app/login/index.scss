@@ -1,3 +1,76 @@
-.custom-input {
-    background-color: var(--secondary-color);
+.login-page {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--background);
+    margin: -1rem;
+    overflow: hidden;
+
+    &__left {
+        flex: 1 1 0;
+        min-width: 1px;
+        min-height: 1px;
+        background-color: var(--background);
+    }
+
+    &__right {
+        flex: 0 0 850px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-xl);
+        background-color: var(--tertiary-color);
+    }
+
+    &__card {
+        width: 100%;
+        max-width: 698px;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.76;
+        color: var(--text-primary);
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        width: 100%;
+    }
+
+    &__label {
+        margin: 0;
+        font-size: 16px;
+        color: var(--text-primary);
+    }
+
+    &__remember {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.875rem;
+        width: 100%;
+        margin-top: var(--spacing-xs);
+    }
+
+    &__remember-label {
+        font-size: 16px;
+        color: var(--text-primary);
+        cursor: pointer;
+    }
+
+    .custom-button {
+        width: 100%;
+    }
 }
