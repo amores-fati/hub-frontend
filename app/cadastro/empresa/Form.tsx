@@ -1,6 +1,7 @@
 import { Input } from "@/components/base";
 import { CompanyRegisterPayload } from "@/dtos/CompanyDto";
-import { cnpjRegex, phoneNumberRegex } from "@/utils/regex";
+import { UserRegisterPayload } from "@/dtos/UserDto";
+import { cpfRegex, phoneNumberRegex } from "@/utils/regex";
 import {
     Description as DescriptionIcon,
     LockOutline as LockOutlineIcon,
@@ -36,9 +37,18 @@ export function Form({ form, setForm }:
             setForm((prevState: CompanyRegisterPayload) => ({
                 ...prevState,
                 address: cepData.logradouro,
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
                 neighbourhood: cepData.bairro,
-                state: cepData.uf,
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
                 city: cepData.localidade,
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                state: cepData.uf,
             }));
         }
     }, [cepData])
@@ -49,8 +59,17 @@ export function Form({ form, setForm }:
             setForm((prevState: CompanyRegisterPayload) => ({
                 ...prevState,
                 address: '',
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
                 neighbourhood: '',
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
                 city: '',
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
                 state: '',
             }));
         }
@@ -73,7 +92,7 @@ export function Form({ form, setForm }:
     function onCnpjChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
         setForm((prevState: CompanyRegisterPayload) => ({
             ...prevState,
-            cnpj: cnpjRegex(newValue?.target?.value ?? null) ?? '',
+            cnpj: cpfRegex(newValue?.target?.value ?? null) ?? '',
         }));
     }
 
@@ -252,29 +271,9 @@ export function Form({ form, setForm }:
     );
 }
 
-export function validateForm(form: CompanyRegisterPayload) {
+export function validateFormStep1(form: UserRegisterPayload) {
     if (!form.email) {
         toast.error('Email é obrigatório')
-        throw ('Missing parameter');
-    }
-    if (!form.cep) {
-        toast.error('CEP é obrigatório')
-        throw ('Missing parameter');
-    }
-    if (!form.ownerName) {
-        toast.error('Nome do sócio propietário é obrigatório')
-        throw ('Missing parameter');
-    }
-    if (!form.phoneNumber) {
-        toast.error('Telefone / Whatsapp é obrigatório')
-        throw ('Missing parameter');
-    }
-    if (!form.password) {
-        toast.error('Senha é obrigatório')
-        throw ('Missing parameter');
-    }
-    if (form.password !== form.passwordConfirmation) {
-        toast.error('Confirmação de senha está diferente da senha')
         throw ('Missing parameter');
     }
 }
