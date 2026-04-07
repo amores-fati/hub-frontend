@@ -23,23 +23,21 @@ export const style = {
         ...provided,
         maxHeight: '2rem',
         overflow: 'auto',
-        padding: '1 1'
+        padding: '1 1',
     }),
     placeholder: (provided: any) => ({
         ...provided,
-        fontSize: '0.75rem'
+        fontSize: '0.75rem',
     }),
-    menu: (provided: any) =>
-    ({
+    menu: (provided: any) => ({
         ...provided,
         fontSize: '1rem',
     }),
-    control: (provided: any) =>
-    ({
+    control: (provided: any) => ({
         ...provided,
-        paddingLeft: '1rem'
+        paddingLeft: '1rem',
     }),
-}
+};
 
 export function CustomSelect({
     value,
@@ -117,4 +115,3 @@ export function CustomMultSelect({
         />
     );
 }
-

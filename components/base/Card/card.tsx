@@ -6,10 +6,5 @@ export type CardProps = {
 };
 
 export default function Card({ children }: CardProps) {
-
-    return (
-        <MuiCard className='custom-card w-full'>
-            {children}
-        </MuiCard>
-    )
+    return <MuiCard className='custom-card w-full'>{children}</MuiCard>;
 }
