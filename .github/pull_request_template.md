@@ -32,6 +32,6 @@
 - [ ] Documentação foi atualizada (Storybook, README, etc) se necessário.
 - [ ] Sem comentários sujos/desnecessários no código final.
 
-## Proavas de funcionamento (Prints)
+## Provas de funcionamento (Prints)
 
 > Adicione prints das telas alteradas.
