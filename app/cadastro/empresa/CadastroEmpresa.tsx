@@ -42,8 +42,8 @@ export default function CadastroAluno() {
     return (
         <div className='cadastro-aluno-page w-full'>
             <div className='page-title'>
-                <h3>Inclua sua empresa no</h3>
-                <h3 className='page-title__highlight'>Instituto Amores Fati</h3>
+                <h1>Inclua sua empresa no</h1>
+                <h1 className='page-title__highlight'>Instituto Amores Fati</h1>
             </div>
 
             <Card>

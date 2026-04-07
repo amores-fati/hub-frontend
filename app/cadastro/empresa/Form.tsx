@@ -9,14 +9,71 @@ import {
     Room as RoomIcon
 } from '@mui/icons-material';
 import { InputAdornment } from "@mui/material";
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { useGetPublicCep } from "../../../services/api-external/cep/queries";
 
 export function Form({ form, setForm }:
     {
         form: CompanyRegisterPayload;
         setForm: React.Dispatch<React.SetStateAction<CompanyRegisterPayload>>
     }) {
+
+    const [cepInput, setCepInput] = useState<string>('');
+
+    const { data: cepData, error } = useGetPublicCep(cepInput);
+
+    // Seta informações da api pública do cep para os campos de endereço
+    useEffect(() => {
+        if ((error || cepData?.erro === 'true') && form.cep?.length === 8) {
+            toast.error('Cep inválido')
+            return;
+        }
+        if (error && (!form.cep || form.cep?.length < 8)) {
+            return;
+        }
+
+        if (cepData) {
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                address: cepData.logradouro,
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                neighbourhood: cepData.bairro,
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                city: cepData.localidade,
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                state: cepData.uf,
+            }));
+        }
+    }, [cepData])
+
+    // Remove informações de endereço quando o cep é deletado
+    useEffect(() => {
+        if ((cepInput ?? '').length < 8) {
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                address: '',
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                neighbourhood: '',
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                city: '',
+            }));
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                state: '',
+            }));
+        }
+    }, [cepInput])
 
     function onNameChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
         setForm((prevState: CompanyRegisterPayload) => ({
@@ -67,11 +124,21 @@ export function Form({ form, setForm }:
         }));
     }
 
+    const typingTimeout = useRef<NodeJS.Timeout | null>(null);
     function onCepChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+        if ((newValue?.target.value ?? '').length > 8) return;
         setForm((prevState: CompanyRegisterPayload) => ({
             ...prevState,
             cep: newValue?.target?.value ?? '',
         }));
+
+        if (typingTimeout.current) {
+            clearTimeout(typingTimeout.current);
+        }
+
+        typingTimeout.current = setTimeout(() => {
+            setCepInput(newValue?.target?.value ?? '');
+        }, 400);
     }
 
     function onAddressChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
@@ -102,6 +169,13 @@ export function Form({ form, setForm }:
         }));
     }
 
+    function onComplementChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+        setForm((prevState: CompanyRegisterPayload) => ({
+            ...prevState,
+            complement: newValue?.target?.value ?? '',
+        }));
+    }
+
     return (
         <div className='register-steps'>
             <div className='register-steps__section-title'>
@@ -110,7 +184,7 @@ export function Form({ form, setForm }:
                 </InputAdornment>
                 <span>Dados da Empresa</span>
             </div>
-            <div className='register-steps__grid'>
+            <div className='register-steps__grid-full'>
                 <div className='register-steps__field'>
                     <p className='field-label'>Nome da Empresa (Razão Social) <span className='required'>*</span></p>
                     <Input onChange={onNameChange} value={form.name} />
@@ -127,7 +201,6 @@ export function Form({ form, setForm }:
                 </div>
             </div>
 
-
             <div className='register-steps__section-title'>
                 <InputAdornment position='start'>
                     <RoomIcon />
@@ -140,20 +213,24 @@ export function Form({ form, setForm }:
                     <Input onChange={onCepChange} value={form.cep} />
                 </div>
                 <div className='register-steps__field'>
+                    <p className='field-label'>Complemento / Número</p>
+                    <Input onChange={onComplementChange} value={form.complement ?? ''} />
+                </div>
+                <div className='register-steps__field'>
                     <p className='field-label'>Rua</p>
-                    <Input onChange={onAddressChange} value={form.address ?? ''} />
+                    <Input disabled={true} onChange={onAddressChange} value={form.address ?? ''} />
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Bairro</p>
-                    <Input onChange={onNeighbourhoodChange} value={form.neighbourhood ?? ''} />
+                    <Input disabled={true} onChange={onNeighbourhoodChange} value={form.neighbourhood ?? ''} />
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Cidade</p>
-                    <Input onChange={onCityChange} value={form.city ?? ''} />
+                    <Input disabled={true} onChange={onCityChange} value={form.city ?? ''} />
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Estado</p>
-                    <Input onChange={onStateChange} value={form.state ?? ''} />
+                    <Input disabled={true} onChange={onStateChange} value={form.state ?? ''} />
                 </div>
             </div>
 

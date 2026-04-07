@@ -1,4 +1,5 @@
 const QUERY_KEYS = {
+    CEP: 'cep',
     EXAMPLES: 'examples',
 };
 

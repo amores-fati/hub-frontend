@@ -91,8 +91,8 @@ export default function CadastroAluno() {
     return (
         <div className='cadastro-aluno-page w-full'>
             <div className='page-title'>
-                <h3>Cria a sua conta no</h3>
-                <h3 className='page-title__highlight'>Instituto Amores Fati</h3>
+                <h1>Cria a sua conta no</h1>
+                <h1 className='page-title__highlight'>Instituto Amores Fati</h1>
             </div>
             <Box className="stepper-box" sx={{ width: '100%' }}>
                 <Stepper activeStep={activeStep}>
