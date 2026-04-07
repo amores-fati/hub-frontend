@@ -3,6 +3,7 @@ import { Button, Card, Checkbox, Input } from '@/components/base';
 import { AuthPayload } from '@/dtos/AuthDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
+import { CardActions, CardContent } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -60,58 +61,82 @@ export default function Login() {
             <div className='login-page__right'>
                 <div className='login-page__card'>
                     <Card>
-                        <div className='login-page__content'>
-                            <h1 className='login-page__title'>
-                                Faça login na plataforma!
-                            </h1>
+                        <CardContent aria-label='content'>
+                            <div className='login-page__content'>
+                                <h1 className='login-page__title'>
+                                    Faça login na plataforma!
+                                </h1>
 
-                            <div className='login-page__field'>
-                                <label className='login-page__label'>
-                                    Email
-                                </label>
-                                <Input
-                                    value={form.email}
-                                    onChange={onEmailChange}
-                                    placeholder=''
-                                    type='email'
-                                />
+                                <div className='login-page__field'>
+                                    <label className='login-page__label'>
+                                        Email
+                                    </label>
+                                    <Input
+                                        value={form.email}
+                                        onChange={onEmailChange}
+                                        placeholder=''
+                                        type='email'
+                                    />
+                                </div>
+
+                                <div className='login-page__field'>
+                                    <label className='login-page__label'>
+                                        Senha
+                                    </label>
+                                    <Input
+                                        value={form.password}
+                                        onChange={onPasswordChange}
+                                        placeholder=''
+                                        type='password'
+                                    />
+                                </div>
+
+                                <div className='login-page__remember'>
+                                    <Checkbox
+                                        checked={rememberMe}
+                                        onChange={(e) =>
+                                            setRememberMe(e.target.checked)
+                                        }
+                                    />
+                                    <span
+                                        className='login-page__remember-label'
+                                        onClick={() =>
+                                            setRememberMe(!rememberMe)
+                                        }
+                                    >
+                                        Manter-me conectado
+                                    </span>
+                                </div>
                             </div>
+                        </CardContent>
 
-                            <div className='login-page__field'>
-                                <label className='login-page__label'>
-                                    Senha
-                                </label>
-                                <Input
-                                    value={form.password}
-                                    onChange={onPasswordChange}
-                                    placeholder=''
-                                    type='password'
-                                />
-                            </div>
-
-                            <div className='login-page__remember'>
-                                <Checkbox
-                                    checked={rememberMe}
-                                    onChange={(e) =>
-                                        setRememberMe(e.target.checked)
-                                    }
-                                />
-                                <span
-                                    className='login-page__remember-label'
-                                    onClick={() => setRememberMe(!rememberMe)}
+                        <CardActions aria-label='actions'>
+                            <div className='login-page__actions'>
+                                <Button
+                                    onClick={handleClick}
+                                    disabled={disabled}
+                                    variant='primary'
                                 >
-                                    Manter-me conectado
-                                </span>
-                            </div>
+                                    <span className='login-page__button-text'>
+                                        ENTRAR
+                                    </span>
+                                </Button>
 
-                            <Button
-                                onClick={handleClick}
-                                disabled={disabled}
-                                variant='primary'
-                            >
-                                ENTRAR
-                            </Button>
-                        </div>
+                                <div className='login-page__links'>
+                                    <span
+                                        className='login-page__link login-page__link--primary'
+                                        onClick={() =>
+                                            router.push('/cadastro/aluno')
+                                        }
+                                    >
+                                        Quero me cadastrar!
+                                    </span>
+                                    <span className='login-page__link'>
+                                        Esqueci minha senha
+                                    </span>
+                                </div>
+                            </div>
+                        </CardActions>
                     </Card>
                 </div>
             </div>
