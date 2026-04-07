@@ -1,216 +1,223 @@
 .p403-container {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #0e0e0f;
-  overflow: hidden;
-  font-family: 'Georgia', 'Times New Roman', serif;
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0e0e0f;
+    overflow: hidden;
+    font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .p403-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 .p403-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: 460px;
-  padding: 3rem 2rem;
-  animation: p403-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 460px;
+    padding: 3rem 2rem;
+    animation: p403-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 // --- Icon ---
 .p403-icon-wrap {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 2rem;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
 }
 
 .p403-icon-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(220, 80, 60, 0.25);
-  animation: p403-pulse 3s ease-in-out infinite;
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(220, 80, 60, 0.25);
+    animation: p403-pulse 3s ease-in-out infinite;
 
-  &--2 {
-    inset: -12px;
-    border-color: rgba(220, 80, 60, 0.1);
-    animation-delay: 0.5s;
-  }
+    &--2 {
+        inset: -12px;
+        border-color: rgba(220, 80, 60, 0.1);
+        animation-delay: 0.5s;
+    }
 }
 
 .p403-icon {
-  width: 40px;
-  height: 40px;
-  color: #dc503c;
-  filter: drop-shadow(0 0 12px rgba(220, 80, 60, 0.45));
+    width: 40px;
+    height: 40px;
+    color: #dc503c;
+    filter: drop-shadow(0 0 12px rgba(220, 80, 60, 0.45));
 }
 
 // --- Code ---
 .p403-code {
-  font-family: 'Courier New', monospace;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.35em;
-  color: #dc503c;
-  text-transform: uppercase;
-  margin-bottom: 0.75rem;
-  opacity: 0.8;
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    color: #dc503c;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    opacity: 0.8;
 }
 
 // --- Title ---
 .p403-title {
-  font-size: 2.25rem;
-  font-weight: 400;
-  color: #f0ece6;
-  letter-spacing: -0.03em;
-  margin: 0 0 1rem;
-  line-height: 1.1;
+    font-size: 2.25rem;
+    font-weight: 400;
+    color: #f0ece6;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem;
+    line-height: 1.1;
 }
 
 // --- Description ---
 .p403-description {
-  font-size: 0.95rem;
-  color: #7a7570;
-  line-height: 1.65;
-  margin: 0 0 2rem;
-  font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    color: #7a7570;
+    line-height: 1.65;
+    margin: 0 0 2rem;
+    font-family: 'Courier New', monospace;
 }
 
 .p403-resource {
-  color: #c4b89a;
-  font-style: italic;
+    color: #c4b89a;
+    font-style: italic;
 }
 
 // --- Divider ---
 .p403-divider {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin-bottom: 1.25rem;
 
-  span {
-    flex: 1;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.07);
-  }
+    span {
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.07);
+    }
 
-  small {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #4a4845;
-    white-space: nowrap;
-    font-family: 'Courier New', monospace;
-  }
+    small {
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #4a4845;
+        white-space: nowrap;
+        font-family: 'Courier New', monospace;
+    }
 }
 
 // --- Tips ---
 .p403-tips {
-  list-style: none;
-  margin: 0 0 2.5rem;
-  padding: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+    list-style: none;
+    margin: 0 0 2.5rem;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
 
-  li {
-    font-size: 0.8rem;
-    color: #55524f;
-    font-family: 'Courier New', monospace;
-    padding-left: 1.25rem;
-    position: relative;
-    text-align: left;
+    li {
+        font-size: 0.8rem;
+        color: #55524f;
+        font-family: 'Courier New', monospace;
+        padding-left: 1.25rem;
+        position: relative;
+        text-align: left;
 
-    &::before {
-      content: '—';
-      position: absolute;
-      left: 0;
-      color: #dc503c;
-      opacity: 0.5;
+        &::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: #dc503c;
+            opacity: 0.5;
+        }
     }
-  }
 }
 
 // --- Actions ---
 .p403-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: center;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .p403-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.65rem 1.5rem;
-  font-size: 0.8rem;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.08em;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-  outline: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.5rem;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.08em;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
 
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  &--ghost {
-    background: transparent;
-    color: #7a7570;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-
-    &:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      color: #c4b89a;
+    svg {
+        width: 16px;
+        height: 16px;
     }
-  }
 
-  &--primary {
-    background: #dc503c;
-    color: #fff;
+    &--ghost {
+        background: transparent;
+        color: #7a7570;
+        border: 1px solid rgba(255, 255, 255, 0.1);
 
-    &:hover {
-      background: #e8604d;
-      box-shadow: 0 0 20px rgba(220, 80, 60, 0.35);
+        &:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #c4b89a;
+        }
     }
-  }
+
+    &--primary {
+        background: #dc503c;
+        color: #fff;
+
+        &:hover {
+            background: #e8604d;
+            box-shadow: 0 0 20px rgba(220, 80, 60, 0.35);
+        }
+    }
 }
 
 // --- Animations ---
 @keyframes p403-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes p403-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.08); opacity: 0.5; }
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.08);
+        opacity: 0.5;
+    }
 }

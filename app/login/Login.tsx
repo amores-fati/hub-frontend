@@ -1,5 +1,4 @@
 'use client';
-import { Input } from '@/components/base';
 import { AuthPayload } from '@/dtos/AuthDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
@@ -13,7 +12,7 @@ export default function Login() {
     const router = useRouter();
     const [form, setForm] = useState<AuthPayload>({
         email: '',
-        password: ''
+        password: '',
     });
     const [disabled, setDisabled] = useState<boolean>(false);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -36,24 +35,27 @@ export default function Login() {
         }
     }, [loginData]);
 
-    const onEmailChange: ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
+    const onEmailChange: ChangeEventHandler<HTMLInputElement> | undefined = (
+        e,
+    ) => {
         setForm((prev) => ({
             ...prev,
-            email: e.target.value
+            email: e.target.value,
         }));
     };
 
-    const onPasswordChange: ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
+    const onPasswordChange: ChangeEventHandler<HTMLInputElement> | undefined = (
+        e,
+    ) => {
         setForm((prev) => ({
             ...prev,
-            password: e.target.value
+            password: e.target.value,
         }));
     };
 
     return (
-        <div className="login-page">
+        <div className='login-page'>
             <p>Login</p>
-            <Input placeholder='Email' onChange={() => console.log()} value={form.email} />
         </div>
     );
 }

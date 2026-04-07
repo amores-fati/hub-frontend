@@ -6,7 +6,7 @@ export function Toast(): React.ReactElement {
     return (
         <ToastContainer
             className={'toast-container'}
-            position="top-right"
+            position='top-right'
             autoClose={3000}
             hideProgressBar={false}
             newestOnTop={false}
@@ -15,7 +15,7 @@ export function Toast(): React.ReactElement {
             pauseOnFocusLoss
             draggable
             pauseOnHover
-            theme="light"
+            theme='light'
             transition={Bounce}
         />
     );

@@ -1,41 +1,50 @@
-import { Loader } from '@/components/Loader'
-import { usePathname } from 'next/navigation'
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { Page, PAGES } from './pagesConfiguration'
+import { Loader } from '@/components/Loader';
+import { usePathname } from 'next/navigation';
+import React, {
+    createContext,
+    ReactNode,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
+import { Page, PAGES } from './pagesConfiguration';
 
 interface RouteProviderProps {
-    currentPage: Page | null,
-    setCurrentPage: (page: Page | null) => void
+    currentPage: Page | null;
+    setCurrentPage: (page: Page | null) => void;
 }
 
 const RouteContext = createContext<RouteProviderProps>({
     currentPage: null,
-    setCurrentPage: () => { },
-})
+    setCurrentPage: () => {},
+});
 
-const RouteProvider: React.FC<{ children?: ReactNode }> = ({ children }: { children?: ReactNode }) => {
-    const [currentPage, setCurrentPage] = useState<Page | null>(null)
-    const pathname = usePathname()
-
+const RouteProvider: React.FC<{ children?: ReactNode }> = ({
+    children,
+}: {
+    children?: ReactNode;
+}) => {
+    const [currentPage, setCurrentPage] = useState<Page | null>(null);
+    const pathname = usePathname();
 
     useEffect(() => {
-        setCurrentPage(PAGES.find(page => page.path === pathname) || null)
-    }, [pathname])
+        setCurrentPage(PAGES.find((page) => page.path === pathname) || null);
+    }, [pathname]);
 
     const value = {
         currentPage,
-        setCurrentPage
-    }
+        setCurrentPage,
+    };
 
     return (
         <RouteContext.Provider value={value}>
             {currentPage ? children : <Loader />}
         </RouteContext.Provider>
-    )
-}
+    );
+};
 
-export { RouteProvider }
+export { RouteProvider };
 
 export function useRoute() {
-    return useContext(RouteContext)
+    return useContext(RouteContext);
 }

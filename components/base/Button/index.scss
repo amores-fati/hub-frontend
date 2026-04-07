@@ -1,0 +1,47 @@
+.custom-button {
+    height: 2.5rem;
+    width: 100%;
+    box-shadow: var(--shadow);
+    border-radius: var(--border-radius) !important;
+
+    span,
+    svg {
+        color: rgba(0, 0, 0, 0.8);
+        text-transform: none;
+        transition: color 200ms ease;
+    }
+
+    &:hover {
+        cursor: pointer;
+        filter: brightness(1.15);
+    }
+
+    &--primary {
+        background: var(--tertiary-color) !important;
+
+        span,
+        svg {
+            color: white;
+        }
+    }
+
+    &--secondary {
+        background: transparent;
+        border: 1px solid black;
+
+        span,
+        svg {
+            color: var(--preto-2);
+        }
+    }
+
+    &.Mui-disabled {
+        background: rgba(200, 200, 200, 0.5);
+        cursor: not-allowed;
+
+        span,
+        svg {
+            color: var(--cinza-3);
+        }
+    }
+}

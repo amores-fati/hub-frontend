@@ -8,28 +8,30 @@ export type InputProps = {
     placeholder: string;
     type?: 'password' | 'text' | 'email' | 'number';
     icon?: React.ReactNode;
-    value?: string;
+    value: string | null;
 };
 
 function Icon({ children }: { children: React.ReactNode }) {
-    return (
-        <InputAdornment position="start">
-            {children}
-        </InputAdornment>
-    )
+    return <InputAdornment position='start'>{children}</InputAdornment>;
 }
 
-export function InputComponent({ type = 'text', placeholder, disabled = false, onChange, icon, value }: InputProps) {
+export function InputComponent({
+    type = 'text',
+    placeholder,
+    disabled = false,
+    onChange,
+    icon,
+    value,
+}: InputProps) {
     return (
         <TextField
-            id="outlined-password-input"
-            className="custom-input"
+            id='outlined-password-input'
+            variant='outlined'
+            className='custom-input'
             label={placeholder}
             slotProps={{
                 input: {
-                    startAdornment: (
-                        icon && <Icon>{icon}</Icon>
-                    ),
+                    startAdornment: icon && <Icon>{icon}</Icon>,
                 },
             }}
             disabled={disabled}
