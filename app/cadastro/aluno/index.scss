@@ -227,3 +227,16 @@
     font-size: 0.875rem;
     color: #333;
 }
+// Adicione NO FINAL do arquivo (fora de qualquer escopo)
+
+// Sobrescreve o grid para os radios de experiência (Step específico)
+.register-steps--experience-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem 2rem;
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
