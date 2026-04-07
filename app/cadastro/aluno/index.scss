@@ -124,3 +124,106 @@
         /* Em mobile, ocupa a linha inteira */
     }
 }
+
+.register-steps {
+
+    // Grid de 3 colunas para os radio groups de experiência
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem 2rem;
+
+        @media (max-width: 600px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    // Campo que ocupa linha inteira (área de atuação, escolaridade, etc.)
+    &__field--full {
+        grid-column: 1 / -1;
+    }
+
+    // Card cinza de Acessibilidade
+    &__accessibility-card {
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    &__accessibility-title {
+        font-weight: 700;
+        font-size: 1rem;
+        margin: 0 0 0.25rem 0;
+    }
+
+    // Grid interno dos tipos de deficiência: 4 por linha (igual à imagem)
+    &__disability-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem 0;
+
+        @media (max-width: 600px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    &__disability-item {
+        margin: 0 !important;
+    }
+
+    // Card roxo claro de Termos
+    &__terms-card {
+        background-color: #ede7f6;
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    &__terms-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.disability-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+}
+
+.disability-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.terms-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    color: #1a1a1a;
+}
+
+.terms-link {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #5b21b6;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.terms-item-label {
+    font-size: 0.875rem;
+    color: #333;
+}
