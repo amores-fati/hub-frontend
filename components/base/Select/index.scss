@@ -1,0 +1,8 @@
+.custom-select {
+    width: 100%;
+    position: relative;
+
+    & div {
+        border-radius: var(--border-radius);
+    }
+}

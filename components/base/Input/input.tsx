@@ -8,7 +8,7 @@ export type InputProps = {
     placeholder: string;
     type?: 'password' | 'text' | 'email' | 'number';
     icon?: React.ReactNode;
-    value?: string;
+    value: string | null;
 };
 
 function Icon({ children }: { children: React.ReactNode }) {
@@ -26,6 +26,7 @@ export function InputComponent({
     return (
         <TextField
             id='outlined-password-input'
+            variant='outlined'
             className='custom-input'
             label={placeholder}
             slotProps={{

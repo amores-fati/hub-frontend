@@ -1,6 +1,13 @@
 import { UserRole } from '@/dtos/UserDto';
 import { HomeFilled } from '@mui/icons-material';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import GroupIcon from '@mui/icons-material/Group';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import PersonIcon from '@mui/icons-material/Person';
+import WorkIcon from '@mui/icons-material/Work';
 import { JSX } from 'react';
+import React from 'react';
 
 export type Page = {
     path: string;
@@ -35,4 +42,43 @@ export const PAGES: Page[] = [
         requireAuth: false,
         name: 'Login',
     },
+    {
+        path: '/cadastro/aluno',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Login',
+    },
 ];
+
+export type NavItem = {
+    title: string;
+    icon: React.ReactNode;
+    expectedPath: string;
+};
+
+export const NAVIGATION_MAP: Record<string, NavItem[]> = {
+    [UserRole.ADMIN]: [
+        { title: 'Dashboard', icon: <DashboardIcon />, expectedPath: '/' },
+        { title: 'Alunos', icon: <GroupIcon />, expectedPath: '/alunos' },
+        { title: 'Cursos', icon: <MenuBookIcon />, expectedPath: '/cursos' },
+        {
+            title: 'Currículos',
+            icon: <AssignmentIndIcon />,
+            expectedPath: '/curriculos',
+        },
+    ],
+    [UserRole.STUDENT]: [
+        { title: 'Cursos', icon: <MenuBookIcon />, expectedPath: '/cursos' },
+        {
+            title: 'Currículo',
+            icon: <AssignmentIndIcon />,
+            expectedPath: '/curriculo',
+        },
+        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
+    ],
+    [UserRole.COMPANY]: [
+        { title: 'Vagas', icon: <WorkIcon />, expectedPath: '/vagas' },
+        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
+    ],
+};

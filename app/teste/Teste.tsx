@@ -1,5 +1,5 @@
 'use client';
-import { Button, Input, MultSelect, Select } from '@/components/base';
+import { Button, Checkbox, Input, MultSelect, Select } from '@/components/base';
 import { ChangeEvent, useState } from 'react';
 import { MultiValue, SingleValue } from 'react-select';
 import { Option } from '../../components/base/Select/select';
@@ -10,6 +10,7 @@ export default function Teste() {
         email: '',
         select: null,
         multSelect: [],
+        checkbox: false,
     });
 
     function onSelectChange(newValue: SingleValue<Option>) {
@@ -27,10 +28,16 @@ export default function Teste() {
     }
 
     function onInput(newValue: ChangeEvent<HTMLInputElement> | undefined) {
-        console.log(newValue?.target?.value);
         setForm((prevState: any) => ({
             ...prevState,
             email: newValue?.target?.value,
+        }));
+    }
+
+    function onCheckboxChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setForm((prevState: any) => ({
+            ...prevState,
+            checkbox: event.target.checked,
         }));
     }
 
@@ -60,7 +67,8 @@ export default function Teste() {
                 placeholder='Seletor Teste'
             />
             <Input placeholder='Email' onChange={onInput} value={form.email} />
-            <Button onClick={onClick}>
+            <Checkbox checked={form.checkbox} onChange={onCheckboxChange} />
+            <Button onClick={onClick} aria-label='primary'>
                 <span>Teste</span>
             </Button>
         </div>

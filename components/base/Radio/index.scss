@@ -1,0 +1,16 @@
+.custom-radio-control {
+    border: solid rgba(0, 0, 0, 0.25) 1px;
+    border-radius: var(--border-radius);
+    padding-right: 0.75rem;
+}
+
+.custom-radio {
+    svg {
+        color: rgba(0, 0, 0, 0.5);
+    }
+}
+
+.custom-radio-group {
+    gap: 1rem;
+    padding-left: 0.75rem;
+}
