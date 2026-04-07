@@ -1,104 +1,90 @@
 'use client';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../providers/Auth/AuthProvider';
-import { PAGES } from '../../providers/Route/pagesConfiguration';
+import {
+    PAGES,
+    NAVIGATION_MAP,
+} from '../../providers/Route/pagesConfiguration';
+import { UserRole } from '@/dtos/UserDto';
 import './index.scss';
+import { ButtonComponent } from '../base/Button/button';
 
-function getInitials(name: string | null): string {
-    if (!name) return '';
-    return name
-        .trim()
-        .split(/\s+/)
-        .slice(0, 2)
-        .map((word) => word[0].toUpperCase())
-        .join('');
-}
+import logoImg from '../../assets/images/logo.png';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 export default function Navbar() {
     const { user, logout } = useAuth();
     const pathname = usePathname();
-    const [mobileOpen, setMobileOpen] = useState(false);
+    const router = useRouter();
+
+    const role = user?.role || UserRole.ADMIN; // Se quiser testar, apenas mudar o valor default de GUEST para ADMIN
+    const navItems = NAVIGATION_MAP[role] || [];
+
+    const roleContent =
+        (role === UserRole.STUDENT || role === UserRole.COMPANY) &&
+        user?.friendlyName
+            ? user.friendlyName
+            : role;
 
     return (
         <nav className='navbar'>
             <div className='navbar__inner'>
-                {/* Logo */}
-                <Link href='/' className='navbar__logo'>
-                    <span className='navbar__logo-text'>
-                        Amores<span>Fati</span>
-                    </span>
-                </Link>
+                <div className='navbar__left'>
+                    {/* Logo */}
+                    <Link href='/' className='navbar__logo'>
+                        <Image src={logoImg} alt='Amores Fati Logo' />
+                        <p className='navbar__logo-text'>Amores Fati</p>
+                    </Link>
 
-                {/* Links desktop */}
-                <ul className='navbar__nav'>
-                    {PAGES.map((item) => {
-                        if (item.navbarEnabled) {
-                            return (
-                                <Link
-                                    key={item.name}
-                                    href={item.path}
-                                    className={`navbar__nav-link${pathname === item.path ? ' navbar__nav-link--active' : ''}`}
-                                    onClick={() => setMobileOpen(false)}
-                                >
-                                    {item.icon}
-                                    {item.name}
-                                </Link>
+                    {/* Badge de Role */}
+                    <span className='navbar__badge'>{roleContent}</span>
+
+                    <div className='navbar__divider' />
+
+                    {/* Links desktop */}
+                    <ul className='navbar__nav'>
+                        {navItems.map((item) => {
+                            const routeExists = PAGES.some(
+                                (p) => p.path === item.expectedPath,
                             );
-                        }
-                    })}
-                </ul>
+                            const isActive = pathname === item.expectedPath;
+                            const isDisabled = !routeExists;
 
-                {/* Ações */}
-                <div className='navbar__actions'>
-                    {/* Avatar */}
-                    <button
-                        className='navbar__avatar'
-                        aria-label='Menu do usuário'
-                    >
-                        <div className='navbar__avatar-img'>
-                            {getInitials(user?.friendlyName || '')}
-                        </div>
-                        <span className='navbar__avatar-name'>
-                            {user?.friendlyName}
-                        </span>
-                        <KeyboardArrowDownIcon />
-                    </button>
+                            return (
+                                <li
+                                    key={item.title}
+                                    className='navbar__nav-item'
+                                >
+                                    <ButtonComponent
+                                        variant={
+                                            isActive ? 'primary' : 'secondary'
+                                        }
+                                        disabled={isDisabled}
+                                        onClick={() => {
+                                            if (!isDisabled)
+                                                router.push(item.expectedPath);
+                                        }}
+                                    >
+                                        <div className='navbar__nav-button-content'>
+                                            {item.icon}
+                                            <span>{item.title}</span>
+                                        </div>
+                                    </ButtonComponent>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
 
-                    {/* Hamburguer mobile */}
-                    <button
-                        className={`navbar__hamburger${mobileOpen ? ' navbar__hamburger--open' : ''}`}
-                        onClick={() => setMobileOpen((prev) => !prev)}
-                        aria-label='Abrir menu'
-                        aria-expanded={mobileOpen}
-                    >
-                        <span />
-                        <span />
-                        <span />
+                {/* Ações / Logout */}
+                <div className='navbar__right'>
+                    <button className='navbar__logout' onClick={logout}>
+                        <LogoutIcon />
+                        Sair da Conta
                     </button>
                 </div>
-            </div>
-
-            {/* Menu mobile */}
-            <div
-                className={`navbar__mobile-menu${mobileOpen ? '' : ' navbar__mobile-menu--hidden'}`}
-            >
-                {PAGES.map((item) => {
-                    if (!item.navbarEnabled) return null;
-                    return (
-                        <Link
-                            key={item.name}
-                            href={item.path}
-                            className={`navbar__nav-link${pathname === item.path ? ' navbar__nav-link--active' : ''}`}
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            {item.icon}
-                            {item.name}
-                        </Link>
-                    );
-                })}
             </div>
         </nav>
     );
