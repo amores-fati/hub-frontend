@@ -9,11 +9,14 @@ export type RadioOption = {
     disabled?: boolean;
     value: string;
     label: string;
-}
+};
 
-export default function RadioGroup({ options, onChange }: {
+export default function RadioGroup({
+    options,
+    onChange,
+}: {
     options: RadioOption[];
-    onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void
+    onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
 }) {
     return (
         <FormControl>
@@ -32,7 +35,7 @@ export default function RadioGroup({ options, onChange }: {
                             label={option.label}
                             disabled={option.disabled}
                         />
-                    )
+                    );
                 })}
             </MuiRadioGroup>
         </FormControl>

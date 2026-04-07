@@ -15,7 +15,8 @@ export function ButtonComponent({
     children,
 }: ButtonProps) {
     return (
-        <Button className={`custom-button custom-button--${variant}`}
+        <Button
+            className={`custom-button custom-button--${variant}`}
             onClick={onClick}
             disabled={disabled}
             aria-label={variant}

@@ -4,9 +4,11 @@
     box-shadow: var(--shadow);
     border-radius: var(--border-radius) !important;
 
-    span {
+    span,
+    svg {
         color: rgba(0, 0, 0, 0.8);
         text-transform: none;
+        transition: color 200ms ease;
     }
 
     &:hover {
@@ -17,7 +19,8 @@
     &--primary {
         background: var(--tertiary-color) !important;
 
-        span {
+        span,
+        svg {
             color: white;
         }
     }
@@ -25,14 +28,20 @@
     &--secondary {
         background: transparent;
         border: 1px solid black;
+
+        span,
+        svg {
+            color: var(--preto-2);
+        }
     }
 
     &.Mui-disabled {
         background: rgba(200, 200, 200, 0.5);
         cursor: not-allowed;
 
-        span {
-            color: rgba(0, 0, 0, 0.8);
+        span,
+        svg {
+            color: var(--cinza-3);
         }
     }
 }
