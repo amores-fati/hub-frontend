@@ -1,17 +1,24 @@
 import { Input } from "@/components/base";
 import { UserRegisterPayload } from "@/dtos/UserDto";
+import AccessibleForwardIcon from '@mui/icons-material/AccessibleForward';
 import GavelIcon from '@mui/icons-material/Gavel';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import HearingDisabledIcon from '@mui/icons-material/HearingDisabled';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Checkbox, FormControlLabel, InputAdornment, RadioGroup as MuiRadioGroup, Radio } from "@mui/material";
 import React, { ChangeEvent } from "react";
 
 const AccessibilityOptions = [
-    { label: 'Física', value: 'FISICA', icon: '♿' },
-    { label: 'Visual', value: 'VISUAL', icon: '👁' },
-    { label: 'Auditiva', value: 'AUDITIVA', icon: '🦻' },
-    { label: 'Intelectual', value: 'INTELECTUAL', icon: '🧠' },
-    { label: 'Psicossocial', value: 'PSICOSSOCIAL', icon: '🤝' },
-    { label: 'Múltipla', value: 'MULTIPLA', icon: '↔' },
-    { label: 'Outra', value: 'OUTRA', icon: '+' },
+    { label: 'Física', value: 'FISICA', icon: <AccessibleForwardIcon /> },
+    { label: 'Visual', value: 'VISUAL', icon: <VisibilityIcon /> },
+    { label: 'Auditiva', value: 'AUDITIVA', icon: <HearingDisabledIcon /> },
+    { label: 'Intelectual', value: 'INTELECTUAL', icon: <PsychologyIcon /> },
+    { label: 'Psicossocial', value: 'PSICOSSOCIAL', icon: <HandshakeIcon /> },
+    { label: 'Múltipla', value: 'MULTIPLA', icon: <SettingsEthernetIcon /> },
+    { label: 'Outra', value: 'OUTRA', icon: <MoreHorizIcon /> },
 ];
 
 
