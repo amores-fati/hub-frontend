@@ -110,3 +110,28 @@
         padding: 3rem 0rem;
     }
 }
+
+/* No seu arquivo CSS */
+.register-steps__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.register-steps__field--full {
+    grid-column: span 4;
+    /* Ocupa todas as 4 colunas */
+}
+
+.register-steps__field--half {
+    grid-column: span 2;
+    /* Ocupa 2 das 4 colunas (metade) */
+}
+
+/* Para mobile */
+@media (max-width: 768px) {
+    .register-steps__field--half {
+        grid-column: span 4;
+        /* Em mobile, ocupa a linha inteira */
+    }
+}

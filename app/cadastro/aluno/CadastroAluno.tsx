@@ -5,7 +5,7 @@ import { UserRegisterPayload } from '@/dtos/UserDto';
 import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
 import { Box, CardActions, CardContent, Step, StepLabel, Stepper, } from '@mui/material';
 import { useState } from 'react';
-import { RegisterStep1 } from './RegisterStep1';
+import { RegisterStep1, validateFormStep1 } from './RegisterStep1';
 import { RegisterStep2 } from './RegisterStep2';
 import { RegisterStep3 } from './RegisterStep3';
 import { RegisterStep4 } from './RegisterStep4';
@@ -127,8 +127,6 @@ export default function CadastroAluno() {
                         <ArrowBackSharpIcon color="action" />
                         <span>Voltar</span>
                     </Button>
-
-
                     <Button onClick={onForward}>
                         <span>{activeStep === StepperSteps.STEP4 ? 'Cadastrar' : 'Avançar'}</span>
                     </Button>
