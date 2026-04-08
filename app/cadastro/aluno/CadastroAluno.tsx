@@ -1,10 +1,10 @@
 'use client';
-import { UserRegisterPayload } from '@/dtos/UserDto';
-import { Box, CardActions, CardContent, Step, StepLabel, Stepper } from '@mui/material';
-import { useState } from 'react';
-
 import { Button } from '@/components/base';
 import Card from '@/components/base/Card/card';
+import { UserRegisterPayload } from '@/dtos/UserDto';
+import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
+import { Box, CardActions, CardContent, Step, StepLabel, Stepper, } from '@mui/material';
+import { useState } from 'react';
 import { RegisterStep1 } from './RegisterStep1';
 import { RegisterStep2 } from './RegisterStep2';
 import { RegisterStep3 } from './RegisterStep3';
@@ -115,8 +115,11 @@ export default function CadastroAluno() {
                         disabled={activeStep === StepperSteps.STEP1}
                         style={{ visibility: activeStep === StepperSteps.STEP1 ? 'hidden' : 'visible' }}
                     >
+                        <ArrowBackSharpIcon color="action" />
                         <span>Voltar</span>
                     </Button>
+
+
                     <Button onClick={onForward}>
                         <span>{activeStep === StepperSteps.STEP4 ? 'Cadastrar' : 'Avançar'}</span>
                     </Button>
