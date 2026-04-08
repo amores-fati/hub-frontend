@@ -1,11 +1,10 @@
 import { Input, RadioGroup, Select } from "@/components/base";
 import { Scholarship, UserRegisterPayload } from "@/dtos/UserDto";
 import HomeIcon from '@mui/icons-material/Home';
+import SchoolSharpIcon from '@mui/icons-material/SchoolSharp';
 import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
 import { Option } from "../../../components/base/Select/select";
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import SchoolIcon from '@mui/icons-material/School';
 
 // Opções de escolaridade - valores únicos e labels corretos
 const ScholarshipRadioOptions = [
@@ -128,10 +127,10 @@ export function RegisterStep2({ form, setForm }: {
         <div className='register-steps'>
             {/* Seção Endereço */}
             <div className='register-steps__section-title'>
-                <LocationOnIcon position='start'>
+                <InputAdornment position='start'>
                     <HomeIcon />
-                </LocationOnIcon>
-                <span>Endereço e Experiência</span>
+                </InputAdornment>
+                <span>Endereço</span>
             </div>
 
             <div className='register-steps__grid'>
@@ -181,24 +180,30 @@ export function RegisterStep2({ form, setForm }: {
                     />
                 </div>
 
-              <div className='register-steps__field'>
-                  <p className='field-label'>Estado <span className='required'>*</span></p>
-                  <Select
-                      value={StateOptions.find((option) => option.value === form.state)}
-                      placeholder="UF"
-                      options={StateOptions}
-                      onChange={onStateChange}
-                  />
-              </div>
+                <div className='register-steps__field register-steps__field--small'>
+                    <p className='field-label'>Estado <span className='required'>*</span></p>
+                    <Select
+                        value={StateOptions.find((option) => option.value === form.state)}
+                        placeholder="UF"
+                        options={StateOptions}
+                        onChange={onStateChange}
+                    />
+                </div>
+            </div>
+
+            {/* Seção Escolaridade */}
+            <div className='register-steps__section-title'>
+                <InputAdornment position='start'>
+                    <SchoolSharpIcon />
+                </InputAdornment>
+                <span>Escolaridade</span>
             </div>
 
             <div className='register-steps__grid'>
                 {/* Nível de escolaridade - ocupa a linha inteira */}
                 <div className='register-steps__field register-steps__field--full'>
-  <div className='register-steps__section-title'>
-            <SchoolIcon />
-            <span>Nível de escolaridade <span className='required'>*</span></span>
-        </div>
+                    <p className='field-label'>Nível de escolaridade <span className='required'>*</span></p>
+
                     <RadioGroup
                         value={form.scholarship ?? undefined}
                         options={ScholarshipRadioOptions}
@@ -227,6 +232,5 @@ export function RegisterStep2({ form, setForm }: {
                 </div>
             </div>
         </div>
-
     );
 }
