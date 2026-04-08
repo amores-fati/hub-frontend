@@ -22,7 +22,7 @@ type Response = {
 export const useGetPublicCep = (cep: string | null) =>
     useQuery({
         enabled: !!cep && cep.length === 8,
-        queryKey: [QUERY_KEYS.EXAMPLES, cep],
+        queryKey: [QUERY_KEYS.CEP, cep],
         queryFn: () =>
             cepApi.get<Response>(`/${cep}/json`).then((res) => res.data),
     });

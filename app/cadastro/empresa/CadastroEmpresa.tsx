@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/components/base';
 import Card from '@/components/base/Card/card';
 import { CompanyRegisterPayload } from '@/dtos/CompanyDto';
-import { Form } from './Form';
+import { Form, validateForm } from './Form';
 import './index.scss';
 
 export enum StepperSteps {
@@ -36,7 +36,12 @@ export default function CadastroAluno() {
     });
 
     const onClick = () => {
-        window.alert(form)
+        try {
+            validateForm(form);
+            window.alert(form);
+        } catch {
+            return null;
+        }
     }
 
     return (

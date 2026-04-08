@@ -1,7 +1,6 @@
 import { Input } from "@/components/base";
 import { CompanyRegisterPayload } from "@/dtos/CompanyDto";
-import { UserRegisterPayload } from "@/dtos/UserDto";
-import { cpfRegex, phoneNumberRegex } from "@/utils/regex";
+import { cnpjRegex, phoneNumberRegex } from "@/utils/regex";
 import {
     Description as DescriptionIcon,
     LockOutline as LockOutlineIcon,
@@ -74,7 +73,7 @@ export function Form({ form, setForm }:
     function onCnpjChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
         setForm((prevState: CompanyRegisterPayload) => ({
             ...prevState,
-            cnpj: cpfRegex(newValue?.target?.value ?? null) ?? '',
+            cnpj: cnpjRegex(newValue?.target?.value ?? null) ?? '',
         }));
     }
 
@@ -253,9 +252,29 @@ export function Form({ form, setForm }:
     );
 }
 
-export function validateFormStep1(form: UserRegisterPayload) {
+export function validateForm(form: CompanyRegisterPayload) {
     if (!form.email) {
         toast.error('Email é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (!form.cep) {
+        toast.error('CEP é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (!form.ownerName) {
+        toast.error('Nome do sócio propietário é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (!form.phoneNumber) {
+        toast.error('Telefone / Whatsapp é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (!form.password) {
+        toast.error('Senha é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (form.password !== form.passwordConfirmation) {
+        toast.error('Confirmação de senha está diferente da senha')
         throw ('Missing parameter');
     }
 }
