@@ -12,6 +12,18 @@
         min-width: 1px;
         min-height: 1px;
         background-color: var(--background);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-xl);
+    }
+
+    &__features-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-lg);
+        width: 100%;
+        max-width: 900px;
     }
 
     &__right {

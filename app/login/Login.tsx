@@ -1,5 +1,6 @@
 'use client';
 import { Button, Card, Checkbox, Input } from '@/components/base';
+import { FeatureCard } from '@/components/FeatureCard';
 import { AuthPayload } from '@/dtos/AuthDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
@@ -57,7 +58,30 @@ export default function Login() {
 
     return (
         <div className='login-page'>
-            <div className='login-page__left'></div>
+            <div className='login-page__left'>
+                <div className='login-page__features-grid'>
+                    <FeatureCard
+                        title='Alto Contraste'
+                        subtitle='Todas as cores da interface foram pensadas para ter uma alta definição.'
+                        color='var(--primary-color)'
+                    />
+                    <FeatureCard
+                        title='Navegação Simplificada'
+                        subtitle='Menus e opções reorganizados para facilitar o acesso rápido às funções mais usadas.'
+                        color='var(--secondary-color)'
+                    />
+                    <FeatureCard
+                        title='Navegação por Teclado'
+                        subtitle='Todos os elementos acessíveis com Tab, Enter e atalhos de teclado.'
+                        color='var(--tertiary-color)'
+                    />
+                    <FeatureCard
+                        title='Leitor de Tela'
+                        subtitle='Compatível com NVDA, JAWS e VoiceOver, com labels e roles ARIA.'
+                        color='var(--success)'
+                    />
+                </div>
+            </div>
             <div className='login-page__right'>
                 <div className='login-page__card'>
                     <Card>
