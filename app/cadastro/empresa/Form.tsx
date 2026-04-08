@@ -37,18 +37,9 @@ export function Form({ form, setForm }:
             setForm((prevState: CompanyRegisterPayload) => ({
                 ...prevState,
                 address: cepData.logradouro,
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 neighbourhood: cepData.bairro,
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
-                city: cepData.localidade,
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 state: cepData.uf,
+                city: cepData.localidade,
             }));
         }
     }, [cepData])
@@ -59,17 +50,8 @@ export function Form({ form, setForm }:
             setForm((prevState: CompanyRegisterPayload) => ({
                 ...prevState,
                 address: '',
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 neighbourhood: '',
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 city: '',
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 state: '',
             }));
         }
