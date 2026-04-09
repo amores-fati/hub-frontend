@@ -59,6 +59,18 @@ export default function Login() {
     return (
         <div className='login-page'>
             <div className='login-page__left'>
+                <h2 className='login-page__header-title'>
+                    <span className='login-page__header-title-line'>
+                        Feito para
+                    </span>
+                    <span className='login-page__header-title-line login-page__header-title-line--accent'>
+                        todo
+                    </span>
+                    <span className='login-page__header-title-line'>
+                        tipo de pessoa!
+                    </span>
+                </h2>
+
                 <div className='login-page__features-grid'>
                     <FeatureCard
                         title='Alto Contraste'
