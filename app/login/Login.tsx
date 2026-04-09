@@ -90,7 +90,7 @@ export default function Login() {
                     <FeatureCard
                         title='Leitor de Tela'
                         subtitle='Compatível com NVDA, JAWS e VoiceOver, com labels e roles ARIA.'
-                        color='var(--success)'
+                        color='var(--complement-3)'
                     />
                 </div>
             </div>
