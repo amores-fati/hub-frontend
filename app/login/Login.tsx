@@ -58,8 +58,8 @@ export default function Login() {
 
     return (
         <div className='login-page'>
-            <div className='login-page__left'>
-                <h2 className='login-page__header-title'>
+            <div className='login-page__left flex flex-col items-center justify-center'>
+                <h2 className='login-page__header-title w-full'>
                     <span className='login-page__header-title-line'>
                         Feito para
                     </span>
@@ -71,7 +71,7 @@ export default function Login() {
                     </span>
                 </h2>
 
-                <div className='login-page__features-grid'>
+                <div className='login-page__features-grid w-full grid'>
                     <FeatureCard
                         title='Alto Contraste'
                         subtitle='Todas as cores da interface foram pensadas para ter uma alta definição.'
