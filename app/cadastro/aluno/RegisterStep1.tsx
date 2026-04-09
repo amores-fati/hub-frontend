@@ -4,7 +4,6 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent } from "react";
 import { SingleValue } from "react-select";
-import { toast } from "react-toastify";
 import { Option } from "../../../components/base/Select/select";
 import { cpfRegex, dateRegex, phoneNumberRegex } from "../../../utils/regex";
 
@@ -188,8 +187,32 @@ export function RegisterStep1({ form, setForm }:
 }
 
 export function validateFormStep1(form: UserRegisterPayload) {
-    if (!form.email) {
-        toast.error('Email é obrigatório')
-        throw ('Missing parameter');
-    }
+    /* if (!form.fullName?.trim()) {
+         toast.error('Nome completo é obrigatório');
+         throw ('Missing parameter');
+     }
+     if (!form.cpf || form.cpf.replace(/\D/g, '').length !== 11) {
+         toast.error('CPF inválido');
+         throw ('Missing parameter');
+     }
+     if (!form.birthDate || form.birthDate.length !== 10) {
+         toast.error('Data de nascimento inválida');
+         throw ('Missing parameter');
+     }
+     if (!form.phoneNumber?.trim()) {
+         toast.error('Telefone é obrigatório');
+         throw ('Missing parameter');
+     }
+     if (!form.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+         toast.error('Email inválido');
+         throw ('Missing parameter');
+     }
+     if (!form.password || form.password.length < 8) {
+         toast.error('Senha deve ter no mínimo 8 caracteres');
+         throw ('Missing parameter');
+     }
+     if (form.password !== form.passwordConfirmation) {
+         toast.error('As senhas não conferem');
+         throw ('Missing parameter');
+     }*/
 }

@@ -6,9 +6,9 @@ import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
 import { Box, CardActions, CardContent, Step, StepLabel, Stepper, } from '@mui/material';
 import { useState } from 'react';
 import { RegisterStep1, validateFormStep1 } from './RegisterStep1';
-import { RegisterStep2 } from './RegisterStep2';
+import { RegisterStep2, validateFormStep2 } from './RegisterStep2';
 import { RegisterStep3 } from './RegisterStep3';
-import { RegisterStep4 } from './RegisterStep4';
+import { RegisterStep4, validateFormStep4 } from './RegisterStep4';
 import './index.scss';
 
 export enum StepperSteps {
@@ -63,8 +63,15 @@ export default function CadastroAluno() {
     const handleNext = () => {
         try {
             switch (activeStep) {
-                case 1:
+                case StepperSteps.STEP1:
                     validateFormStep1(form);
+                    break;
+                case StepperSteps.STEP2:
+                    validateFormStep2(form);
+                    break;
+                case StepperSteps.STEP4:
+                    validateFormStep4(form);
+                    break;
             }
         } catch {
             return null;
