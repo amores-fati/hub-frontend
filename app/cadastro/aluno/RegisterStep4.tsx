@@ -1,5 +1,6 @@
 import { Input } from "@/components/base";
 import { UserRegisterPayload } from "@/dtos/UserDto";
+import { toast } from "react-toastify";
 import AccessibleForwardIcon from '@mui/icons-material/AccessibleForward';
 import GavelIcon from '@mui/icons-material/Gavel';
 import HandshakeIcon from '@mui/icons-material/Handshake';
@@ -263,4 +264,11 @@ export function RegisterStep4({ form, setForm }: {
 
         </div>
     );
+}
+
+export function validateFormStep4(form: UserRegisterPayload) {
+    if (!form.lgpd?.terms) {
+        toast.error('Você deve aceitar os Termos de Uso e a LGPD para continuar');
+        throw ('Missing parameter');
+    }
 }
