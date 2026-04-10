@@ -60,10 +60,10 @@ export default function Login() {
 
     return (
         <div className='login-page'>
-            <div className='login-page__left flex flex-col items-center justify-start'>
-                <div className='login-page__header w-full'>
+            <div className='login-page__left'>
+                <div className='login-page__header'>
                     <div className='login-page__header-text'>
-                        <h2 className='login-page__header-title w-full'>
+                        <h2 className='login-page__header-title'>
                             <span className='login-page__header-title-line'>
                                 Feito para
                             </span>
@@ -89,7 +89,7 @@ export default function Login() {
                     </div>
                 </div>
 
-                <div className='login-page__features-grid w-full grid'>
+                <div className='login-page__features-grid'>
                     <FeatureCard
                         title='Alto Contraste'
                         subtitle='Todas as cores da interface foram pensadas para ter uma alta definição.'
@@ -123,7 +123,7 @@ export default function Login() {
             <div className='login-page__right'>
                 <div className='login-page__card'>
                     <Card>
-                        <CardContent aria-label='content'>
+                        <CardContent className='login-page__card-content'>
                             <div className='login-page__content'>
                                 <h1 className='login-page__title'>
                                     Faça login na plataforma!
@@ -172,12 +172,13 @@ export default function Login() {
                             </div>
                         </CardContent>
 
-                        <CardActions aria-label='actions'>
+                        <CardActions className='login-page__card-actions'>
                             <div className='login-page__actions'>
                                 <Button
                                     onClick={handleClick}
                                     disabled={disabled}
                                     variant='primary'
+                                    className='login-page__submit-btn'
                                 >
                                     <span className='login-page__button-text'>
                                         ENTRAR

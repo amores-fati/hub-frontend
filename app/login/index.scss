@@ -1,11 +1,9 @@
-@use '../../scss/globals.scss' as *;
+﻿@use '../../scss/globals.scss' as *;
 
 .login-page {
+    /* layout principal */
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 100vh;
     min-height: 100dvh;
     width: 100%;
     background-color: var(--background);
@@ -15,11 +13,15 @@
         flex-direction: row;
     }
 
+    /* lado esquerdo -> featurecards e header */
     &__left {
         flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
         min-width: 1px;
         background-color: var(--background);
-        justify-content: flex-start;
         gap: var(--spacing-lg);
         padding: var(--spacing-md) var(--spacing-lg);
 
@@ -32,6 +34,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%;
         gap: var(--spacing-md);
         max-width: 900px;
         margin-bottom: var(--spacing-xs);
@@ -50,6 +53,30 @@
 
         @include lg {
             gap: var(--spacing-lg);
+        }
+    }
+
+    &__header-title {
+        width: 100%;
+        margin: 0;
+        color: var(--preto-1);
+    }
+
+    &__header-title-line {
+        display: block;
+        font-family: var(--font-zilla);
+        font-size: clamp(2.05rem, 3.75vw, 3.9rem);
+        line-height: 1.02;
+        font-weight: 700;
+
+        &:first-child {
+            font-weight: 400;
+        }
+
+        &--accent {
+            color: var(--tertiary-color);
+            font-style: italic;
+            font-weight: 400;
         }
     }
 
@@ -90,32 +117,10 @@
         }
     }
 
-    &__header-title {
-        width: 100%;
-        margin: 0;
-        color: var(--preto-1);
-    }
-
-    &__header-title-line {
-        display: block;
-        font-family: var(--font-zilla);
-        font-size: clamp(2.05rem, 3.75vw, 3.9rem);
-        line-height: 1.02;
-        font-weight: 700;
-
-        &:first-child {
-            font-weight: 400;
-        }
-
-        &--accent {
-            color: var(--tertiary-color);
-            font-style: italic;
-            font-weight: 400;
-        }
-    }
-
     &__features-grid {
+        display: grid;
         grid-template-columns: repeat(1, 1fr);
+        width: 100%;
         gap: var(--spacing-md);
         max-width: 900px;
 
@@ -128,6 +133,7 @@
         }
     }
 
+    /* lado direito -> formulário */
     &__right {
         flex: 1;
         display: flex;
@@ -156,56 +162,14 @@
         max-width: 680px;
     }
 
+    &__card-content {
+        padding: 0;
+    }
+
     &__content {
         display: flex;
         flex-direction: column;
         gap: var(--spacing-sm);
-    }
-
-    [aria-label='content'] {
-        padding: 0;
-    }
-
-    [aria-label='actions'] {
-        width: 100%;
-        padding: var(--spacing-md) 0 0;
-
-        .login-page__actions {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-        }
-
-        button {
-            width: 100%;
-        }
-    }
-
-    &__links {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        gap: var(--spacing-md);
-    }
-
-    &__link {
-        font-size: var(--font-size-base);
-        cursor: pointer;
-        color: var(--text-primary);
-        text-decoration: none;
-        transition: color var(--transition-fast);
-
-        &:hover {
-            color: var(--secondary-color);
-            text-decoration: underline;
-        }
-
-        &--primary {
-            color: var(--tertiary-color);
-            font-weight: 600;
-        }
     }
 
     &__title {
@@ -214,6 +178,7 @@
         color: var(--text-primary);
     }
 
+    /* elementos do forms */
     &__field {
         display: flex;
         flex-direction: column;
@@ -247,7 +212,50 @@
         }
     }
 
+    /* ações e botões */
+    &__card-actions {
+        width: 100%;
+        padding: var(--spacing-md) 0 0;
+    }
+
+    &__actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+
+    &__submit-btn {
+        width: 100%;
+    }
+
     &__button-text {
         font-weight: 700;
+    }
+
+    &__links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: var(--spacing-md);
+    }
+
+    &__link {
+        font-size: var(--font-size-base);
+        cursor: pointer;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+
+        &:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        &--primary {
+            color: var(--tertiary-color);
+            font-weight: 600;
+        }
     }
 }
