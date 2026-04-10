@@ -60,7 +60,7 @@ export default function Login() {
 
     return (
         <div className='login-page'>
-            <div className='login-page__left flex flex-col items-center justify-center'>
+            <div className='login-page__left flex flex-col items-center justify-start'>
                 <div className='login-page__header w-full'>
                     <div className='login-page__header-text'>
                         <h2 className='login-page__header-title w-full'>

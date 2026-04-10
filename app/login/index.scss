@@ -3,7 +3,10 @@
 .login-page {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
+    min-height: 100dvh;
     width: 100%;
     background-color: var(--background);
     overflow: hidden;
@@ -16,11 +19,12 @@
         flex: 1 1 0;
         min-width: 1px;
         background-color: var(--background);
-        gap: var(--spacing-xl);
-        padding: var(--spacing-lg);
+        justify-content: flex-start;
+        gap: var(--spacing-lg);
+        padding: var(--spacing-md) var(--spacing-lg);
 
         @include xl {
-            padding: var(--spacing-2xl);
+            padding: var(--spacing-lg) var(--spacing-2xl);
         }
     }
 
@@ -28,9 +32,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: var(--spacing-lg);
+        gap: var(--spacing-md);
         max-width: 900px;
-        margin-bottom: 0;
+        margin-bottom: var(--spacing-xs);
 
         @include lg {
             flex-direction: row;
@@ -42,10 +46,10 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-lg);
+        gap: var(--spacing-md);
 
         @include lg {
-            gap: var(--spacing-xl);
+            gap: var(--spacing-lg);
         }
     }
 
@@ -53,6 +57,7 @@
         font: var(--headline-light);
         color: var(--text-primary);
         max-width: 480px;
+        line-height: 1.45;
 
         strong {
             font-weight: 600;
@@ -62,7 +67,7 @@
 
     &__logo {
         flex: 0 0 100%;
-        max-width: 250px;
+        max-width: 220px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -74,14 +79,14 @@
         }
 
         @include lg {
-            flex: 0 0 350px;
-            max-width: 350px;
+            flex: 0 0 300px;
+            max-width: 300px;
             margin-left: auto;
         }
 
         @include xl {
-            flex: 0 0 400px;
-            max-width: 400px;
+            flex: 0 0 340px;
+            max-width: 340px;
         }
     }
 
@@ -94,8 +99,8 @@
     &__header-title-line {
         display: block;
         font-family: var(--font-zilla);
-        font-size: clamp(2.25rem, 4.2vw, 4.25rem);
-        line-height: 1.08;
+        font-size: clamp(2.05rem, 3.75vw, 3.9rem);
+        line-height: 1.02;
         font-weight: 700;
 
         &:first-child {
@@ -111,8 +116,12 @@
 
     &__features-grid {
         grid-template-columns: repeat(1, 1fr);
-        gap: var(--spacing-lg);
+        gap: var(--spacing-md);
         max-width: 900px;
+
+        @include md {
+            gap: var(--spacing-lg);
+        }
 
         @include lg {
             grid-template-columns: repeat(2, 1fr);
@@ -124,17 +133,17 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: var(--spacing-lg);
+        padding: var(--spacing-md);
         background-color: var(--tertiary-color);
 
         @include lg {
             flex: 0 0 500px;
-            padding: var(--spacing-xl);
+            padding: var(--spacing-lg);
         }
 
         @include xl {
             flex: 0 0 650px;
-            padding: var(--spacing-2xl);
+            padding: var(--spacing-xl);
         }
 
         @include xxl {
@@ -144,13 +153,13 @@
 
     &__card {
         width: 100%;
-        max-width: 698px;
+        max-width: 680px;
     }
 
     &__content {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
     }
 
     [aria-label='content'] {
@@ -159,7 +168,7 @@
 
     [aria-label='actions'] {
         width: 100%;
-        padding: 1.25rem 0 0;
+        padding: var(--spacing-md) 0 0;
 
         .login-page__actions {
             width: 100%;
@@ -178,6 +187,7 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
+        gap: var(--spacing-md);
     }
 
     &__link {
