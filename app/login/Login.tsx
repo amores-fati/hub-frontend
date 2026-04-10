@@ -5,6 +5,9 @@ import { FeatureCard } from '@/components/FeatureCard';
 import { AuthPayload } from '@/dtos/AuthDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BusinessIcon from '@mui/icons-material/Business';
+import SchoolIcon from '@mui/icons-material/School';
 import { CardActions, CardContent } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -21,6 +24,7 @@ export default function Login() {
     });
     const [disabled, setDisabled] = useState<boolean>(false);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
+    const [isSelectingRole, setIsSelectingRole] = useState<boolean>(false);
     const { mutate: login, data: loginData } = useLoginMutation(form);
 
     const handleClick = () => {
@@ -123,11 +127,48 @@ export default function Login() {
             <div className='login-page__right'>
                 <div className='login-page__card'>
                     <Card>
-                        <CardContent className='login-page__card-content'>
-                            <div className='login-page__content'>
-                                <h1 className='login-page__title'>
-                                    Faça login na plataforma!
-                                </h1>
+                        <div className='login-page__card-wrapper'>
+                            <CardContent className='login-page__card-content'>
+                            {isSelectingRole ? (
+                                <div className='login-page__register'>
+                                    <div
+                                        className='login-page__register-back'
+                                        onClick={() => setIsSelectingRole(false)}
+                                    >
+                                        <ArrowBackIcon />
+                                        <span>Voltar</span>
+                                    </div>
+                                    <h3 className='login-page__register-title'>
+                                        Qual cadastro deseja realizar?
+                                    </h3>
+                                    <div className='login-page__register-cards'>
+                                        <div
+                                            className='login-page__register-card'
+                                            onClick={() => router.push('/cadastro/aluno')}
+                                        >
+                                            <div className='login-page__register-card-color'></div>
+                                            <div className='login-page__register-card-content'>
+                                                <SchoolIcon className='login-page__register-icon' />
+                                                <span>Sou Aluno</span>
+                                            </div>
+                                        </div>
+                                        <div
+                                            className='login-page__register-card'
+                                            onClick={() => router.push('/cadastro/empresa')}
+                                        >
+                                            <div className='login-page__register-card-color'></div>
+                                            <div className='login-page__register-card-content'>
+                                                <BusinessIcon className='login-page__register-icon' />
+                                                <span>Sou Empresa</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className='login-page__content'>
+                                    <h1 className='login-page__title'>
+                                        Faça login na plataforma!
+                                    </h1>
 
                                 <div className='login-page__field'>
                                     <label className='login-page__label'>
@@ -170,8 +211,10 @@ export default function Login() {
                                     </span>
                                 </div>
                             </div>
+                            )}
                         </CardContent>
 
+                        {!isSelectingRole && (
                         <CardActions className='login-page__card-actions'>
                             <div className='login-page__actions'>
                                 <Button
@@ -189,7 +232,7 @@ export default function Login() {
                                     <span
                                         className='login-page__link login-page__link--primary'
                                         onClick={() =>
-                                            router.push('/cadastro/aluno')
+                                            setIsSelectingRole(true)
                                         }
                                     >
                                         Quero me cadastrar!
@@ -200,6 +243,8 @@ export default function Login() {
                                 </div>
                             </div>
                         </CardActions>
+                        )}
+                        </div>
                     </Card>
                 </div>
             </div>
