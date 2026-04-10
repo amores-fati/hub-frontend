@@ -214,3 +214,4 @@ const TiposDeDeficienciaChart: React.FC = () => {
 // );
 
 // export default DashboardCharts;
+//dash
