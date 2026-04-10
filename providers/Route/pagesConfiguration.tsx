@@ -1,5 +1,5 @@
 import { UserRole } from '@/dtos/UserDto';
-import { HomeFilled } from '@mui/icons-material';
+import { DashboardRounded } from '@mui/icons-material';
 import { JSX } from 'react';
 
 export type Page = {
@@ -16,10 +16,10 @@ export const PAGES: Page[] = [
     {
         path: '/',
         navbarEnabled: true,
-        requireRoles: [UserRole.ADMIN, UserRole.STUDENT, UserRole.COMPANY],
-        requireAuth: true,
-        name: 'Home',
-        icon: <HomeFilled className='sidebar-icon' />,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Dashboard',
+        icon: <DashboardRounded className='sidebar-icon' />,
     },
     {
         path: '/login',
