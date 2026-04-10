@@ -1,10 +1,12 @@
 'use client';
+import LogoSvg from '@/assets/logo.svg';
 import { Button, Card, Checkbox, Input } from '@/components/base';
 import { FeatureCard } from '@/components/FeatureCard';
 import { AuthPayload } from '@/dtos/AuthDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
 import { CardActions, CardContent } from '@mui/material';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -59,17 +61,33 @@ export default function Login() {
     return (
         <div className='login-page'>
             <div className='login-page__left flex flex-col items-center justify-center'>
-                <h2 className='login-page__header-title w-full'>
-                    <span className='login-page__header-title-line'>
-                        Feito para
-                    </span>
-                    <span className='login-page__header-title-line login-page__header-title-line--accent'>
-                        todo
-                    </span>
-                    <span className='login-page__header-title-line'>
-                        tipo de pessoa!
-                    </span>
-                </h2>
+                <div className='login-page__header w-full'>
+                    <div className='login-page__header-text'>
+                        <h2 className='login-page__header-title w-full'>
+                            <span className='login-page__header-title-line'>
+                                Feito para
+                            </span>
+                            <span className='login-page__header-title-line login-page__header-title-line--accent'>
+                                todo
+                            </span>
+                            <span className='login-page__header-title-line'>
+                                tipo de pessoa!
+                            </span>
+                        </h2>
+
+                        <p className='login-page__subtitle'>
+                            Esse site oferece recursos de{' '}
+                            <strong>acessibilidade</strong> para que sua{' '}
+                            <strong>experiência</strong> seja{' '}
+                            <strong>a melhor</strong>, independente de como
+                            enxerga, lê ou navega.
+                        </p>
+                    </div>
+
+                    <div className='login-page__logo'>
+                        <Image src={LogoSvg} alt='Hub Logo' />
+                    </div>
+                </div>
 
                 <div className='login-page__features-grid w-full grid'>
                     <FeatureCard
