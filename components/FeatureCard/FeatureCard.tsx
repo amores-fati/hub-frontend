@@ -6,12 +6,16 @@ export type FeatureCardProps = {
     title: string;
     subtitle: string;
     color: string;
+    badgeText?: string;
+    badgeDarkText?: boolean;
 };
 
 export default function FeatureCard({
     title,
     subtitle,
     color,
+    badgeText,
+    badgeDarkText = false,
 }: FeatureCardProps) {
     return (
         <div
@@ -33,6 +37,19 @@ export default function FeatureCard({
                     />
                     <h2 className='feature-card__title'>{title}</h2>
                     <p className='feature-card__subtitle'>{subtitle}</p>
+                    {badgeText && (
+                        <span
+                            className='feature-card__badge'
+                            style={{
+                                backgroundColor: color,
+                                color: badgeDarkText
+                                    ? 'var(--preto-1)'
+                                    : 'var(--branco)',
+                            }}
+                        >
+                            {badgeText}
+                        </span>
+                    )}
                 </div>
             </Card>
         </div>

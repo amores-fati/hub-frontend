@@ -94,21 +94,29 @@ export default function Login() {
                         title='Alto Contraste'
                         subtitle='Todas as cores da interface foram pensadas para ter uma alta definição.'
                         color='var(--primary-color)'
+                        badgeText='Visual'
+                        badgeDarkText={true}
                     />
                     <FeatureCard
                         title='Navegação Simplificada'
                         subtitle='Menus e opções reorganizados para facilitar o acesso rápido às funções mais usadas.'
                         color='var(--secondary-color)'
+                        badgeText='Navegação'
+                        badgeDarkText={true}
                     />
                     <FeatureCard
                         title='Navegação por Teclado'
                         subtitle='Todos os elementos acessíveis com Tab, Enter e atalhos de teclado.'
                         color='var(--tertiary-color)'
+                        badgeText='Navegação'
+                        badgeDarkText={false}
                     />
                     <FeatureCard
                         title='Leitor de Tela'
                         subtitle='Compatível com NVDA, JAWS e VoiceOver, com labels e roles ARIA.'
                         color='var(--complement-3)'
+                        badgeText='Auditivo'
+                        badgeDarkText={false}
                     />
                 </div>
             </div>
