@@ -94,6 +94,20 @@
             flex-direction: column;
             gap: 0.25rem;
         }
+
+        &__card {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            gap: 16px;
+
+            @media (max-width: 600px) {
+                grid-template-columns: 1fr;
+            }
+        }
     }
 
     .field-label {
