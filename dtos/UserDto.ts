@@ -80,7 +80,7 @@ export type UserRegisterPayload = {
 export enum UserRole {
     ADMIN = 'ADMIN',
     STUDENT = 'STUDENT',
-    COMPANY = 'COMPANY',
+    COMPANY = 'COMPANY', //Banco está como 'enterprise', verificar qual nomenclatura será seguida
 }
 
 export interface UserProfileDto {
