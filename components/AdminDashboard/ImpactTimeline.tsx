@@ -43,7 +43,9 @@ export function ImpactTimeline({ data }: ImpactTimelineProps) {
                             <div className='dashboard-timeline__content'>
                                 <div className='dashboard-timeline__meta'>
                                     <span>{EVENT_TYPE_LABEL[item.type]}</span>
-                                    <strong>{formatDateLabel(item.date)}</strong>
+                                    <strong>
+                                        {formatDateLabel(item.date)}
+                                    </strong>
                                 </div>
                                 <p>{item.description}</p>
                             </div>

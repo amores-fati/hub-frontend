@@ -59,7 +59,10 @@ export function StatusDonutChart({ data }: StatusChartProps) {
                 <header className='dashboard-panel__header'>
                     <div>
                         <h3>Tipos de Deficiência</h3>
-                        <p>Quantidade de alunos por tipo de deficiência registrada.</p>
+                        <p>
+                            Quantidade de alunos por tipo de deficiência
+                            registrada.
+                        </p>
                     </div>
                 </header>
 
@@ -80,7 +83,8 @@ export function StatusDonutChart({ data }: StatusChartProps) {
 
                     <div className='dashboard-status-chart__legend'>
                         {data.map((item, index) => {
-                            const percentage = (item.count / Math.max(total, 1)) * 100;
+                            const percentage =
+                                (item.count / Math.max(total, 1)) * 100;
 
                             return (
                                 <div
@@ -92,14 +96,19 @@ export function StatusDonutChart({ data }: StatusChartProps) {
                                             className='dashboard-status-chart__bullet'
                                             style={{
                                                 backgroundColor:
-                                                    statusColors[index % statusColors.length],
+                                                    statusColors[
+                                                        index %
+                                                            statusColors.length
+                                                    ],
                                             }}
                                         />
                                         <span>{item.disabilityType}</span>
                                     </div>
                                     <div className='dashboard-status-chart__legend-values'>
                                         <strong>{item.count}</strong>
-                                        <span>{formatPercentage(percentage)}</span>
+                                        <span>
+                                            {formatPercentage(percentage)}
+                                        </span>
                                     </div>
                                 </div>
                             );

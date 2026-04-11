@@ -13,7 +13,9 @@ export function StatCard({ item }: StatCardProps) {
             <article className={`admin-stat-card ${item.accentClassName}`}>
                 <div className='admin-stat-card__header'>
                     <div className='admin-stat-card__icon'>{item.icon}</div>
-                    <span className='admin-stat-card__helper'>{item.helperText}</span>
+                    <span className='admin-stat-card__helper'>
+                        {item.helperText}
+                    </span>
                 </div>
                 <span className='admin-stat-card__label'>{item.label}</span>
                 <strong className='admin-stat-card__value'>

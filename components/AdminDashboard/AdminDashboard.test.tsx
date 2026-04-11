@@ -9,9 +9,10 @@ import { StatusDonutChart } from './StatusDonutChart';
 const eChartSpy = vi.fn();
 
 vi.mock('@/components/base', async () => {
-    const actual = await vi.importActual<typeof import('@/components/base')>(
-        '@/components/base',
-    );
+    const actual =
+        await vi.importActual<typeof import('@/components/base')>(
+            '@/components/base',
+        );
 
     return {
         ...actual,
@@ -48,7 +49,11 @@ describe('Admin dashboard components', () => {
                     key: 'totalStudents',
                     label: 'Total de alunos',
                     value: 12345,
-                    icon: createElement('span', { 'data-testid': 'stat-icon' }, 'I'),
+                    icon: createElement(
+                        'span',
+                        { 'data-testid': 'stat-icon' },
+                        'I',
+                    ),
                     accentClassName: 'admin-stat-card--primary',
                     helperText: 'Base cadastrada',
                 },

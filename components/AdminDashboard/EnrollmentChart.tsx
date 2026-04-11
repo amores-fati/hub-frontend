@@ -30,7 +30,7 @@ export function EnrollmentChart({ data }: EnrollmentChartProps) {
                 color: theme.textPrimary,
             },
             valueFormatter: (value) =>
-                `${Number(Array.isArray(value) ? value[0] : value ?? 0)} alunos`,
+                `${Number(Array.isArray(value) ? value[0] : (value ?? 0))} alunos`,
         },
         xAxis: {
             type: 'category',

@@ -71,8 +71,7 @@ export const adminDashboardMock: AdminDashboardDto = {
         {
             date: '2025-01-15',
             type: 'course_launch',
-            description:
-                'Novo curso de Analise de Dados lancado com 40 vagas',
+            description: 'Novo curso de Analise de Dados lancado com 40 vagas',
         },
         {
             date: '2024-12-01',

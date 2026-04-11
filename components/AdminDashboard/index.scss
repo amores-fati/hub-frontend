@@ -10,9 +10,21 @@
     padding: clamp(1.5rem, 2vw, 2rem);
     border-radius: var(--border-radius-xl);
     background:
-        radial-gradient(circle at top left, rgba(255, 209, 0, 0.28), transparent 28%),
-        radial-gradient(circle at right bottom, rgba(103, 58, 183, 0.18), transparent 32%),
-        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92));
+        radial-gradient(
+            circle at top left,
+            rgba(255, 209, 0, 0.28),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at right bottom,
+            rgba(103, 58, 183, 0.18),
+            transparent 32%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.98),
+            rgba(255, 255, 255, 0.92)
+        );
     border: 1px solid rgba(103, 58, 183, 0.1);
     box-shadow: var(--shadow-sm);
 

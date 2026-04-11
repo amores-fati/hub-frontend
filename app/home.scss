@@ -19,8 +19,16 @@
     border: 1px solid rgba(103, 58, 183, 0.08);
     border-radius: var(--border-radius-xl);
     background:
-        radial-gradient(circle at top right, rgba(239, 70, 134, 0.12), transparent 25%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92));
+        radial-gradient(
+            circle at top right,
+            rgba(239, 70, 134, 0.12),
+            transparent 25%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.98),
+            rgba(255, 255, 255, 0.92)
+        );
     box-shadow: var(--shadow-sm);
 
     h1 {
