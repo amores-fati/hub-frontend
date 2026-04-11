@@ -28,8 +28,9 @@ function HomeFallback({ description, tag, title }: HomeFallbackProps) {
 export default function HomePage() {
     const { isHydrated, user } = useAuth();
     const role = user?.role;
+    const withOutLogin = !user; //Enquanto não existe autenticação, RETIRAR QUANDO TIVER AUTENTICAÇÃO REAL
     const isAdmin = user?.role === UserRole.ADMIN;
-    const shouldRenderAdminHome = isHydrated && (isAdmin);
+    const shouldRenderAdminHome = isHydrated && (withOutLogin || isAdmin);
     const {
         data: dashboardData,
         isLoading,
