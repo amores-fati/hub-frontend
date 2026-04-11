@@ -1,13 +1,12 @@
 import { UserRole } from '@/dtos/UserDto';
 import { HomeFilled } from '@mui/icons-material';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import PersonIcon from '@mui/icons-material/Person';
 import WorkIcon from '@mui/icons-material/Work';
-import { JSX } from 'react';
-import React from 'react';
+import React, { JSX } from 'react';
 
 export type Page = {
     path: string;
@@ -23,8 +22,10 @@ export const PAGES: Page[] = [
     {
         path: '/',
         navbarEnabled: true,
-        requireRoles: [UserRole.ADMIN, UserRole.STUDENT, UserRole.COMPANY],
-        requireAuth: true,
+        // requireRoles: [UserRole.ADMIN, UserRole.STUDENT, UserRole.COMPANY],
+        // requireAuth: true,
+        requireRoles: [],
+        requireAuth: false,
         name: 'Home',
         icon: <HomeFilled className='sidebar-icon' />,
     },
