@@ -20,8 +20,6 @@ interface AuthProviderProps {
     user: UserProfileDto | null;
     isLogged: () => boolean;
     setAuthToken: (token?: string, rememberMe?: boolean) => void;
-    logout: () => void;
-    removeAuthToken: () => void;
 }
 
 const AuthContext = createContext<AuthProviderProps>({
@@ -29,8 +27,6 @@ const AuthContext = createContext<AuthProviderProps>({
     user: null,
     isLogged: () => false,
     setAuthToken: () => {},
-    logout: () => {},
-    removeAuthToken: () => {},
 });
 
 const AuthProvider: React.FC<{ children?: ReactNode }> = ({
