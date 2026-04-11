@@ -11,7 +11,12 @@ export default tseslint.config(
     eslint.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     {
-        ignores: ['**/*.test.ts', '**/*.test.tsx', 'vitest.config.ts', 'vitest.setup.ts'],
+        ignores: [
+            '**/*.test.ts',
+            '**/*.test.tsx',
+            'vitest.config.ts',
+            'vitest.setup.ts',
+        ],
     },
     {
         plugins: {
