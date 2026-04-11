@@ -73,6 +73,8 @@ export default tseslint.config(
                         'query-client.ts',
                         'http-client.ts',
                         'next.config.ts',
+                        'chartTheme.ts',
+                        'mock.ts',
                     ],
                 },
             ],

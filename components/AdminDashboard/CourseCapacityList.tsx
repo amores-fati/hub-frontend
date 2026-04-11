@@ -34,7 +34,7 @@ export function CourseCapacityList({ data }: CourseCapacityProps) {
                 color: theme.textPrimary,
             },
             valueFormatter: (value) =>
-                `${Array.isArray(value) ? value[0] : value ?? 0} alunos`,
+                `${Number(Array.isArray(value) ? value[0] : value ?? 0)} alunos`,
         },
         xAxis: {
             type: 'value',
