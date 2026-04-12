@@ -44,7 +44,7 @@
         flex-direction: column;
         gap: var(--spacing-lg);
         width: 100%;
-        
+
         @include md {
             flex-direction: row;
             height: 150px;
@@ -59,7 +59,9 @@
         border-radius: var(--border-radius-lg);
         box-shadow: var(--shadow-sm);
         cursor: pointer;
-        transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        transition:
+            transform var(--transition-fast),
+            box-shadow var(--transition-fast);
         overflow: hidden;
 
         &:hover {
@@ -83,7 +85,7 @@
         justify-content: flex-start;
         gap: var(--spacing-md);
         padding: var(--spacing-lg) var(--spacing-xl);
-        
+
         @include md {
             padding: var(--spacing-md);
             justify-content: center;

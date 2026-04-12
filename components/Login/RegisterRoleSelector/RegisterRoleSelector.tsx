@@ -10,10 +10,10 @@ type RegisterRoleSelectorProps = {
     onSelectCompany: () => void;
 };
 
-export function RegisterRoleSelector({ 
-    onBack, 
-    onSelectStudent, 
-    onSelectCompany 
+export function RegisterRoleSelector({
+    onBack,
+    onSelectStudent,
+    onSelectCompany,
 }: RegisterRoleSelectorProps) {
     return (
         <CardContent className='login-page__card-content'>
