@@ -64,7 +64,7 @@ export function Form({
         if ((form.cnpj ?? '').length < 18) {
             return;
         }
-        if (!!cnpjError) {
+        if (cnpjError) {
             toast.error('CNPJ inválido');
             return;
         }
@@ -77,7 +77,7 @@ export function Form({
     }, [cnpjData, cnpjError]);
 
     useEffect(() => {
-        if ((cnpjInput ?? '').length < 14 || !!cnpjError) {
+        if ((cnpjInput ?? '').length < 14 || cnpjError) {
             setForm((prevState: CompanyRegisterPayload) => ({
                 ...prevState,
                 name: '',
@@ -372,30 +372,30 @@ export function Form({
 export function validateForm(form: CompanyRegisterPayload) {
     if (!form.name) {
         toast.error('CNPJ inválido');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.email) {
         toast.error('Email é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.cep) {
         toast.error('CEP é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.ownerName) {
         toast.error('Nome do sócio propietário é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.phoneNumber) {
         toast.error('Telefone / Whatsapp é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.password) {
         toast.error('Senha é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (form.password !== form.passwordConfirmation) {
         toast.error('Confirmação de senha está diferente da senha');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
 }

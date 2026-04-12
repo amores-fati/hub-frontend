@@ -242,6 +242,6 @@ export function RegisterStep3({
 export function validateFormStep3(form: UserRegisterPayload) {
     if (!form.whyJoinFatiLab?.trim()) {
         toast.error('Por que você quer participar do FatiLab é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
 }

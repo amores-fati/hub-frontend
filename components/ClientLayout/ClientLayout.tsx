@@ -16,10 +16,9 @@ export default function ClientLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const router = useRouter();
     const { user, logout } = useAuth();
-    const { currentPage, setCurrentPage } = useRoute();
+    const { currentPage } = useRoute();
 
     useEffect(() => {
         if (currentPage?.requireAuth && !user) {

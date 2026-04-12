@@ -20,13 +20,15 @@ interface AuthProviderProps {
     user: UserProfileDto | null;
     isLogged: () => boolean;
     setAuthToken: (token?: string, rememberMe?: boolean) => void;
+    logout: () => void;
 }
 
 const AuthContext = createContext<AuthProviderProps>({
     isHydrated: false,
     user: null,
     isLogged: () => false,
-    setAuthToken: () => {},
+    setAuthToken: () => { },
+    logout: () => null,
 });
 
 const AuthProvider: React.FC<{ children?: ReactNode }> = ({

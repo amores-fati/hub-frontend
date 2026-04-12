@@ -354,10 +354,10 @@ export function validateFormStep4(form: UserRegisterPayload) {
         toast.error(
             'Você deve aceitar os Termos de Uso e a LGPD para continuar',
         );
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.lgpd?.imageUsage) {
         toast.error('Você deve permitir o uso de imagem para continuar');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
 }

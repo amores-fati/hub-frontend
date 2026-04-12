@@ -271,26 +271,26 @@ export function validateFormStep2(form: UserRegisterPayload) {
         form.cep.replace(/\D/g, '').length !== 8
     ) {
         toast.error('CEP inválido');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.address?.trim()) {
         toast.error('Endereço é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.neighbourhood?.trim()) {
         toast.error('Bairro é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.city?.trim()) {
         toast.error('Cidade é obrigatória');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.state?.trim()) {
         toast.error('Estado é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
     if (!form.scholarship) {
         toast.error('Nível de escolaridade é obrigatório');
-        throw 'Missing parameter';
+        throw new Error('Missing parameter');
     }
 }
