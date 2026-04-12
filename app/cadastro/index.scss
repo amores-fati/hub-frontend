@@ -94,6 +94,22 @@
             flex-direction: column;
             gap: 0.25rem;
         }
+<<<<<<< Updated upstream
+=======
+
+        &__card {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            gap: 16px;
+
+            @media (max-width: 600px) {
+                grid-template-columns: 1fr;
+            }
+        }
+>>>>>>> Stashed changes
     }
 
     .field-label {

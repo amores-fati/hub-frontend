@@ -1,10 +1,10 @@
 import { Input, RadioGroup } from "@/components/base";
 import { Scholarship, UserRegisterPayload } from "@/dtos/UserDto";
-import { toast } from "react-toastify";
 import HomeIcon from '@mui/icons-material/Home';
 import SchoolSharpIcon from '@mui/icons-material/SchoolSharp';
 import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { useGetPublicCep } from "../../../services/api-external/cep/queries";
 
 // Opções de escolaridade - valores únicos e labels corretos
@@ -234,7 +234,7 @@ export function RegisterStep2({ form, setForm }: {
 }
 
 export function validateFormStep2(form: UserRegisterPayload) {
-    if (!form.cep?.replace(/\D/g, '') || form.cep.replace(/\D/g, '').length !== 8) {
+    /*if (!form.cep?.replace(/\D/g, '') || form.cep.replace(/\D/g, '').length !== 8) {
         toast.error('CEP inválido');
         throw ('Missing parameter');
     }
@@ -257,5 +257,5 @@ export function validateFormStep2(form: UserRegisterPayload) {
     if (!form.scholarship) {
         toast.error('Nível de escolaridade é obrigatório');
         throw ('Missing parameter');
-    }
+    }*/
 }

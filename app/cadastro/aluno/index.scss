@@ -26,6 +26,7 @@
 }
 
 .register-steps {
+
     // Grid de 3 colunas para os radio groups de experiência
     &__grid {
         display: grid;
@@ -40,6 +41,28 @@
     // Campo que ocupa linha inteira (área de atuação, escolaridade, etc.)
     &__field--full {
         grid-column: 1 / -1;
+    }
+
+    // Card cinza genérico (computador, internet, compromisso, etc.)
+    &__card {
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        grid-column: 1 / -1;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+    }
+
+    &__inline-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
     }
 
     // Card cinza de Acessibilidade
@@ -126,6 +149,7 @@
     font-size: 0.875rem;
     color: #333;
 }
+
 // Adicione NO FINAL do arquivo (fora de qualquer escopo)
 
 // Sobrescreve o grid para os radios de experiência (Step específico)
