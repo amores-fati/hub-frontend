@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthProviderProps>({
     isHydrated: false,
     user: null,
     isLogged: () => false,
-    setAuthToken: () => { },
+    setAuthToken: () => {},
     logout: () => null,
 });
 
