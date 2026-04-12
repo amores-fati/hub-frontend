@@ -1,6 +1,7 @@
 const QUERY_KEYS = {
-    CEP: 'cep',
     ADMIN_DASHBOARD: 'admin-dashboard',
+    CEP: 'cep',
+    CNPJ: 'cnpj',
     EXAMPLES: 'examples',
 };
 

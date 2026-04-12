@@ -8,14 +8,7 @@ import { CompanyRegisterPayload } from '@/dtos/CompanyDto';
 import { Form, validateForm } from './Form';
 import './index.scss';
 
-export enum StepperSteps {
-    STEP1 = 1,
-    STEP2 = 2,
-    STEP3 = 3,
-    STEP4 = 4,
-}
-
-export default function CadastroAluno() {
+export default function CadastroEmpresa() {
     const [form, setForm] = useState<CompanyRegisterPayload>({
         name: '',
         cnpj: '',
@@ -42,7 +35,7 @@ export default function CadastroAluno() {
         } catch {
             return null;
         }
-    }
+    };
 
     return (
         <div className='cadastro-aluno-page w-full'>

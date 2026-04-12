@@ -14,9 +14,9 @@ export function ButtonComponent({
     onClick,
     disabled = false,
     variant = 'primary',
-    className = "",
+    className = '',
     children,
-    style = {}
+    style = {},
 }: ButtonProps) {
     return (
         <Button

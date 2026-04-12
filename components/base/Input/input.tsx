@@ -28,7 +28,7 @@ export function InputComponent({
     onChange,
     icon,
     value,
-    error = false
+    error = false,
 }: InputProps) {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const isPassword = type === 'password';
@@ -49,7 +49,11 @@ export function InputComponent({
                                 onClick={() => setShowPassword((prev) => !prev)}
                                 edge='end'
                             >
-                                {showPassword ? <VisibilityOff fontSize='small' /> : <Visibility fontSize='small' />}
+                                {showPassword ? (
+                                    <VisibilityOff fontSize='small' />
+                                ) : (
+                                    <Visibility fontSize='small' />
+                                )}
                             </IconButton>
                         </InputAdornment>
                     ),

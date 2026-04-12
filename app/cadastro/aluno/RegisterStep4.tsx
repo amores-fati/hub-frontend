@@ -1,16 +1,24 @@
-import { Input } from "@/components/base";
-import { UserRegisterPayload } from "@/dtos/UserDto";
-import AccessibleForwardIcon from '@mui/icons-material/AccessibleForward';
-import GavelIcon from '@mui/icons-material/Gavel';
-import HandshakeIcon from '@mui/icons-material/Handshake';
-import HearingDisabledIcon from '@mui/icons-material/HearingDisabled';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Checkbox, FormControlLabel, InputAdornment, RadioGroup as MuiRadioGroup, Radio } from "@mui/material";
-import React, { ChangeEvent } from "react";
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import { Input } from '@/components/base';
+import { UserRegisterPayload } from '@/dtos/UserDto';
+import { toast } from 'react-toastify';
+import {
+    Visibility as VisibilityIcon,
+    SettingsEthernet as SettingsEthernetIcon,
+    AccessibleForward as AccessibleForwardIcon,
+    Handshake as HandshakeIcon,
+    HearingDisabled as HearingDisabledIcon,
+    MoreHoriz as MoreHorizIcon,
+    Psychology as PsychologyIcon,
+    VerifiedUser as VerifiedUserIcon,
+} from '@mui/icons-material';
+import {
+    Checkbox,
+    FormControlLabel,
+    InputAdornment,
+    RadioGroup as MuiRadioGroup,
+    Radio,
+} from '@mui/material';
+import React, { ChangeEvent } from 'react';
 
 const AccessibilityOptions = [
     { label: 'Física', value: 'FISICA', icon: <AccessibleForwardIcon /> },
@@ -22,29 +30,39 @@ const AccessibilityOptions = [
     { label: 'Outra', value: 'OUTRA', icon: <MoreHorizIcon /> },
 ];
 
-
-export function RegisterStep4({ form, setForm }: {
+export function RegisterStep4({
+    form,
+    setForm,
+}: {
     form: UserRegisterPayload;
     setForm: React.Dispatch<React.SetStateAction<UserRegisterPayload>>;
 }) {
-
     // ── Experiência ───────────────────────────────────────────────────────────
 
-    function onHasWorkExperienceChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onHasWorkExperienceChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             hasWorkExperience: value === 'true',
         }));
     }
 
-    function onHasParticipatedOnCoursesChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onHasParticipatedOnCoursesChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             hasParticipatedOnCourses: value === 'true',
         }));
     }
 
-    function onCurrentlyWorkingChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onCurrentlyWorkingChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         const isWorking = value === 'true';
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
@@ -53,7 +71,9 @@ export function RegisterStep4({ form, setForm }: {
         }));
     }
 
-    function onWorkFieldChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+    function onWorkFieldChange(
+        newValue: ChangeEvent<HTMLInputElement> | undefined,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             workField: newValue?.target?.value ?? '',
@@ -62,7 +82,10 @@ export function RegisterStep4({ form, setForm }: {
 
     // ── Acessibilidade ────────────────────────────────────────────────────────
 
-    function onHasAccessabilityChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onHasAccessabilityChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         const hasPcd = value === 'true';
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
@@ -93,7 +116,10 @@ export function RegisterStep4({ form, setForm }: {
         }));
     }
 
-    function onImageUsageChange(_: ChangeEvent<HTMLInputElement>, checked: boolean) {
+    function onImageUsageChange(
+        _: ChangeEvent<HTMLInputElement>,
+        checked: boolean,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             lgpd: { ...prevState.lgpd, imageUsage: checked },
@@ -110,45 +136,78 @@ export function RegisterStep4({ form, setForm }: {
 
     return (
         <div className='register-steps'>
-
-         <div className='register-steps--experience-grid'>  {/* ← muda a classe aqui */}
-
-             <div className='register-steps__field'>
-                 <p className='field-label'>Já trabalhou com programação?</p>
-                 <MuiRadioGroup
-                     row
-                     value={form.hasWorkExperience === undefined ? '' : String(form.hasWorkExperience)}
-                     onChange={onHasWorkExperienceChange}
-                 >
-                     <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
-                     <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
-                 </MuiRadioGroup>
-             </div>
-
-             <div className='register-steps__field'>
-                 <p className='field-label'>Já participou de curso de tecnologia?</p>
-                 <MuiRadioGroup
-                     row
-                     value={form.hasParticipatedOnCourses === undefined ? '' : String(form.hasParticipatedOnCourses)}
-                     onChange={onHasParticipatedOnCoursesChange}
-                 >
-                     <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
-                     <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
-                 </MuiRadioGroup>
-             </div>
-
-             <div className='register-steps__field'>
-                 <p className='field-label'>Você está trabalhando atualmente?</p>
-                 <MuiRadioGroup
-                     row
-                     value={String(form.currentlyWorking)}
-                     onChange={onCurrentlyWorkingChange}
-                 >
-                     <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
-                     <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
-                 </MuiRadioGroup>
-             </div>
-
+            <div className='register-steps--experience-grid'>
+                {' '}
+                {/* ← muda a classe aqui */}
+                <div className='register-steps__field'>
+                    <p className='field-label'>Já trabalhou com programação?</p>
+                    <MuiRadioGroup
+                        row
+                        value={
+                            form.hasWorkExperience === undefined
+                                ? ''
+                                : String(form.hasWorkExperience)
+                        }
+                        onChange={onHasWorkExperienceChange}
+                    >
+                        <FormControlLabel
+                            value='true'
+                            control={<Radio size='small' />}
+                            label='Sim'
+                        />
+                        <FormControlLabel
+                            value='false'
+                            control={<Radio size='small' />}
+                            label='Não'
+                        />
+                    </MuiRadioGroup>
+                </div>
+                <div className='register-steps__field'>
+                    <p className='field-label'>
+                        Já participou de curso de tecnologia?
+                    </p>
+                    <MuiRadioGroup
+                        row
+                        value={
+                            form.hasParticipatedOnCourses === undefined
+                                ? ''
+                                : String(form.hasParticipatedOnCourses)
+                        }
+                        onChange={onHasParticipatedOnCoursesChange}
+                    >
+                        <FormControlLabel
+                            value='true'
+                            control={<Radio size='small' />}
+                            label='Sim'
+                        />
+                        <FormControlLabel
+                            value='false'
+                            control={<Radio size='small' />}
+                            label='Não'
+                        />
+                    </MuiRadioGroup>
+                </div>
+                <div className='register-steps__field'>
+                    <p className='field-label'>
+                        Você está trabalhando atualmente?
+                    </p>
+                    <MuiRadioGroup
+                        row
+                        value={String(form.currentlyWorking)}
+                        onChange={onCurrentlyWorkingChange}
+                    >
+                        <FormControlLabel
+                            value='true'
+                            control={<Radio size='small' />}
+                            label='Sim'
+                        />
+                        <FormControlLabel
+                            value='false'
+                            control={<Radio size='small' />}
+                            label='Não'
+                        />
+                    </MuiRadioGroup>
+                </div>
                 {/* Área de atuação — linha inteira, só quando trabalhando */}
                 {form.currentlyWorking && (
                     <div className='register-steps__field register-steps__field--full'>
@@ -160,14 +219,16 @@ export function RegisterStep4({ form, setForm }: {
                         />
                     </div>
                 )}
-
             </div>
 
             {/* ── Acessibilidade ───────────────────────────────────────────── */}
             <div className='register-steps__accessibility-card'>
-
-                <p className='register-steps__accessibility-title'>Acessibilidade</p>
-                <p className='field-label'>Você é Pessoa com Deficiência (PcD)?</p>
+                <p className='register-steps__accessibility-title'>
+                    Acessibilidade
+                </p>
+                <p className='field-label'>
+                    Você é Pessoa com Deficiência (PcD)?
+                </p>
 
                 <MuiRadioGroup
                     row
@@ -175,35 +236,57 @@ export function RegisterStep4({ form, setForm }: {
                     onChange={onHasAccessabilityChange}
                     sx={{ mb: 1 }}
                 >
-                    <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
-                    <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
+                    <FormControlLabel
+                        value='true'
+                        control={<Radio size='small' />}
+                        label='Sim'
+                    />
+                    <FormControlLabel
+                        value='false'
+                        control={<Radio size='small' />}
+                        label='Não'
+                    />
                 </MuiRadioGroup>
 
                 {form.hasAccessability && (
                     <>
-                        <p className='field-label' style={{ marginBottom: '0.75rem' }}>
+                        <p
+                            className='field-label'
+                            style={{ marginBottom: '0.75rem' }}
+                        >
                             Se sim, marque o tipo de deficiência:
                         </p>
                         <div className='register-steps__disability-grid'>
-                            {AccessibilityOptions.map(({ label, value, icon }) => (
-                                <FormControlLabel
-                                    key={value}
-                                    className='register-steps__disability-item'
-                                    control={
-                                        <Checkbox
-                                            size='small'
-                                            checked={selectedTypes.includes(value)}
-                                            onChange={(_, checked) => onAccessibilityTypeChange(value, checked)}
-                                        />
-                                    }
-                                    label={
-                                        <span className='disability-label'>
-                                            {label}
-                                            <span className='disability-icon'>{icon}</span>
-                                        </span>
-                                    }
-                                />
-                            ))}
+                            {AccessibilityOptions.map(
+                                ({ label, value, icon }) => (
+                                    <FormControlLabel
+                                        key={value}
+                                        className='register-steps__disability-item'
+                                        control={
+                                            <Checkbox
+                                                size='small'
+                                                checked={selectedTypes.includes(
+                                                    value,
+                                                )}
+                                                onChange={(_, checked) =>
+                                                    onAccessibilityTypeChange(
+                                                        value,
+                                                        checked,
+                                                    )
+                                                }
+                                            />
+                                        }
+                                        label={
+                                            <span className='disability-label'>
+                                                {label}
+                                                <span className='disability-icon'>
+                                                    {icon}
+                                                </span>
+                                            </span>
+                                        }
+                                    />
+                                ),
+                            )}
                         </div>
                     </>
                 )}
@@ -240,7 +323,8 @@ export function RegisterStep4({ form, setForm }: {
                     }
                     label={
                         <span className='terms-item-label'>
-                            Aceito os <strong>Termos de Uso</strong> e as políticas da LGPD.
+                            Aceito os <strong>Termos de Uso</strong> e as
+                            políticas da LGPD.
                         </span>
                     }
                 />
@@ -255,12 +339,25 @@ export function RegisterStep4({ form, setForm }: {
                     }
                     label={
                         <span className='terms-item-label'>
-                            Você autoriza o uso da sua imagem para fins institucionais do Instituto Amores Fati.
+                            Você autoriza o uso da sua imagem para fins
+                            institucionais do Instituto Amores Fati.
                         </span>
                     }
                 />
             </div>
-
         </div>
     );
+}
+
+export function validateFormStep4(form: UserRegisterPayload) {
+    if (!form.lgpd?.terms) {
+        toast.error(
+            'Você deve aceitar os Termos de Uso e a LGPD para continuar',
+        );
+        throw new Error('Missing parameter');
+    }
+    if (!form.lgpd?.imageUsage) {
+        toast.error('Você deve permitir o uso de imagem para continuar');
+        throw new Error('Missing parameter');
+    }
 }
