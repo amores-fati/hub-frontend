@@ -58,7 +58,7 @@ export function InputComponent({
             disabled={disabled}
             onChange={onChange}
             type={isPassword && showPassword ? 'text' : type}
-            value={value}
+            value={value ?? ''}
         />
     );
 }
