@@ -5,6 +5,7 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent } from "react";
 import { toast } from "react-toastify";
+import { integerRegex } from "@/utils/regex";
 
 
 const GenderRadioOptions = [
@@ -65,25 +66,25 @@ export function RegisterStep3({ form, setForm }: {
     }
 
     function onOwnComputerChange(_: ChangeEvent<HTMLInputElement> | undefined, value: string) {
-        setForm((prev) => ({ ...prev, hasOwnComputer: value === "true" }));
+        setForm((prev: UserRegisterPayload) => ({ ...prev, hasOwnComputer: value === "true" }));
     }
 
     function onInternetAccessChange(_: ChangeEvent<HTMLInputElement> | undefined, value: string) {
-        setForm((prev) => ({ ...prev, hasInternetAccess: value === "true" }));
+        setForm((prev: UserRegisterPayload) => ({ ...prev, hasInternetAccess: value === "true" }));
     }
 
     function onCommitsToClassesChange(_: ChangeEvent<HTMLInputElement> | undefined, value: string) {
-        setForm((prev) => ({ ...prev, commitsToClasses: value === "true" }));
+        setForm((prev: UserRegisterPayload) => ({ ...prev, commitsToClasses: value === "true" }));
     }
 
     function onFamilyIncomeChange(_: ChangeEvent<HTMLInputElement> | undefined, value: string) {
-        setForm((prev) => ({ ...prev, familyIncome: value as FamilyIncome }));
+        setForm((prev: UserRegisterPayload) => ({ ...prev, familyIncome: value as FamilyIncome }));
     }
 
     function onPeopleInHouseChange(newValue: ChangeEvent<HTMLInputElement>) {
-        setForm((prev) => ({
+        setForm((prev: UserRegisterPayload) => ({
             ...prev,
-            peopleInHouse: newValue.target.value,
+            peopleInHouse: integerRegex(newValue?.target?.value ?? null) ?? '',
         }
         ))
     }
@@ -178,7 +179,7 @@ export function RegisterStep3({ form, setForm }: {
                 <Input
                     placeholder='Ex: 3'
                     onChange={onPeopleInHouseChange}
-                    value={form.peopleInHouse ?? null}
+                    value={form.peopleInHouse ?? ''}
                 />
             </div>
 

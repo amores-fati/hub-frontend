@@ -1,17 +1,18 @@
 import { Input } from "@/components/base";
 import { UserRegisterPayload } from "@/dtos/UserDto";
 import { toast } from "react-toastify";
-import AccessibleForwardIcon from '@mui/icons-material/AccessibleForward';
-import GavelIcon from '@mui/icons-material/Gavel';
-import HandshakeIcon from '@mui/icons-material/Handshake';
-import HearingDisabledIcon from '@mui/icons-material/HearingDisabled';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import {
+    Visibility as VisibilityIcon,
+    SettingsEthernet as SettingsEthernetIcon,
+    AccessibleForward as AccessibleForwardIcon,
+    Handshake as HandshakeIcon,
+    HearingDisabled as HearingDisabledIcon,
+    MoreHoriz as MoreHorizIcon,
+    Psychology as PsychologyIcon,
+    VerifiedUser as VerifiedUserIcon,
+} from '@mui/icons-material';
 import { Checkbox, FormControlLabel, InputAdornment, RadioGroup as MuiRadioGroup, Radio } from "@mui/material";
 import React, { ChangeEvent } from "react";
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 
 const AccessibilityOptions = [
     { label: 'Física', value: 'FISICA', icon: <AccessibleForwardIcon /> },
@@ -112,43 +113,43 @@ export function RegisterStep4({ form, setForm }: {
     return (
         <div className='register-steps'>
 
-         <div className='register-steps--experience-grid'>  {/* ← muda a classe aqui */}
+            <div className='register-steps--experience-grid'>  {/* ← muda a classe aqui */}
 
-             <div className='register-steps__field'>
-                 <p className='field-label'>Já trabalhou com programação?</p>
-                 <MuiRadioGroup
-                     row
-                     value={form.hasWorkExperience === undefined ? '' : String(form.hasWorkExperience)}
-                     onChange={onHasWorkExperienceChange}
-                 >
-                     <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
-                     <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
-                 </MuiRadioGroup>
-             </div>
+                <div className='register-steps__field'>
+                    <p className='field-label'>Já trabalhou com programação?</p>
+                    <MuiRadioGroup
+                        row
+                        value={form.hasWorkExperience === undefined ? '' : String(form.hasWorkExperience)}
+                        onChange={onHasWorkExperienceChange}
+                    >
+                        <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
+                        <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
+                    </MuiRadioGroup>
+                </div>
 
-             <div className='register-steps__field'>
-                 <p className='field-label'>Já participou de curso de tecnologia?</p>
-                 <MuiRadioGroup
-                     row
-                     value={form.hasParticipatedOnCourses === undefined ? '' : String(form.hasParticipatedOnCourses)}
-                     onChange={onHasParticipatedOnCoursesChange}
-                 >
-                     <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
-                     <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
-                 </MuiRadioGroup>
-             </div>
+                <div className='register-steps__field'>
+                    <p className='field-label'>Já participou de curso de tecnologia?</p>
+                    <MuiRadioGroup
+                        row
+                        value={form.hasParticipatedOnCourses === undefined ? '' : String(form.hasParticipatedOnCourses)}
+                        onChange={onHasParticipatedOnCoursesChange}
+                    >
+                        <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
+                        <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
+                    </MuiRadioGroup>
+                </div>
 
-             <div className='register-steps__field'>
-                 <p className='field-label'>Você está trabalhando atualmente?</p>
-                 <MuiRadioGroup
-                     row
-                     value={String(form.currentlyWorking)}
-                     onChange={onCurrentlyWorkingChange}
-                 >
-                     <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
-                     <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
-                 </MuiRadioGroup>
-             </div>
+                <div className='register-steps__field'>
+                    <p className='field-label'>Você está trabalhando atualmente?</p>
+                    <MuiRadioGroup
+                        row
+                        value={String(form.currentlyWorking)}
+                        onChange={onCurrentlyWorkingChange}
+                    >
+                        <FormControlLabel value='true' control={<Radio size='small' />} label='Sim' />
+                        <FormControlLabel value='false' control={<Radio size='small' />} label='Não' />
+                    </MuiRadioGroup>
+                </div>
 
                 {/* Área de atuação — linha inteira, só quando trabalhando */}
                 {form.currentlyWorking && (
@@ -269,6 +270,10 @@ export function RegisterStep4({ form, setForm }: {
 export function validateFormStep4(form: UserRegisterPayload) {
     if (!form.lgpd?.terms) {
         toast.error('Você deve aceitar os Termos de Uso e a LGPD para continuar');
+        throw ('Missing parameter');
+    }
+    if (!form.lgpd?.imageUsage) {
+        toast.error('Você deve permitir o uso de imagem para continuar');
         throw ('Missing parameter');
     }
 }

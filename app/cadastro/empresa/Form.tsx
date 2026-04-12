@@ -1,7 +1,6 @@
 import { Input } from "@/components/base";
 import { CompanyRegisterPayload } from "@/dtos/CompanyDto";
-import { UserRegisterPayload } from "@/dtos/UserDto";
-import { cpfRegex, phoneNumberRegex } from "@/utils/regex";
+import { cnpjRegex, phoneNumberRegex } from "@/utils/regex";
 import {
     Description as DescriptionIcon,
     LockOutline as LockOutlineIcon,
@@ -11,7 +10,8 @@ import {
 import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { useGetPublicCep } from "../../../services/api-external/cep/queries";
+import { useGetPublicCep } from "@/services/api-external/cep/queries";
+import { useGetPublicCnpj } from "../../../services/api-external/cnpj/queries";
 
 export function Form({ form, setForm }:
     {
@@ -20,16 +20,18 @@ export function Form({ form, setForm }:
     }) {
 
     const [cepInput, setCepInput] = useState<string>('');
+    const [cnpjInput, setCnpjInput] = useState<string>('');
 
-    const { data: cepData, error } = useGetPublicCep(cepInput);
+    const { data: cepData, error: cepError } = useGetPublicCep(cepInput);
+    const { data: cnpjData, error: cnpjError } = useGetPublicCnpj(cnpjInput);
 
     // Seta informações da api pública do cep para os campos de endereço
     useEffect(() => {
-        if ((error || cepData?.erro === 'true') && form.cep?.length === 8) {
+        if ((cepError || cepData?.erro === 'true') && form.cep?.length === 8) {
             toast.error('Cep inválido')
             return;
         }
-        if (error && (!form.cep || form.cep?.length < 8)) {
+        if (cepError && (!form.cep || form.cep?.length < 8)) {
             return;
         }
 
@@ -37,21 +39,12 @@ export function Form({ form, setForm }:
             setForm((prevState: CompanyRegisterPayload) => ({
                 ...prevState,
                 address: cepData.logradouro,
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 neighbourhood: cepData.bairro,
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
+                state: cepData.uf,
                 city: cepData.localidade,
             }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
-                state: cepData.uf,
-            }));
         }
-    }, [cepData])
+    }, [cepData, cepError])
 
     // Remove informações de endereço quando o cep é deletado
     useEffect(() => {
@@ -59,21 +52,37 @@ export function Form({ form, setForm }:
             setForm((prevState: CompanyRegisterPayload) => ({
                 ...prevState,
                 address: '',
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 neighbourhood: '',
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 city: '',
-            }));
-            setForm((prevState: CompanyRegisterPayload) => ({
-                ...prevState,
                 state: '',
             }));
         }
     }, [cepInput])
+
+    useEffect(() => {
+        if ((form.cnpj ?? '').length < 18) {
+            return;
+        }
+        if (!!cnpjError) {
+            toast.error('CNPJ inválido')
+            return;
+        }
+        if (cnpjData) {
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                name: cnpjData.razao_social,
+            }));
+        }
+    }, [cnpjData, cnpjError])
+
+    useEffect(() => {
+        if ((cnpjInput ?? '').length < 14 || !!cnpjError) {
+            setForm((prevState: CompanyRegisterPayload) => ({
+                ...prevState,
+                name: '',
+            }));
+        }
+    }, [cnpjInput, cnpjError])
 
     function onNameChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
         setForm((prevState: CompanyRegisterPayload) => ({
@@ -89,11 +98,21 @@ export function Form({ form, setForm }:
         }));
     }
 
+    const typingTimeout = useRef<NodeJS.Timeout | null>(null);
     function onCnpjChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+        if ((newValue?.target.value ?? '').length > 18) return;
         setForm((prevState: CompanyRegisterPayload) => ({
             ...prevState,
-            cnpj: cpfRegex(newValue?.target?.value ?? null) ?? '',
+            cnpj: cnpjRegex(newValue?.target?.value ?? null) ?? '',
         }));
+
+        if (typingTimeout.current) {
+            clearTimeout(typingTimeout.current);
+        }
+
+        typingTimeout.current = setTimeout(() => {
+            setCnpjInput((newValue?.target?.value ?? '').replaceAll('.', '').replaceAll('/', '').replaceAll('-', ''));
+        }, 400);
     }
 
     function onPhoneNumberChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
@@ -124,7 +143,6 @@ export function Form({ form, setForm }:
         }));
     }
 
-    const typingTimeout = useRef<NodeJS.Timeout | null>(null);
     function onCepChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
         if ((newValue?.target.value ?? '').length > 8) return;
         setForm((prevState: CompanyRegisterPayload) => ({
@@ -184,12 +202,6 @@ export function Form({ form, setForm }:
                 </InputAdornment>
                 <span>Dados da Empresa</span>
             </div>
-            <div className='register-steps__grid-full'>
-                <div className='register-steps__field'>
-                    <p className='field-label'>Nome da Empresa (Razão Social) <span className='required'>*</span></p>
-                    <Input onChange={onNameChange} value={form.name} />
-                </div>
-            </div>
             <div className='register-steps__grid'>
                 <div className='register-steps__field'>
                     <p className='field-label'>CNPJ <span className='required'>*</span></p>
@@ -198,6 +210,12 @@ export function Form({ form, setForm }:
                 <div className='register-steps__field'>
                     <p className='field-label'>Email da Empresa <span className='required'>*</span></p>
                     <Input onChange={onEmailChange} value={form.email} />
+                </div>
+            </div>
+            <div className='register-steps__grid-full'>
+                <div className='register-steps__field'>
+                    <p className='field-label'>Nome da Empresa (Razão Social) <span className='required'>*</span></p>
+                    <Input disabled={true} onChange={onNameChange} value={form.name} />
                 </div>
             </div>
 
@@ -271,9 +289,33 @@ export function Form({ form, setForm }:
     );
 }
 
-export function validateFormStep1(form: UserRegisterPayload) {
+export function validateForm(form: CompanyRegisterPayload) {
+    if (!form.name) {
+        toast.error('CNPJ inválido')
+        throw ('Missing parameter');
+    }
     if (!form.email) {
         toast.error('Email é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (!form.cep) {
+        toast.error('CEP é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (!form.ownerName) {
+        toast.error('Nome do sócio propietário é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (!form.phoneNumber) {
+        toast.error('Telefone / Whatsapp é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (!form.password) {
+        toast.error('Senha é obrigatório')
+        throw ('Missing parameter');
+    }
+    if (form.password !== form.passwordConfirmation) {
+        toast.error('Confirmação de senha está diferente da senha')
         throw ('Missing parameter');
     }
 }

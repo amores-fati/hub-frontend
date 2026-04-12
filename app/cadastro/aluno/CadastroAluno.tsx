@@ -64,16 +64,16 @@ export default function CadastroAluno() {
         try {
             switch (activeStep) {
                 case StepperSteps.STEP1:
-                    validateFormStep1(form);
+                    // validateFormStep1(form);
                     break;
                 case StepperSteps.STEP2:
-                    validateFormStep2(form);
+                    // validateFormStep2(form);
                     break;
                 case StepperSteps.STEP3:
-                    validateFormStep3(form);
+                    // validateFormStep3(form);
                     break;
                 case StepperSteps.STEP4:
-                    validateFormStep4(form);
+                    // validateFormStep4(form);
                     break;
             }
         } catch {

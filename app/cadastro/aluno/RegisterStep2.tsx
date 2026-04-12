@@ -5,7 +5,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import SchoolSharpIcon from '@mui/icons-material/SchoolSharp';
 import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useGetPublicCep } from "../../../services/api-external/cep/queries";
+import { useGetPublicCep } from "@/services/api-external/cep/queries";
 
 // Opções de escolaridade - valores únicos e labels corretos
 const ScholarshipRadioOptions = [
