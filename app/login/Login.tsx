@@ -1,6 +1,7 @@
 'use client';
 import { Card } from '@/components/base';
 import {
+    ForgotPassword,
     LoginForm,
     LoginInfoPanel,
     RegisterRoleSelector,
@@ -22,7 +23,9 @@ export default function Login() {
     });
     const [disabled, setDisabled] = useState<boolean>(false);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
-    const [isSelectingRole, setIsSelectingRole] = useState<boolean>(false);
+    const [view, setView] = useState<
+        'login' | 'registerRole' | 'forgotPassword'
+    >('login');
     const { mutate: login, data: loginData } = useLoginMutation(form);
 
     const handleClick = () => {
@@ -60,6 +63,16 @@ export default function Login() {
         }));
     };
 
+    const handleForgotPasswordSubmit = () => {
+        setDisabled(true);
+        // mock do envio do email de recuperação
+        setTimeout(() => {
+            setDisabled(false);
+            toast.success('Link de redefinição enviado com sucesso!');
+            setView('login');
+        }, 1000);
+    };
+
     return (
         <div className='login-page'>
             <LoginInfoPanel />
@@ -67,13 +80,27 @@ export default function Login() {
                 <div className='login-page__card'>
                     <Card>
                         <div className='login-page__card-wrapper'>
-                            {isSelectingRole ? (
+                            {view === 'registerRole' && (
                                 <RegisterRoleSelector
-                                    onBack={() => setIsSelectingRole(false)}
-                                    onSelectStudent={() => router.push('/cadastro/aluno')}
-                                    onSelectCompany={() => router.push('/cadastro/empresa')}
+                                    onBack={() => setView('login')}
+                                    onSelectStudent={() =>
+                                        router.push('/cadastro/aluno')
+                                    }
+                                    onSelectCompany={() =>
+                                        router.push('/cadastro/empresa')
+                                    }
                                 />
-                            ) : (
+                            )}
+                            {view === 'forgotPassword' && (
+                                <ForgotPassword
+                                    email={form.email}
+                                    disabled={disabled}
+                                    onEmailChange={onEmailChange}
+                                    onBack={() => setView('login')}
+                                    onSubmit={handleForgotPasswordSubmit}
+                                />
+                            )}
+                            {view === 'login' && (
                                 <LoginForm
                                     form={form}
                                     disabled={disabled}
@@ -82,7 +109,12 @@ export default function Login() {
                                     onPasswordChange={onPasswordChange}
                                     onRememberMeChange={setRememberMe}
                                     onSubmit={handleClick}
-                                    onGoToRegister={() => setIsSelectingRole(true)}
+                                    onGoToRegister={() =>
+                                        setView('registerRole')
+                                    }
+                                    onGoToForgotPassword={() =>
+                                        setView('forgotPassword')
+                                    }
                                 />
                             )}
                         </div>

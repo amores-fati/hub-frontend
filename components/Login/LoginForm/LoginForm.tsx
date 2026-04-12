@@ -13,6 +13,7 @@ type LoginFormProps = {
     onRememberMeChange: (checked: boolean) => void;
     onSubmit: () => void;
     onGoToRegister: () => void;
+    onGoToForgotPassword: () => void;
 };
 
 export function LoginForm({
@@ -24,6 +25,7 @@ export function LoginForm({
     onRememberMeChange,
     onSubmit,
     onGoToRegister,
+    onGoToForgotPassword,
 }: LoginFormProps) {
     return (
         <>
@@ -59,7 +61,8 @@ export function LoginForm({
                         <Checkbox
                             checked={rememberMe}
                             onChange={(e) =>
-                                !disabled && onRememberMeChange(e.target.checked)
+                                !disabled &&
+                                onRememberMeChange(e.target.checked)
                             }
                         />
                         <span
@@ -94,7 +97,10 @@ export function LoginForm({
                         >
                             Quero me cadastrar!
                         </span>
-                        <span className='login-page__link'>
+                        <span
+                            className='login-page__link'
+                            onClick={onGoToForgotPassword}
+                        >
                             Esqueci minha senha
                         </span>
                     </div>
