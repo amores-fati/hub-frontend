@@ -36,10 +36,10 @@ export enum FamilyIncome {
 }
 
 export enum SocialBenefit {
-    BOLSA_FAMILIA = "BOLSA_FAMILIA",
-    BPC = "BPC",
-    NONE = "NONE",
-    OTHERS = "OTHERS",
+    BOLSA_FAMILIA = 'BOLSA_FAMILIA',
+    BPC = 'BPC',
+    NONE = 'NONE',
+    OTHERS = 'OTHERS',
 }
 
 export type UserRegisterPayload = {

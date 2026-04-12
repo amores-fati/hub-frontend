@@ -14,7 +14,7 @@ export type RadioOption = {
 export default function RadioGroup({
     options,
     onChange,
-    value
+    value,
 }: {
     options: RadioOption[];
     onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void;

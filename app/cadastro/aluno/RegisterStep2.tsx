@@ -1,11 +1,11 @@
-import { Input, RadioGroup } from "@/components/base";
-import { Scholarship, UserRegisterPayload } from "@/dtos/UserDto";
-import { toast } from "react-toastify";
+import { Input, RadioGroup } from '@/components/base';
+import { Scholarship, UserRegisterPayload } from '@/dtos/UserDto';
+import { toast } from 'react-toastify';
 import HomeIcon from '@mui/icons-material/Home';
 import SchoolSharpIcon from '@mui/icons-material/SchoolSharp';
-import { InputAdornment } from "@mui/material";
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useGetPublicCep } from "@/services/api-external/cep/queries";
+import { InputAdornment } from '@mui/material';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useGetPublicCep } from '@/services/api-external/cep/queries';
 
 // Opções de escolaridade - valores únicos e labels corretos
 const ScholarshipRadioOptions = [
@@ -15,13 +15,20 @@ const ScholarshipRadioOptions = [
     { label: 'Superior Completo', value: 'SUPERIOR_COMPLETO' },
 ];
 
-export function RegisterStep2({ form, setForm }: {
+export function RegisterStep2({
+    form,
+    setForm,
+}: {
     form: UserRegisterPayload;
-    setForm: React.Dispatch<React.SetStateAction<UserRegisterPayload>>
+    setForm: React.Dispatch<React.SetStateAction<UserRegisterPayload>>;
 }) {
     const [cepInput, setCepInput] = useState<string>('');
 
-    const { data: cepData, error, isLoading: loadingCep } = useGetPublicCep(cepInput);
+    const {
+        data: cepData,
+        error,
+        isLoading: loadingCep,
+    } = useGetPublicCep(cepInput);
 
     // Preenche os campos de endereço quando a API retorna dados do CEP
     useEffect(() => {
@@ -72,21 +79,27 @@ export function RegisterStep2({ form, setForm }: {
         }, 400);
     }
 
-    function onAddressChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+    function onAddressChange(
+        newValue: ChangeEvent<HTMLInputElement> | undefined,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             address: newValue?.target?.value ?? '',
         }));
     }
 
-    function onComplementChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+    function onComplementChange(
+        newValue: ChangeEvent<HTMLInputElement> | undefined,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             complement: newValue?.target?.value ?? '',
         }));
     }
 
-    function onNeighbourhoodChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+    function onNeighbourhoodChange(
+        newValue: ChangeEvent<HTMLInputElement> | undefined,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             neighbourhood: newValue?.target?.value ?? '',
@@ -100,22 +113,28 @@ export function RegisterStep2({ form, setForm }: {
         }));
     }
 
-
-    function onScholarshipChange(_: ChangeEvent<HTMLInputElement> | undefined, value: string) {
+    function onScholarshipChange(
+        _: ChangeEvent<HTMLInputElement> | undefined,
+        value: string,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             scholarship: value as Scholarship,
         }));
     }
 
-    function onCourseChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+    function onCourseChange(
+        newValue: ChangeEvent<HTMLInputElement> | undefined,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             course: newValue?.target?.value ?? '',
         }));
     }
 
-    function onInstitutionChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+    function onInstitutionChange(
+        newValue: ChangeEvent<HTMLInputElement> | undefined,
+    ) {
         setForm((prevState: UserRegisterPayload) => ({
             ...prevState,
             institution: newValue?.target?.value ?? '',
@@ -134,7 +153,9 @@ export function RegisterStep2({ form, setForm }: {
 
             <div className='register-steps__grid'>
                 <div className='register-steps__field register-steps__field--small'>
-                    <p className='field-label'>CEP <span className='required'>*</span></p>
+                    <p className='field-label'>
+                        CEP <span className='required'>*</span>
+                    </p>
                     <Input
                         placeholder='00000-000'
                         onChange={onCepChange}
@@ -144,7 +165,9 @@ export function RegisterStep2({ form, setForm }: {
                 </div>
 
                 <div className='register-steps__field register-steps__field--large'>
-                    <p className='field-label'>Endereço <span className='required'>*</span></p>
+                    <p className='field-label'>
+                        Endereço <span className='required'>*</span>
+                    </p>
                     <Input
                         placeholder='Ex: Ipiranga, 1234'
                         onChange={onAddressChange}
@@ -162,7 +185,9 @@ export function RegisterStep2({ form, setForm }: {
                 </div>
 
                 <div className='register-steps__field'>
-                    <p className='field-label'>Bairro <span className='required'>*</span></p>
+                    <p className='field-label'>
+                        Bairro <span className='required'>*</span>
+                    </p>
                     <Input
                         placeholder='Ex: Bela Vista'
                         onChange={onNeighbourhoodChange}
@@ -171,7 +196,9 @@ export function RegisterStep2({ form, setForm }: {
                 </div>
 
                 <div className='register-steps__field'>
-                    <p className='field-label'>Cidade <span className='required'>*</span></p>
+                    <p className='field-label'>
+                        Cidade <span className='required'>*</span>
+                    </p>
                     <Input
                         placeholder='Ex: São Paulo'
                         onChange={onCityChange}
@@ -180,10 +207,12 @@ export function RegisterStep2({ form, setForm }: {
                 </div>
 
                 <div className='register-steps__field register-steps__field--small'>
-                    <p className='field-label'>Estado <span className='required'>*</span></p>
+                    <p className='field-label'>
+                        Estado <span className='required'>*</span>
+                    </p>
                     <Input
                         disabled={true}
-                        placeholder="UF"
+                        placeholder='UF'
                         value={form.state ?? ''}
                     />
                 </div>
@@ -200,7 +229,10 @@ export function RegisterStep2({ form, setForm }: {
             <div className='register-steps__grid'>
                 {/* Nível de escolaridade - ocupa a linha inteira */}
                 <div className='register-steps__field register-steps__field--full'>
-                    <p className='field-label'>Nível de escolaridade <span className='required'>*</span></p>
+                    <p className='field-label'>
+                        Nível de escolaridade{' '}
+                        <span className='required'>*</span>
+                    </p>
 
                     <RadioGroup
                         value={form.scholarship ?? undefined}
@@ -234,28 +266,31 @@ export function RegisterStep2({ form, setForm }: {
 }
 
 export function validateFormStep2(form: UserRegisterPayload) {
-    if (!form.cep?.replace(/\D/g, '') || form.cep.replace(/\D/g, '').length !== 8) {
+    if (
+        !form.cep?.replace(/\D/g, '') ||
+        form.cep.replace(/\D/g, '').length !== 8
+    ) {
         toast.error('CEP inválido');
-        throw ('Missing parameter');
+        throw 'Missing parameter';
     }
     if (!form.address?.trim()) {
         toast.error('Endereço é obrigatório');
-        throw ('Missing parameter');
+        throw 'Missing parameter';
     }
     if (!form.neighbourhood?.trim()) {
         toast.error('Bairro é obrigatório');
-        throw ('Missing parameter');
+        throw 'Missing parameter';
     }
     if (!form.city?.trim()) {
         toast.error('Cidade é obrigatória');
-        throw ('Missing parameter');
+        throw 'Missing parameter';
     }
     if (!form.state?.trim()) {
         toast.error('Estado é obrigatório');
-        throw ('Missing parameter');
+        throw 'Missing parameter';
     }
     if (!form.scholarship) {
         toast.error('Nível de escolaridade é obrigatório');
-        throw ('Missing parameter');
+        throw 'Missing parameter';
     }
 }

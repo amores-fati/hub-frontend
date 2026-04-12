@@ -35,7 +35,7 @@ export default function CadastroEmpresa() {
         } catch {
             return null;
         }
-    }
+    };
 
     return (
         <div className='cadastro-aluno-page w-full'>
