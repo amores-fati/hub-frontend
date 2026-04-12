@@ -3,7 +3,6 @@ const QUERY_KEYS = {
     ADMIN_DASHBOARD: 'admin-dashboard',
     CEP: 'cep',
     CNPJ: 'cnpj',
-    ADMIN_DASHBOARD: 'admin-dashboard',
     EXAMPLES: 'examples',
 };
 
