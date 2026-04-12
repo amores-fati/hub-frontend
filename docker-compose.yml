@@ -1,0 +1,15 @@
+services:
+    app:
+        container_name: amoresfati.app
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        image: amoresfati/app:dev
+        ports:
+            - '5000:5000'
+        volumes:
+            - ./:/app
+        environment:
+            - NODE_ENV=development
+        command: npm dev
+        restart: always

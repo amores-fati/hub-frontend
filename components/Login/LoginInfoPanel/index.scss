@@ -1,0 +1,118 @@
+@use '../../../scss/globals.scss' as *;
+
+.login-info {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 1px;
+    background-color: var(--background);
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+
+    @include xl {
+        padding: var(--spacing-lg) var(--spacing-2xl);
+    }
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-xs);
+
+        @include lg {
+            flex-direction: row;
+            align-items: flex-start;
+        }
+    }
+
+    &__header-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+
+        @include lg {
+            gap: var(--spacing-lg);
+        }
+    }
+
+    &__header-title {
+        width: 100%;
+        margin: 0;
+        color: var(--preto-1);
+    }
+
+    &__header-title-line {
+        display: block;
+        font-family: var(--font-zilla);
+        font-size: clamp(2.05rem, 3.75vw, 3.9rem);
+        line-height: 1.02;
+        font-weight: 700;
+
+        &:first-child {
+            font-weight: 400;
+        }
+
+        &--accent {
+            color: var(--tertiary-color);
+            font-style: italic;
+            font-weight: 400;
+        }
+    }
+
+    &__subtitle {
+        font: var(--headline-light);
+        color: var(--text-primary);
+        max-width: 480px;
+        line-height: 1.45;
+
+        strong {
+            font-weight: 600;
+            color: var(--tertiary-color);
+        }
+    }
+
+    &__logo {
+        flex: 0 0 100%;
+        max-width: 220px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        @include lg {
+            flex: 0 0 300px;
+            max-width: 300px;
+            margin-left: auto;
+        }
+
+        @include xl {
+            flex: 0 0 340px;
+            max-width: 340px;
+        }
+    }
+
+    &__features-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        width: 100%;
+        gap: var(--spacing-md);
+
+        @include md {
+            gap: var(--spacing-lg);
+        }
+
+        @include lg {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+}

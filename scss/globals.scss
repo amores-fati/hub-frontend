@@ -158,6 +158,7 @@
 
     --text-primary: #f0f0f0;
     --text-secondary: #bdbdbd;
+    --text-tertiary: #1a1a1a;
     --text-muted: #757575;
 
     --border-color: rgba(255, 255, 255, 0.1);
@@ -460,6 +461,9 @@ pre {
 
 .field-label {
     font-weight: 600 !important;
+}
+.hidden {
+    visibility: hidden;
 }
 
 // ------------------------------------------------------------

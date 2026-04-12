@@ -1,0 +1,57 @@
+@use '../../../scss/globals.scss' as *;
+
+.feature-card-wrapper {
+    .custom-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: var(--spacing-lg) !important;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .feature-card__top-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--spacing-sm);
+    }
+
+    .feature-card__content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .feature-card__title {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .feature-card__subtitle {
+        font-family: var(--font-sans);
+        font-weight: 400;
+        font-size: var(--font-size-base);
+        color: var(--text-primary);
+        margin-bottom: 0;
+        opacity: 0.9;
+        line-height: 1.45;
+    }
+
+    .feature-card__badge {
+        margin-top: var(--spacing-md);
+        padding: var(--spacing-xs) 0.75rem;
+        border-radius: var(--border-radius);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+}

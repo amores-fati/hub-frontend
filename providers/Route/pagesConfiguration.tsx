@@ -48,7 +48,14 @@ export const PAGES: Page[] = [
         navbarEnabled: false,
         requireRoles: [],
         requireAuth: false,
-        name: 'Login',
+        name: 'Cadastro Aluno',
+    },
+    {
+        path: '/cadastro/empresa',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Cadastro Empresa',
     },
 ];
 
