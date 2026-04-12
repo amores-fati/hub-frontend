@@ -4,9 +4,9 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { InputAdornment } from '@mui/material';
 import React, { ChangeEvent } from 'react';
 import { SingleValue } from 'react-select';
+import { toast } from 'react-toastify';
 import { Option } from '../../../components/base/Select/select';
 import { cpfRegex, dateRegex, phoneNumberRegex } from '../../../utils/regex';
-import { toast } from 'react-toastify';
 
 const GenderRadioOptions = [
     {
@@ -89,10 +89,10 @@ export function RegisterStep1({
     function onBirthDateChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm({
-            ...form,
+        setForm((prevState: UserRegisterPayload) => ({
+            ...prevState,
             birthDate: dateRegex(newValue?.target?.value ?? null) ?? '',
-        });
+        }));
     }
 
     function onPhoneNumberChange(
@@ -269,12 +269,27 @@ export function validateFormStep1(form: UserRegisterPayload) {
         toast.error('Nome completo é obrigatório');
         throw new Error('Missing parameter');
     }
-    if (!form.cpf || form.cpf.replace(/\D/g, '').length !== 11) {
-        toast.error('CPF inválido');
+    if (!form.cpf) {
+        toast.error('CPF é obrigatório');
         throw new Error('Missing parameter');
     }
-    if (!form.birthDate || form.birthDate.length !== 10) {
-        toast.error('Data de nascimento inválida');
+    if (!isValidCPF(form.cpf)) {
+        toast.error('CPF inválido');
+        throw new Error('CPF inválido');
+    }
+    if (form.birthDate) {
+        const [day, month, year] = form.birthDate.split('/').map(Number);
+        const date = new Date(year, month - 1, day);
+        const isValid =
+            date.getDate() === day &&
+            date.getMonth() === month - 1 &&
+            date.getFullYear() === year;
+        if (!isValid) {
+            toast.error('Data de nascimento inválida');
+            throw new Error('Data de nascimento inválida');
+        }
+    } else {
+        toast.error('Data de nascimento é obrigatória');
         throw new Error('Missing parameter');
     }
     if (!form.phoneNumber?.trim()) {
@@ -282,7 +297,7 @@ export function validateFormStep1(form: UserRegisterPayload) {
         throw new Error('Missing parameter');
     }
     if (!form.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-        toast.error('Email inválido');
+        toast.error('Email inválido ou faltante');
         throw new Error('Missing parameter');
     }
     if (!form.password || form.password.length < 8) {
@@ -292,5 +307,23 @@ export function validateFormStep1(form: UserRegisterPayload) {
     if (form.password !== form.passwordConfirmation) {
         toast.error('As senhas não conferem');
         throw new Error('Missing parameter');
+    }
+
+    function isValidCPF(cpf: string): boolean {
+        const digits = cpf.replace(/\D/g, '');
+        if (digits.length !== 11) return false;
+        if (/^(\d)\1{10}$/.test(digits)) return false; // todos iguais
+
+        let sum = 0;
+        for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
+        let check = 11 - (sum % 11);
+        if (check >= 10) check = 0;
+        if (parseInt(digits[9]) !== check) return false;
+
+        sum = 0;
+        for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i);
+        check = 11 - (sum % 11);
+        if (check >= 10) check = 0;
+        return parseInt(digits[10]) === check;
     }
 }

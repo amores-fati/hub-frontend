@@ -5,14 +5,14 @@ import {
     UserRegisterPayload,
     WhoInformed,
 } from '@/dtos/UserDto';
+import { integerRegex } from '@/utils/regex';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { InputAdornment } from '@mui/material';
 import React, { ChangeEvent } from 'react';
 import { toast } from 'react-toastify';
-import { integerRegex } from '@/utils/regex';
 
-const GenderRadioOptions = [
+const WhoInformedFromRadioOptions = [
     {
         label: 'Instagram',
         value: WhoInformed.INSTAGRAM,
@@ -39,7 +39,7 @@ const yesNoOptions = [
 const familyIncomeOptions = [
     { label: 'Até 1 salário mínimo', value: FamilyIncome.TO1_SALARY },
     { label: '1 a 3 salários mínimos', value: FamilyIncome.BETWEEN_1_3 },
-    { label: 'Mais de 3 salários', value: FamilyIncome.LESS_THAN_3 },
+    { label: 'Mais de 3 salários', value: FamilyIncome.MORE_THAN_3 },
 ];
 
 const socialBenefitOptions = [
@@ -93,13 +93,13 @@ export function RegisterStep3({
         }));
     }
 
-    function onCommitsToClassesChange(
+    function onCompromisedToClassesChange(
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
         setForm((prev: UserRegisterPayload) => ({
             ...prev,
-            commitsToClasses: value === 'true',
+            compromisedToClasses: value === 'true',
         }));
     }
 
@@ -158,7 +158,7 @@ export function RegisterStep3({
                 <p className='field-label'>Como ficou sabendo ?</p>
                 <RadioGroup
                     value={form.whomInformed}
-                    options={GenderRadioOptions}
+                    options={WhoInformedFromRadioOptions}
                     onChange={onWhoInformedChange}
                 />
             </div>
@@ -193,7 +193,7 @@ export function RegisterStep3({
                     <RadioGroup
                         value={String(form.compromisedToClasses ?? '')}
                         options={yesNoOptions}
-                        onChange={onCommitsToClassesChange}
+                        onChange={onCompromisedToClassesChange}
                     />
                 </div>
             </div>
@@ -241,7 +241,9 @@ export function RegisterStep3({
 
 export function validateFormStep3(form: UserRegisterPayload) {
     if (!form.whyJoinFatiLab?.trim()) {
-        toast.error('Por que você quer participar do FatiLab é obrigatório');
+        toast.error(
+            "O campo 'Por que você quer participar do FatiLab' é obrigatório",
+        );
         throw new Error('Missing parameter');
     }
 }

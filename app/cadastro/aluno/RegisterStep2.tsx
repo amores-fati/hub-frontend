@@ -1,18 +1,21 @@
 import { Input, RadioGroup } from '@/components/base';
 import { Scholarship, UserRegisterPayload } from '@/dtos/UserDto';
-import { toast } from 'react-toastify';
+import { useGetPublicCep } from '@/services/api-external/cep/queries';
 import HomeIcon from '@mui/icons-material/Home';
 import SchoolSharpIcon from '@mui/icons-material/SchoolSharp';
 import { InputAdornment } from '@mui/material';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { useGetPublicCep } from '@/services/api-external/cep/queries';
+import { toast } from 'react-toastify';
 
 // Opções de escolaridade - valores únicos e labels corretos
 const ScholarshipRadioOptions = [
-    { label: 'Fundamental Incompleto', value: 'FUNDAMENTAL_INCOMPLETO' },
-    { label: 'Médio Completo', value: 'MEDIO_COMPLETO' },
-    { label: 'Superior Incompleto', value: 'SUPERIOR_INCOMPLETO' },
-    { label: 'Superior Completo', value: 'SUPERIOR_COMPLETO' },
+    {
+        label: 'Fundamental Incompleto',
+        value: Scholarship.INCOMPLETE_FUNDAMENTAL,
+    },
+    { label: 'Médio Completo', value: Scholarship.COMPLETE_MEDIUM },
+    { label: 'Superior Incompleto', value: Scholarship.INCOMPLETE_SUPERIOR },
+    { label: 'Superior Completo', value: Scholarship.COMPLETE_SUPERIOR },
 ];
 
 export function RegisterStep2({
@@ -32,23 +35,20 @@ export function RegisterStep2({
 
     // Preenche os campos de endereço quando a API retorna dados do CEP
     useEffect(() => {
-        if ((error || cepData?.erro === 'true') && form.cep?.length === 8) {
-            toast.error('CEP inválido');
+        if (!cepData || cepData.erro === 'true') {
+            if (cepData?.erro === 'true' && cepInput.length === 8) {
+                toast.error('CEP inválido');
+            }
             return;
         }
-        if (error && (!form.cep || form.cep?.length < 8)) {
-            return;
-        }
-        if (cepData) {
-            setForm((prevState: UserRegisterPayload) => ({
-                ...prevState,
-                address: cepData.logradouro,
-                neighbourhood: cepData.bairro,
-                state: cepData.uf,
-                city: cepData.localidade,
-            }));
-        }
-    }, [cepData]);
+        setForm((prevState) => ({
+            ...prevState,
+            address: cepData.logradouro,
+            neighbourhood: cepData.bairro,
+            state: cepData.uf,
+            city: cepData.localidade,
+        }));
+    }, [cepData, cepInput]);
 
     // Limpa os campos de endereço quando o CEP é deletado
     useEffect(() => {
@@ -64,6 +64,13 @@ export function RegisterStep2({
     }, [cepInput]);
 
     const typingTimeout = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (typingTimeout.current) clearTimeout(typingTimeout.current);
+        };
+    }, []);
+
     function onCepChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
         const raw = newValue?.target?.value ?? '';
         if (raw.length > 8) return;
@@ -210,11 +217,7 @@ export function RegisterStep2({
                     <p className='field-label'>
                         Estado <span className='required'>*</span>
                     </p>
-                    <Input
-                        disabled={true}
-                        placeholder='UF'
-                        value={form.state ?? ''}
-                    />
+                    <Input placeholder='UF' value={form.state ?? ''} />
                 </div>
             </div>
 
@@ -270,7 +273,7 @@ export function validateFormStep2(form: UserRegisterPayload) {
         !form.cep?.replace(/\D/g, '') ||
         form.cep.replace(/\D/g, '').length !== 8
     ) {
-        toast.error('CEP inválido');
+        toast.error('CEP inválido ou faltante');
         throw new Error('Missing parameter');
     }
     if (!form.address?.trim()) {
