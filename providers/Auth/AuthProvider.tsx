@@ -16,6 +16,7 @@ import React, {
 } from 'react';
 
 interface AuthProviderProps {
+    isHydrated: boolean;
     user: UserProfileDto | null;
     isLogged: () => boolean;
     setAuthToken: (token?: string, rememberMe?: boolean) => void;
@@ -24,6 +25,7 @@ interface AuthProviderProps {
 }
 
 const AuthContext = createContext<AuthProviderProps>({
+    isHydrated: false,
     user: null,
     isLogged: () => false,
     setAuthToken: () => {},
@@ -37,6 +39,7 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
     children?: ReactNode;
 }) => {
     const [user, setUser] = useState<UserProfileDto | null>(null);
+    const [isHydrated, setIsHydrated] = useState(false);
     const [token, setToken] = useState<string | undefined>();
     const router = useRouter();
 
@@ -44,7 +47,11 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
         const token = localStorage.getItem(STORE_KEYS.token);
         if (token) {
             setAuthToken(token);
+        } else {
+            setUser(null);
         }
+
+        setIsHydrated(true);
     }, []);
 
     useEffect(() => {
@@ -74,6 +81,7 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
     };
 
     const value = {
+        isHydrated,
         user,
         isLogged,
         setAuthToken,

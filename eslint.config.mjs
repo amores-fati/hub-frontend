@@ -11,6 +11,14 @@ export default tseslint.config(
     eslint.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     {
+        ignores: [
+            '**/*.test.ts',
+            '**/*.test.tsx',
+            'vitest.config.ts',
+            'vitest.setup.ts',
+        ],
+    },
+    {
         plugins: {
             // @ts-expect-error
             node: nodePlugin,
@@ -73,6 +81,8 @@ export default tseslint.config(
                         'query-client.ts',
                         'http-client.ts',
                         'next.config.ts',
+                        'chartTheme.ts',
+                        'mock.ts',
                     ],
                 },
             ],
