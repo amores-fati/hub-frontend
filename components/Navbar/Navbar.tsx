@@ -23,8 +23,7 @@ export default function Navbar() {
     const navItems = NAVIGATION_MAP[role] || [];
 
     const roleContent =
-        (role === UserRole.STUDENT || role === UserRole.COMPANY) &&
-            user?.email
+        (role === UserRole.STUDENT || role === UserRole.COMPANY) && user?.email
             ? user.email
             : role;
 
