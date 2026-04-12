@@ -1,5 +1,5 @@
 import { Input } from '@/components/base';
-import { UserRegisterPayload } from '@/dtos/UserDto';
+import { StudentRegisterPayload } from '@/dtos/StudentDto';
 import { toast } from 'react-toastify';
 import {
     Visibility as VisibilityIcon,
@@ -34,8 +34,8 @@ export function RegisterStep4({
     form,
     setForm,
 }: {
-    form: UserRegisterPayload;
-    setForm: React.Dispatch<React.SetStateAction<UserRegisterPayload>>;
+    form: StudentRegisterPayload;
+    setForm: React.Dispatch<React.SetStateAction<StudentRegisterPayload>>;
 }) {
     // ── Experiência ───────────────────────────────────────────────────────────
 
@@ -43,7 +43,7 @@ export function RegisterStep4({
         _: ChangeEvent<HTMLInputElement>,
         value: string,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             hasWorkExperience: value === 'true',
         }));
@@ -53,7 +53,7 @@ export function RegisterStep4({
         _: ChangeEvent<HTMLInputElement>,
         value: string,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             hasParticipatedOnCourses: value === 'true',
         }));
@@ -64,7 +64,7 @@ export function RegisterStep4({
         value: string,
     ) {
         const isWorking = value === 'true';
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             currentlyWorking: isWorking,
             workField: isWorking ? prevState.workField : '',
@@ -74,7 +74,7 @@ export function RegisterStep4({
     function onWorkFieldChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             workField: newValue?.target?.value ?? '',
         }));
@@ -87,7 +87,7 @@ export function RegisterStep4({
         value: string,
     ) {
         const hasPcd = value === 'true';
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             hasAccessability: hasPcd,
             typeAccessability: hasPcd ? prevState.typeAccessability : '',
@@ -95,7 +95,7 @@ export function RegisterStep4({
     }
 
     function onAccessibilityTypeChange(value: string, checked: boolean) {
-        setForm((prevState: UserRegisterPayload) => {
+        setForm((prevState: StudentRegisterPayload) => {
             // typeAccessability é string; armazenamos como CSV para suportar múltiplos
             const current = prevState.typeAccessability
                 ? prevState.typeAccessability.split(',')
@@ -110,7 +110,7 @@ export function RegisterStep4({
     // ── LGPD ──────────────────────────────────────────────────────────────────
 
     function onTermsChange(_: ChangeEvent<HTMLInputElement>, checked: boolean) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             lgpd: { ...prevState.lgpd, terms: checked },
         }));
@@ -120,7 +120,7 @@ export function RegisterStep4({
         _: ChangeEvent<HTMLInputElement>,
         checked: boolean,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             lgpd: { ...prevState.lgpd, imageUsage: checked },
         }));
@@ -349,7 +349,7 @@ export function RegisterStep4({
     );
 }
 
-export function validateFormStep4(form: UserRegisterPayload) {
+export function validateFormStep4(form: StudentRegisterPayload) {
     if (!form.lgpd?.terms) {
         toast.error(
             'Você deve aceitar os Termos de Uso e a LGPD para continuar',

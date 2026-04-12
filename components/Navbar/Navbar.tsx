@@ -24,8 +24,8 @@ export default function Navbar() {
 
     const roleContent =
         (role === UserRole.STUDENT || role === UserRole.COMPANY) &&
-        user?.friendlyName
-            ? user.friendlyName
+            user?.email
+            ? user.email
             : role;
 
     return (
