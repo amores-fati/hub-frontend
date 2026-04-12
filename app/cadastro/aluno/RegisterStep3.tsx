@@ -1,7 +1,7 @@
 import { Input, RadioGroup } from "@/components/base";
-import { UserRegisterPayload, WhoInformed } from "@/dtos/UserDto";
-import DescriptionIcon from '@mui/icons-material/Description';
+import { FamilyIncome, SocialBenefit, UserRegisterPayload, WhoInformed } from "@/dtos/UserDto";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { InputAdornment } from "@mui/material";
 import React, { ChangeEvent } from "react";
 import { toast } from "react-toastify";
@@ -16,6 +16,19 @@ const GenderRadioOptions = [
 const yesNoOptions = [
     { label: "Sim", value: "true" },
     { label: "Não", value: "false" },
+];
+
+const familyIncomeOptions = [
+    { label: "Até 1 salário mínimo", value: FamilyIncome.TO1_SALARY },
+    { label: "1 a 3 salários mínimos", value: FamilyIncome.BETWEEN_1_3 },
+    { label: "Mais de 3 salários", value: FamilyIncome.LESS_THAN_3 },
+];
+
+const socialBenefitOptions = [
+    { label: "Bolsa Família", value: SocialBenefit.BOLSA_FAMILIA },
+    { label: "BPC", value: SocialBenefit.BPC },
+    { label: "Nenhum", value: SocialBenefit.NONE },
+    { label: "Outros", value: SocialBenefit.OTHERS },
 ];
 
 export function RegisterStep3({ form, setForm }: {
@@ -41,6 +54,18 @@ export function RegisterStep3({ form, setForm }: {
 
     function onCommitsToClassesChange(_: ChangeEvent<HTMLInputElement> | undefined, value: string) {
         setForm((prev) => ({ ...prev, commitsToClasses: value === "true" }));
+    }
+
+    function onFamilyIncomeChange(_: ChangeEvent<HTMLInputElement> | undefined, value: string) {
+        setForm((prev) => ({ ...prev, familyIncome: value as FamilyIncome }));
+    }
+
+    function onPeopleInHouseChange(newValue: ChangeEvent<HTMLInputElement>) {
+        setForm((prev) => ({ ...prev, peopleInHouse: newValue.target.value }));
+    }
+
+    function onSocialBenefitChange(_: ChangeEvent<HTMLInputElement> | undefined, value: string) {
+        setForm((prev) => ({ ...prev, socialBenefit: value as SocialBenefit }));
     }
 
     return (
@@ -83,7 +108,6 @@ export function RegisterStep3({ form, setForm }: {
                     />
                 </div>
 
-                {/* Seção Acesso a internet */}
                 <div className="register-steps__inline-field">
                     <p className="field-label">Acesso à internet?</p>
                     <RadioGroup
@@ -93,7 +117,6 @@ export function RegisterStep3({ form, setForm }: {
                     />
                 </div>
 
-                {/* Seção Compromete a participação */}
                 <div className="register-steps__inline-field">
                     <p className="field-label">Se compromete a participar das aulas?</p>
                     <RadioGroup
@@ -104,17 +127,41 @@ export function RegisterStep3({ form, setForm }: {
                 </div>
             </div>
 
-            {/*Seção Informações adicionais*/}
+            {/*Seção Socioeconômica*/}
             <div className='register-steps__section-title'>
                 <InputAdornment position='start'>
-                    <DescriptionIcon />
+                    <LocalAtmIcon />
                 </InputAdornment>
-                <span>Informações adicionais</span>
+                <span>Perfil Socioeconômico</span>
             </div>
 
-            <div className='register-steps__grid'>
-                <p>Informações adicionais</p>
+            <div className="register-steps__field">
+                <p className="field-label">Renda familiar mensal</p>
+                <RadioGroup
+                    value={form.familyIncome}
+                    options={familyIncomeOptions}
+                    onChange={onFamilyIncomeChange}
+                />
             </div>
+
+            <div className="register-steps__field">
+                <p className="field-label">Quantas pessoas vivem na casa?</p>
+                <Input
+                    placeholder='Ex: 3'
+                    onChange={onPeopleInHouseChange}
+                    value={form.peopleInHouse ?? null}
+                />
+            </div>
+
+            <div className="register-steps__field">
+                <p className="field-label">Recebe algum benefício social?</p>
+                <RadioGroup
+                    value={form.socialBenefit}
+                    options={socialBenefitOptions}
+                    onChange={onSocialBenefitChange}
+                />
+            </div>
+
         </div>
     );
 }

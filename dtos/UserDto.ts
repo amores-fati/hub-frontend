@@ -35,6 +35,13 @@ export enum FamilyIncome {
     LESS_THAN_3 = 'LESS_THAN_3',
 }
 
+export enum SocialBenefit {
+    BOLSA_FAMILIA = 'BOLSA_FAMILIA',
+    BPC = 'BPC',
+    NONE = 'NONE',
+    OTHERS = 'OTHERS',
+}
+
 export type UserRegisterPayload = {
     // Stepper 1
     fullName: string | null;
@@ -64,6 +71,8 @@ export type UserRegisterPayload = {
     hasInternetAccess?: boolean;
     compromisedToClasses?: boolean;
     familyIncome?: FamilyIncome;
+    peopleInHouse?: string;
+    socialBenefit?: SocialBenefit;
     // Stepper 4
     hasWorkExperience?: boolean;
     hasParticipatedOnCourses?: boolean;
