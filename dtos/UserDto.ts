@@ -15,11 +15,10 @@ export enum Race {
 }
 
 export enum Scholarship {
-    NO_EDUCATION = 'NO_EDUCATION',
-    PRIMARY = 'PRIMARY',
-    SECONDARY = 'SECONDARY',
-    HIGHER = 'HIGHER',
-    POSTGRADUATE = 'POSTGRADUATE',
+    INCOMPLETE_FUNDAMENTAL = 'FUNDAMENTAL_INCOMPLETE',
+    COMPLETE_MEDIUM = 'COMPLETE_MEDIUM',
+    INCOMPLETE_SUPERIOR = 'INCOMPLETE_SUPERIOR',
+    COMPLETE_SUPERIOR = 'COMPLETE_SUPERIOR',
 }
 
 export enum WhoInformed {
@@ -32,7 +31,7 @@ export enum WhoInformed {
 export enum FamilyIncome {
     TO1_SALARY = 'TO1_SALARY',
     BETWEEN_1_3 = 'BETWEEN_1_3',
-    LESS_THAN_3 = 'LESS_THAN_3',
+    MORE_THAN_3 = 'MORE_THAN_3',
 }
 
 export enum SocialBenefit {

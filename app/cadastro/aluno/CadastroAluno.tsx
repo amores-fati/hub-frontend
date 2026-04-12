@@ -3,14 +3,8 @@ import { Button } from '@/components/base';
 import Card from '@/components/base/Card/card';
 import { UserRegisterPayload } from '@/dtos/UserDto';
 import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
-import {
-    Box,
-    CardActions,
-    CardContent,
-    Step,
-    StepLabel,
-    Stepper,
-} from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import { CardActions, CardContent } from '@mui/material';
 import { useState } from 'react';
 import { RegisterStep1, validateFormStep1 } from './RegisterStep1';
 import { RegisterStep2, validateFormStep2 } from './RegisterStep2';
@@ -72,6 +66,8 @@ export default function CadastroAluno() {
             terms: false,
             imageUsage: false,
         },
+        peopleInHouse: '',
+        socialBenefit: undefined,
     });
 
     const handleNext = () => {
@@ -122,21 +118,31 @@ export default function CadastroAluno() {
                 <h1>Cria a sua conta no</h1>
                 <h1 className='page-title__highlight'>Instituto Amores Fati</h1>
             </div>
-            <Box className='stepper-box' sx={{ width: '100%' }}>
-                <Stepper activeStep={activeStep}>
-                    {steps.map((label) => {
-                        const stepProps: { completed?: boolean } = {};
-                        const labelProps: {
-                            optional?: React.ReactNode;
-                        } = {};
-                        return (
-                            <Step key={label} {...stepProps}>
-                                <StepLabel {...labelProps}>{label}</StepLabel>
-                            </Step>
-                        );
-                    })}
-                </Stepper>
-            </Box>
+            <div className='stepper-custom'>
+                {steps.map((label, index) => {
+                    const stepNumber = index + 1;
+                    const isActive = stepNumber === activeStep;
+                    const isCompleted = stepNumber < activeStep;
+
+                    return (
+                        <div
+                            key={label}
+                            className={`stepper-custom__step ${isActive ? 'stepper-custom__step--active' : ''} ${isCompleted ? 'stepper-custom__step--completed' : ''}`}
+                        >
+                            <div className='stepper-custom__indicator'>
+                                {isCompleted ? (
+                                    <CheckIcon fontSize='small' />
+                                ) : (
+                                    <span>{stepNumber}</span>
+                                )}
+                            </div>
+                            <span className='stepper-custom__label'>
+                                {label}
+                            </span>
+                        </div>
+                    );
+                })}
+            </div>
 
             <Card>
                 <CardContent aria-label='content'>
