@@ -278,7 +278,6 @@ export function Form({
                 <div className='register-steps__field'>
                     <p className='field-label'>Rua</p>
                     <Input
-                        disabled={true}
                         onChange={onAddressChange}
                         value={form.address ?? ''}
                     />
@@ -286,7 +285,6 @@ export function Form({
                 <div className='register-steps__field'>
                     <p className='field-label'>Bairro</p>
                     <Input
-                        disabled={true}
                         onChange={onNeighbourhoodChange}
                         value={form.neighbourhood ?? ''}
                     />
@@ -294,7 +292,6 @@ export function Form({
                 <div className='register-steps__field'>
                     <p className='field-label'>Cidade</p>
                     <Input
-                        disabled={true}
                         onChange={onCityChange}
                         value={form.city ?? ''}
                     />
@@ -302,7 +299,6 @@ export function Form({
                 <div className='register-steps__field'>
                     <p className='field-label'>Estado</p>
                     <Input
-                        disabled={true}
                         onChange={onStateChange}
                         value={form.state ?? ''}
                     />
