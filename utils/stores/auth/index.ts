@@ -1,4 +1,4 @@
-import { STORE_KEYS } from '../../contants/stores';
+import { STORE_KEYS } from '../../contants/Stores';
 
 const getAuthToken = (): string | null => {
     return (

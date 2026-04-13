@@ -2,9 +2,9 @@ import { Input, RadioGroup } from '@/components/base';
 import {
     FamilyIncome,
     SocialBenefit,
-    UserRegisterPayload,
+    StudentRegisterPayload,
     WhoInformed,
-} from '@/dtos/UserDto';
+} from '@/dtos/StudentDto';
 import { integerRegex } from '@/utils/regex';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
@@ -53,11 +53,11 @@ export function RegisterStep3({
     form,
     setForm,
 }: {
-    form: UserRegisterPayload;
-    setForm: React.Dispatch<React.SetStateAction<UserRegisterPayload>>;
+    form: StudentRegisterPayload;
+    setForm: React.Dispatch<React.SetStateAction<StudentRegisterPayload>>;
 }) {
     function onWhyJoinFatiLabChange(newValue: ChangeEvent<HTMLInputElement>) {
-        setForm((prev) => ({
+        setForm((prev: StudentRegisterPayload) => ({
             ...prev,
             whyJoinFatiLab: newValue.target.value,
         }));
@@ -67,7 +67,7 @@ export function RegisterStep3({
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             whomInformed: value as WhoInformed,
         }));
@@ -77,7 +77,7 @@ export function RegisterStep3({
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
-        setForm((prev: UserRegisterPayload) => ({
+        setForm((prev: StudentRegisterPayload) => ({
             ...prev,
             hasOwnComputer: value === 'true',
         }));
@@ -87,7 +87,7 @@ export function RegisterStep3({
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
-        setForm((prev: UserRegisterPayload) => ({
+        setForm((prev: StudentRegisterPayload) => ({
             ...prev,
             hasInternetAccess: value === 'true',
         }));
@@ -97,7 +97,7 @@ export function RegisterStep3({
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
-        setForm((prev: UserRegisterPayload) => ({
+        setForm((prev: StudentRegisterPayload) => ({
             ...prev,
             compromisedToClasses: value === 'true',
         }));
@@ -107,14 +107,14 @@ export function RegisterStep3({
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
-        setForm((prev: UserRegisterPayload) => ({
+        setForm((prev: StudentRegisterPayload) => ({
             ...prev,
             familyIncome: value as FamilyIncome,
         }));
     }
 
     function onPeopleInHouseChange(newValue: ChangeEvent<HTMLInputElement>) {
-        setForm((prev: UserRegisterPayload) => ({
+        setForm((prev: StudentRegisterPayload) => ({
             ...prev,
             peopleInHouse: integerRegex(newValue?.target?.value ?? null) ?? '',
         }));
@@ -124,7 +124,10 @@ export function RegisterStep3({
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
-        setForm((prev) => ({ ...prev, socialBenefit: value as SocialBenefit }));
+        setForm((prev: StudentRegisterPayload) => ({
+            ...prev,
+            socialBenefit: value as SocialBenefit,
+        }));
     }
 
     return (
@@ -239,7 +242,7 @@ export function RegisterStep3({
     );
 }
 
-export function validateFormStep3(form: UserRegisterPayload) {
+export function validateFormStep3(form: StudentRegisterPayload) {
     if (!form.whyJoinFatiLab?.trim()) {
         toast.error(
             "O campo 'Por que você quer participar do FatiLab' é obrigatório",

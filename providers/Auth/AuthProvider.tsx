@@ -1,5 +1,5 @@
 import { UserProfileDto } from '@/dtos/UserDto';
-import { STORE_KEYS } from '@/utils/contants/stores';
+import { STORE_KEYS } from '@/utils/contants/Stores';
 import {
     getAuthToken,
     removeAuthToken,
@@ -54,7 +54,7 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
 
     useEffect(() => {
         if (token) {
-            const decoded = jwtDecode(token) as UserProfileDto;
+            const decoded = jwtDecode<UserProfileDto>(token);
             setUser({ ...decoded });
         } else {
             setUser(null);

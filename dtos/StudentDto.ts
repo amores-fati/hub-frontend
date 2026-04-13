@@ -1,0 +1,93 @@
+import { UUID } from 'crypto';
+
+export enum Gender {
+    MALE = 'MALE',
+    FEMALE = 'FEMALE',
+    NON_BINARY = 'NON_BINARY',
+    PREFER_NOT_TO_SAY = 'PREFER_NOT_TO_SAY',
+    OTHER = 'OTHER',
+}
+
+export enum Race {
+    WHITE = 'WHITE',
+    BLACK = 'BLACK',
+    BROWN = 'BROWN',
+    INDIGENOUS = 'INDIGENOUS',
+    PREFER_NOT_TO_SAY = 'PREFER_NOT_TO_SAY',
+}
+
+export enum Scholarship {
+    INCOMPLETE_FUNDAMENTAL = 'FUNDAMENTAL_INCOMPLETE',
+    COMPLETE_MEDIUM = 'COMPLETE_MEDIUM',
+    INCOMPLETE_SUPERIOR = 'INCOMPLETE_SUPERIOR',
+    COMPLETE_SUPERIOR = 'COMPLETE_SUPERIOR',
+}
+
+export enum WhoInformed {
+    INSTAGRAM = 'INSTAGRAM',
+    REFEREE = 'REFEREE',
+    LINKEDIN = 'LINKEDIN',
+    OTHERS = 'OTHERS',
+}
+
+export enum FamilyIncome {
+    TO1_SALARY = 'TO1_SALARY',
+    BETWEEN_1_3 = 'BETWEEN_1_3',
+    MORE_THAN_3 = 'MORE_THAN_3',
+}
+
+export enum SocialBenefit {
+    BOLSA_FAMILIA = 'BOLSA_FAMILIA',
+    BPC = 'BPC',
+    NONE = 'NONE',
+    OTHERS = 'OTHERS',
+}
+
+export type StudentRegisterPayload = {
+    // Stepper 1
+    fullName: string | null;
+    socialName?: string;
+    cpf: string | null;
+    birthDate: string | null;
+    phoneNumber: string | null;
+    email: string | null;
+    password: string | null;
+    passwordConfirmation: string | null;
+    gender?: Gender;
+    race?: Race;
+    // Stepper 2
+    cep: string;
+    address: string;
+    complement?: string;
+    neighbourhood?: string;
+    city?: string;
+    state?: string;
+    scholarship: Scholarship | null;
+    course?: string;
+    institution?: string;
+    // Stepper 3
+    whyJoinFatiLab: string;
+    whomInformed?: WhoInformed;
+    hasOwnComputer?: boolean;
+    hasInternetAccess?: boolean;
+    compromisedToClasses?: boolean;
+    familyIncome?: FamilyIncome;
+    peopleInHouse?: string;
+    socialBenefit?: SocialBenefit;
+    // Stepper 4
+    hasWorkExperience?: boolean;
+    hasParticipatedOnCourses?: boolean;
+    currentlyWorking: boolean;
+    workField?: string;
+    hasAccessability: boolean;
+    typeAccessability: string;
+    lgpd: {
+        terms: boolean;
+        imageUsage: boolean;
+    };
+};
+
+export type StudentRegisterResponse = Omit<
+    StudentRegisterPayload,
+    'password' | 'passwordConfirmation'
+> & { id: UUID };

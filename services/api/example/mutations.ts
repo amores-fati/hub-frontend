@@ -21,7 +21,7 @@ export const useSurveysCreateMutation = (payload: ExampleCreateUpdatePayload) =>
                 toast.error('O nome do example é obrigatório!');
                 throw new Error('O nome do example é obrigatório!');
             }
-            queryClient.invalidateQueries({
+            void queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.EXAMPLES],
             });
             toast.success(`Example criado com sucesso!`);
@@ -45,7 +45,7 @@ export const useSurveysUpdateMutation = (payload: ExampleCreateUpdatePayload) =>
                     'É necessário informar um item para atualização!',
                 );
             }
-            queryClient.invalidateQueries({
+            void queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.EXAMPLES, payload.id],
             });
             toast.success(`Example atualizado com sucesso!`);
@@ -59,7 +59,7 @@ export const useSurveysDeleteMutation = (payload: ExamplePayload) =>
                 .delete(`/${payload.id}`)
                 .then((res: ResponseDto<ExampleResponse>) => res.data),
         onSuccess: () => {
-            queryClient.invalidateQueries({
+            void queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.EXAMPLES, payload.id],
             });
             toast.success('Example deletado com sucesso!');

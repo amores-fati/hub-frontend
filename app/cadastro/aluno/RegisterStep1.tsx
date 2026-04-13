@@ -1,5 +1,5 @@
 import { Input, RadioGroup, Select } from '@/components/base';
-import { Gender, Race, UserRegisterPayload } from '@/dtos/UserDto';
+import { Gender, Race, StudentRegisterPayload } from '@/dtos/StudentDto';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { InputAdornment } from '@mui/material';
 import React, { ChangeEvent } from 'react';
@@ -58,13 +58,13 @@ export function RegisterStep1({
     form,
     setForm,
 }: {
-    form: UserRegisterPayload;
-    setForm: React.Dispatch<React.SetStateAction<UserRegisterPayload>>;
+    form: StudentRegisterPayload;
+    setForm: React.Dispatch<React.SetStateAction<StudentRegisterPayload>>;
 }) {
     function onFullNameChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             fullName: newValue?.target?.value ?? '',
         }));
@@ -73,14 +73,14 @@ export function RegisterStep1({
     function onSocialNameChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             socialName: newValue?.target?.value ?? '',
         }));
     }
 
     function onCpfChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             cpf: cpfRegex(newValue?.target?.value ?? null) ?? '',
         }));
@@ -89,7 +89,7 @@ export function RegisterStep1({
     function onBirthDateChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             birthDate: dateRegex(newValue?.target?.value ?? null) ?? '',
         }));
@@ -98,7 +98,7 @@ export function RegisterStep1({
     function onPhoneNumberChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             phoneNumber:
                 phoneNumberRegex(newValue?.target?.value ?? null) ?? '',
@@ -108,7 +108,7 @@ export function RegisterStep1({
     function onEmailChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             email: newValue?.target?.value ?? '',
         }));
@@ -117,7 +117,7 @@ export function RegisterStep1({
     function onPasswordChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             password: newValue?.target?.value ?? '',
         }));
@@ -126,7 +126,7 @@ export function RegisterStep1({
     function onPasswordConfirmationChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             passwordConfirmation: newValue?.target?.value ?? '',
         }));
@@ -136,14 +136,14 @@ export function RegisterStep1({
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             gender: value as Gender,
         }));
     }
 
     function onRaceChange(newValue: SingleValue<Option>) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             race: newValue?.value as Race,
         }));
@@ -264,7 +264,7 @@ export function RegisterStep1({
     );
 }
 
-export function validateFormStep1(form: UserRegisterPayload) {
+export function validateFormStep1(form: StudentRegisterPayload) {
     if (!form.fullName?.trim()) {
         toast.error('Nome completo é obrigatório');
         throw new Error('Missing parameter');

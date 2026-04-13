@@ -1,11 +1,11 @@
 import { Input, RadioGroup } from '@/components/base';
-import { Scholarship, UserRegisterPayload } from '@/dtos/UserDto';
-import { useGetPublicCep } from '@/services/api-external/cep/queries';
+import { Scholarship, StudentRegisterPayload } from '@/dtos/StudentDto';
+import { toast } from 'react-toastify';
 import HomeIcon from '@mui/icons-material/Home';
 import SchoolSharpIcon from '@mui/icons-material/SchoolSharp';
 import { InputAdornment } from '@mui/material';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
+import { useGetPublicCep } from '@/services/api-external/cep/queries';
 
 // Opções de escolaridade - valores únicos e labels corretos
 const ScholarshipRadioOptions = [
@@ -22,10 +22,10 @@ export function RegisterStep2({
     form,
     setForm,
 }: {
-    form: UserRegisterPayload;
-    setForm: React.Dispatch<React.SetStateAction<UserRegisterPayload>>;
+    form: StudentRegisterPayload;
+    setForm: React.Dispatch<React.SetStateAction<StudentRegisterPayload>>;
 }) {
-    const [cepInput, setCepInput] = useState<string>('');
+    const [cepInput, setCepInput] = useState<string>(form.cep ?? '');
 
     const {
         data: cepData,
@@ -41,19 +41,24 @@ export function RegisterStep2({
             }
             return;
         }
-        setForm((prevState) => ({
-            ...prevState,
-            address: cepData.logradouro,
-            neighbourhood: cepData.bairro,
-            state: cepData.uf,
-            city: cepData.localidade,
-        }));
-    }, [cepData, cepInput]);
+        if (error && (!form.cep || form.cep?.length < 8)) {
+            return;
+        }
+        if (cepData) {
+            setForm((prevState: StudentRegisterPayload) => ({
+                ...prevState,
+                address: cepData.logradouro,
+                neighbourhood: cepData.bairro,
+                state: cepData.uf,
+                city: cepData.localidade,
+            }));
+        }
+    }, [cepData]);
 
     // Limpa os campos de endereço quando o CEP é deletado
     useEffect(() => {
         if ((cepInput ?? '').length < 8) {
-            setForm((prevState: UserRegisterPayload) => ({
+            setForm((prevState: StudentRegisterPayload) => ({
                 ...prevState,
                 address: '',
                 neighbourhood: '',
@@ -75,7 +80,7 @@ export function RegisterStep2({
         const raw = newValue?.target?.value ?? '';
         if (raw.length > 8) return;
 
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             cep: raw,
         }));
@@ -89,7 +94,7 @@ export function RegisterStep2({
     function onAddressChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             address: newValue?.target?.value ?? '',
         }));
@@ -98,7 +103,7 @@ export function RegisterStep2({
     function onComplementChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             complement: newValue?.target?.value ?? '',
         }));
@@ -107,14 +112,14 @@ export function RegisterStep2({
     function onNeighbourhoodChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             neighbourhood: newValue?.target?.value ?? '',
         }));
     }
 
     function onCityChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             city: newValue?.target?.value ?? '',
         }));
@@ -124,7 +129,7 @@ export function RegisterStep2({
         _: ChangeEvent<HTMLInputElement> | undefined,
         value: string,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             scholarship: value as Scholarship,
         }));
@@ -133,7 +138,7 @@ export function RegisterStep2({
     function onCourseChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             course: newValue?.target?.value ?? '',
         }));
@@ -142,7 +147,7 @@ export function RegisterStep2({
     function onInstitutionChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             institution: newValue?.target?.value ?? '',
         }));
@@ -176,6 +181,7 @@ export function RegisterStep2({
                         Endereço <span className='required'>*</span>
                     </p>
                     <Input
+                        disabled={true}
                         placeholder='Ex: Ipiranga, 1234'
                         onChange={onAddressChange}
                         value={form.address ?? ''}
@@ -196,6 +202,7 @@ export function RegisterStep2({
                         Bairro <span className='required'>*</span>
                     </p>
                     <Input
+                        disabled={true}
                         placeholder='Ex: Bela Vista'
                         onChange={onNeighbourhoodChange}
                         value={form.neighbourhood ?? ''}
@@ -207,6 +214,7 @@ export function RegisterStep2({
                         Cidade <span className='required'>*</span>
                     </p>
                     <Input
+                        disabled={true}
                         placeholder='Ex: São Paulo'
                         onChange={onCityChange}
                         value={form.city ?? ''}
@@ -268,7 +276,7 @@ export function RegisterStep2({
     );
 }
 
-export function validateFormStep2(form: UserRegisterPayload) {
+export function validateFormStep2(form: StudentRegisterPayload) {
     if (
         !form.cep?.replace(/\D/g, '') ||
         form.cep.replace(/\D/g, '').length !== 8
