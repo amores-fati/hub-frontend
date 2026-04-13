@@ -6,7 +6,7 @@ import { useAuth } from '../../providers/Auth/AuthProvider';
 import {
     PAGES,
     NAVIGATION_MAP,
-} from '../../providers/Route/pagesConfiguration';
+} from '../../providers/Route/PagesConfiguration';
 import { UserRole } from '@/dtos/UserDto';
 import './index.scss';
 import { ButtonComponent } from '../base/Button/button';

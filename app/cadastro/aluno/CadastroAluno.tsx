@@ -155,8 +155,10 @@ export default function CadastroAluno() {
             <div className='stepper-custom'>
                 {steps.map((label, index) => {
                     const stepNumber = index + 1;
-                    const isActive = stepNumber === activeStep;
-                    const isCompleted = stepNumber < activeStep;
+                    const isActive =
+                        (stepNumber as StepperSteps) === activeStep;
+                    const isCompleted =
+                        (stepNumber as StepperSteps) < activeStep;
 
                     return (
                         <div
