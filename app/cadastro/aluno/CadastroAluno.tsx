@@ -1,16 +1,21 @@
 'use client';
 import { Button } from '@/components/base';
 import Card from '@/components/base/Card/card';
-import { UserRegisterPayload } from '@/dtos/UserDto';
+import { StudentRegisterPayload } from '@/dtos/StudentDto';
 import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
 import CheckIcon from '@mui/icons-material/Check';
 import { CardActions, CardContent } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RegisterStep1, validateFormStep1 } from './RegisterStep1';
 import { RegisterStep2, validateFormStep2 } from './RegisterStep2';
 import { RegisterStep3, validateFormStep3 } from './RegisterStep3';
 import { RegisterStep4, validateFormStep4 } from './RegisterStep4';
 import './index.scss';
+import { useStudentRegister } from '@/services/api/students/mutations';
+import { useRouter } from 'next/navigation';
+import { useLoginMutation } from '@/services/auth/login/mutations';
+import { removeAuthToken, setAuthToken } from '@/utils/stores/auth';
+import { toast } from 'react-toastify';
 
 export enum StepperSteps {
     STEP1 = 1,
@@ -27,10 +32,12 @@ const steps = [
 ];
 
 export default function CadastroAluno() {
+    const router = useRouter();
+
     const [activeStep, setActiveStep] = useState<StepperSteps>(
         StepperSteps.STEP1,
     );
-    const [form, setForm] = useState<UserRegisterPayload>({
+    const [form, setForm] = useState<StudentRegisterPayload>({
         fullName: '',
         socialName: undefined,
         cpf: '',
@@ -55,7 +62,8 @@ export default function CadastroAluno() {
         hasOwnComputer: false,
         hasInternetAccess: false,
         compromisedToClasses: false,
-        familyIncome: undefined,
+        // familyIncome: undefined,
+        // Ajustar para receber array
         hasWorkExperience: false,
         hasParticipatedOnCourses: false,
         currentlyWorking: false,
@@ -70,26 +78,52 @@ export default function CadastroAluno() {
         socialBenefit: undefined,
     });
 
+    const { mutate, error, data } = useStudentRegister(form);
+
+    const { mutate: login, data: loginData } = useLoginMutation({
+        email: form.email ?? '',
+        password: form.password ?? '',
+    });
+
+    useEffect(() => {
+        if (error || !data) return;
+        login();
+    }, [data]);
+
+    useEffect(() => {
+        if (loginData && loginData.accessToken) {
+            removeAuthToken();
+            setAuthToken(loginData.accessToken, true);
+            toast.success('Login realizado com sucesso!');
+            router.push('/');
+        }
+    }, [loginData]);
+
     const handleNext = () => {
         try {
             switch (activeStep) {
                 case StepperSteps.STEP1:
                     validateFormStep1(form);
-                    break;
+                    handleForward();
+                    return;
                 case StepperSteps.STEP2:
                     validateFormStep2(form);
-                    break;
+                    handleForward();
+                    return;
                 case StepperSteps.STEP3:
                     validateFormStep3(form);
-                    break;
+                    handleForward();
+                    return;
                 case StepperSteps.STEP4:
                     validateFormStep4(form);
-                    break;
             }
+            mutate();
         } catch {
             return null;
         }
+    };
 
+    const handleForward = () => {
         setActiveStep((prevActiveStep) =>
             Math.min(prevActiveStep + 1, StepperSteps.STEP4),
         );
@@ -121,8 +155,10 @@ export default function CadastroAluno() {
             <div className='stepper-custom'>
                 {steps.map((label, index) => {
                     const stepNumber = index + 1;
-                    const isActive = stepNumber === activeStep;
-                    const isCompleted = stepNumber < activeStep;
+                    const isActive =
+                        (stepNumber as StepperSteps) === activeStep;
+                    const isCompleted =
+                        (stepNumber as StepperSteps) < activeStep;
 
                     return (
                         <div

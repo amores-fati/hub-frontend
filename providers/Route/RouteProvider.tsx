@@ -7,7 +7,7 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { Page, PAGES } from './pagesConfiguration';
+import { Page, PAGES } from './PagesConfiguration';
 
 interface RouteProviderProps {
     currentPage: Page | null;

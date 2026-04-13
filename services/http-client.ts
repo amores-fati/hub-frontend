@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
-import { getAuthToken } from '../utils/stores/auth';
+import { getAuthToken } from '@/utils/stores/auth';
 
 export type HttpClient = {
     url: string;

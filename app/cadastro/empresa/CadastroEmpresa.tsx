@@ -1,12 +1,17 @@
 'use client';
 import { CardActions, CardContent } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/base';
 import Card from '@/components/base/Card/card';
 import { CompanyRegisterPayload } from '@/dtos/CompanyDto';
 import { Form, validateForm } from './Form';
 import './index.scss';
+import { useCompanyRegister } from '@/services/api/companies/mutations';
+import { useLoginMutation } from '@/services/auth/login/mutations';
+import { removeAuthToken, setAuthToken } from '../../../utils/stores/auth';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 export default function CadastroEmpresa() {
     const [form, setForm] = useState<CompanyRegisterPayload>({
@@ -28,10 +33,32 @@ export default function CadastroEmpresa() {
         },
     });
 
+    const router = useRouter();
+
+    const { mutate, error, data } = useCompanyRegister(form);
+    const { mutate: login, data: loginData } = useLoginMutation({
+        email: form.email ?? '',
+        password: form.password ?? '',
+    });
+
+    useEffect(() => {
+        if (error || !data) return;
+        login();
+    }, [data]);
+
+    useEffect(() => {
+        if (loginData && loginData.accessToken) {
+            removeAuthToken();
+            setAuthToken(loginData.accessToken, true);
+            toast.success('Login realizado com sucesso!');
+            router.push('/');
+        }
+    }, [loginData]);
+
     const onClick = () => {
         try {
             validateForm(form);
-            window.alert(form);
+            mutate();
         } catch {
             return null;
         }

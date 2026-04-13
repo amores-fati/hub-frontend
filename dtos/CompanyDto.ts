@@ -1,3 +1,5 @@
+import { UUID } from 'crypto';
+
 export type CompanyRegisterPayload = {
     name: string | null;
     cnpj: string | null;
@@ -16,3 +18,8 @@ export type CompanyRegisterPayload = {
         terms: boolean;
     };
 };
+
+export type CompanyRegisterResponse = Omit<
+    CompanyRegisterPayload,
+    'password' | 'passwordConfirmation'
+> & { id: UUID };
