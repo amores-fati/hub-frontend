@@ -89,7 +89,7 @@ export function RegisterStep1({
     function onBirthDateChange(
         newValue: ChangeEvent<HTMLInputElement> | undefined,
     ) {
-        setForm((prevState: UserRegisterPayload) => ({
+        setForm((prevState: StudentRegisterPayload) => ({
             ...prevState,
             birthDate: dateRegex(newValue?.target?.value ?? null) ?? '',
         }));
