@@ -1,9 +1,9 @@
 import { UserProfileDto } from '@/dtos/UserDto';
 import { STORE_KEYS } from '@/utils/contants/Stores';
 import {
-    getAuthToken,
-    removeAuthToken,
-    setAuthToken as setStoreAuthToken,
+    getStoreAuthToken,
+    removeStoreAuthToken,
+    setStoreAuthToken,
 } from '@/utils/stores/auth';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
@@ -17,7 +17,7 @@ import React, {
 
 interface AuthProviderProps {
     isHydrated: boolean;
-    user: UserProfileDto | null;
+    user: UserProfileDto | null | undefined;
     isLogged: () => boolean;
     setAuthToken: (token?: string, rememberMe?: boolean) => void;
     logout: () => void;
@@ -36,8 +36,10 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
 }: {
     children?: ReactNode;
 }) => {
-    const [user, setUser] = useState<UserProfileDto | null>(null);
-    const [isHydrated, setIsHydrated] = useState(false);
+    const [user, setUser] = useState<UserProfileDto | null | undefined>(
+        undefined,
+    );
+    const [isHydrated, setIsHydrated] = useState<boolean>(false);
     const [token, setToken] = useState<string | undefined>();
     const router = useRouter();
 
@@ -48,8 +50,6 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
         } else {
             setUser(null);
         }
-
-        setIsHydrated(true);
     }, []);
 
     useEffect(() => {
@@ -61,20 +61,25 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
         }
     }, [token]);
 
-    const isLogged = () => !!getAuthToken();
+    useEffect(() => {
+        if (user === undefined) return;
+        setIsHydrated(true);
+    }, [user]);
+
+    const isLogged = () => !!getStoreAuthToken();
 
     const setAuthToken = (token?: string, rememberMe?: boolean) => {
         setToken(token);
         if (token) {
             setStoreAuthToken(token, rememberMe);
         } else {
-            removeAuthToken();
+            removeStoreAuthToken();
         }
     };
 
     const logout = () => {
-        setToken(undefined); // undefined em vez de string vazia
-        removeAuthToken(); // limpa localStorage
+        setToken(undefined);
+        removeStoreAuthToken();
         router.push('/login');
     };
 
@@ -84,7 +89,6 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
         isLogged,
         setAuthToken,
         logout,
-        removeAuthToken,
     };
 
     return (

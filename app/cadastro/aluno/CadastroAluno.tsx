@@ -14,8 +14,9 @@ import './index.scss';
 import { useStudentRegister } from '@/services/api/students/mutations';
 import { useRouter } from 'next/navigation';
 import { useLoginMutation } from '@/services/auth/login/mutations';
-import { removeAuthToken, setAuthToken } from '@/utils/stores/auth';
 import { toast } from 'react-toastify';
+import { useAuth } from '@/providers/Auth/AuthProvider';
+import { removeStoreAuthToken } from '@/utils/stores/auth';
 
 export enum StepperSteps {
     STEP1 = 1,
@@ -33,6 +34,8 @@ const steps = [
 
 export default function CadastroAluno() {
     const router = useRouter();
+
+    const { setAuthToken } = useAuth();
 
     const [activeStep, setActiveStep] = useState<StepperSteps>(
         StepperSteps.STEP1,
@@ -92,7 +95,7 @@ export default function CadastroAluno() {
 
     useEffect(() => {
         if (loginData && loginData.accessToken) {
-            removeAuthToken();
+            removeStoreAuthToken();
             setAuthToken(loginData.accessToken, true);
             toast.success('Login realizado com sucesso!');
             router.push('/');

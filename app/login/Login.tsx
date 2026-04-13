@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './index.scss';
-import { removeAuthToken } from '@/utils/stores/auth';
+import { removeStoreAuthToken } from '@/utils/stores/auth';
 
 export default function Login() {
     const { setAuthToken } = useAuth();
@@ -39,7 +39,7 @@ export default function Login() {
 
     useEffect(() => {
         if (loginData && loginData.accessToken) {
-            removeAuthToken();
+            removeStoreAuthToken();
             setAuthToken(loginData.accessToken, rememberMe);
             toast.success('Login realizado com sucesso!');
             router.push('/');
