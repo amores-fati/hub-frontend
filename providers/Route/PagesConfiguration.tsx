@@ -22,10 +22,8 @@ export const PAGES: Page[] = [
     {
         path: '/',
         navbarEnabled: true,
-        // requireRoles: [UserRole.ADMIN, UserRole.STUDENT, UserRole.COMPANY],
-        // requireAuth: true,
+        requireAuth: true,
         requireRoles: [],
-        requireAuth: false,
         name: 'Home',
         icon: <HomeFilled className='sidebar-icon' />,
     },
@@ -86,6 +84,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
     ],
     [UserRole.COMPANY]: [
+        { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },
         { title: 'Vagas', icon: <WorkIcon />, expectedPath: '/vagas' },
         { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
     ],

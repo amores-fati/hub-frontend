@@ -8,6 +8,7 @@ import {
     StudentRegisterPayload,
     StudentRegisterResponse,
 } from '@/dtos/StudentDto';
+import { formatDate } from '@/utils/shared-functions/date';
 
 export const useStudentRegister = (payload: StudentRegisterPayload) =>
     useMutation({
@@ -18,7 +19,7 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                     password: payload.password,
                     cpf: payload.cpf,
                     socialName: payload.socialName,
-                    birthDate: payload.birthDate,
+                    birthDate: formatDate(payload.birthDate),
                     gender: payload.gender,
                     race: payload.race,
                     education: payload.scholarship,
@@ -52,7 +53,7 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                     },
                     socialBenefits: [
                         {
-                            benefit: payload.socialBenefit,
+                            benefit: 'Outro',
                             benefitOther: null,
                         },
                     ],
