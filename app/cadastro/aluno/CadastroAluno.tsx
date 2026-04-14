@@ -140,9 +140,6 @@ export default function CadastroAluno() {
 
     const onForward = () => {
         handleNext();
-        if (activeStep === StepperSteps.STEP4) {
-            window.alert(JSON.stringify(form));
-        }
     };
 
     const onBack = () => {
