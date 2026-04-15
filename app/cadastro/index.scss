@@ -1,0 +1,340 @@
+.cadastro-aluno-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    max-width: 40rem;
+    margin: 0 auto;
+    font-family: var(--font-sf-pro);
+
+    // ── Custom Stepper ─────────────────────────────────────────
+    .stepper-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 1.5rem 0 2rem;
+        gap: 0.5rem;
+        width: 100%;
+
+        &__step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            position: relative;
+
+            // connector line between steps
+            &:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                top: 14px;
+                left: calc(50% + 18px);
+                width: calc(100% - 36px);
+                height: 2px;
+                background-color: var(--cinza-5);
+                transition: background-color var(--transition-base);
+            }
+
+            &--completed:not(:last-child)::after {
+                background-color: var(--tertiary-color);
+            }
+        }
+
+        &__indicator {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font: var(--footnote-bold);
+            color: var(--cinza-3);
+            background-color: var(--cinza-5);
+            transition: all var(--transition-base);
+            position: relative;
+            z-index: 1;
+
+            .stepper-custom__step--active & {
+                background-color: var(--tertiary-color);
+                color: #fff;
+                box-shadow: 0 0 0 4px rgba(103, 58, 183, 0.15);
+            }
+
+            .stepper-custom__step--completed & {
+                background-color: var(--tertiary-color);
+                color: #fff;
+
+                svg {
+                    font-size: 16px;
+                }
+            }
+        }
+
+        &__label {
+            font: var(--footnote-bold);
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 100px;
+            transition: all var(--transition-base);
+
+            .stepper-custom__step--active & {
+                font: var(--footnote-bold);
+                color: var(--tertiary-color);
+            }
+
+            .stepper-custom__step--completed & {
+                font: var(--footnote-bold);
+                color: var(--text-secondary);
+            }
+        }
+    }
+
+    [aria-label='actions'] {
+        justify-content: space-between;
+        width: 100%;
+        padding: 1rem 1rem 0 1rem;
+
+        button {
+            width: 7rem;
+            font: var(--callout-bold);
+        }
+    }
+
+    [aria-label='content'] {
+        overflow-y: auto;
+        max-height: 65vh;
+        min-height: 65vh;
+    }
+
+    // ── Page Title ──────────────────────────────────────────────
+    .page-title {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 2rem;
+
+        h1 {
+            font: var(--titulo-2);
+            margin: 0;
+        }
+
+        &__highlight {
+            color: var(--tertiary-color);
+            font: var(--titulo-2);
+            font-weight: 800;
+        }
+    }
+
+    // ── Register Steps (shared across all steps) ────────────────
+    .register-steps {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+
+        &__section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font: var(--heading);
+
+            svg {
+                color: var(--tertiary-color);
+            }
+        }
+
+        &__grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem 2rem;
+
+            @media (max-width: 600px) {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        &__grid-full {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem 2rem;
+        }
+
+        &__field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            &--full {
+                grid-column: 1 / -1;
+            }
+
+            &--half {
+                grid-column: span 1;
+            }
+
+            &--small {
+                grid-column: span 1;
+            }
+
+            &--large {
+                grid-column: span 1;
+            }
+        }
+
+        // ── Card for yes/no inline fields (Step 3) ─────────────
+        &__card {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background-color: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            gap: 16px;
+
+            @media (max-width: 600px) {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        &__inline-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            .field-label {
+                font: var(--subhead);
+                font-weight: 600;
+            }
+        }
+
+        // ── Experience grid (Step 4) ────────────────────────────
+        &--experience-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+
+            @media (max-width: 600px) {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        // ── Accessibility card (Step 4) ─────────────────────────
+        &__accessibility-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        &__accessibility-title {
+            font: var(--body-2-semibold);
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        &__disability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.5rem;
+        }
+
+        &__disability-item {
+            .disability-label {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                font: var(--subhead);
+            }
+
+            .disability-icon {
+                display: inline-flex;
+                color: var(--tertiary-color);
+
+                svg {
+                    font-size: 1rem;
+                }
+            }
+        }
+
+        // ── Terms card (Step 4) ─────────────────────────────────
+        &__terms-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        &__terms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .terms-title {
+                font: var(--footnote-bold);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--text-muted);
+            }
+
+            .terms-link {
+                font: var(--footnote-bold);
+                color: var(--tertiary-color);
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+    // ── Field labels ────────────────────────────────────────────
+    .field-label {
+        font: var(--subhead);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .required {
+        color: var(--error);
+    }
+
+    .terms-item-label {
+        font: var(--subhead);
+    }
+
+    .stepper {
+        padding: 3rem 0;
+    }
+
+    // ── MUI overrides for SF Pro ────────────────────────────────
+    .MuiFormControlLabel-label {
+        font: var(--subhead);
+    }
+
+    .MuiRadioGroup-root .MuiFormControlLabel-label {
+        font: var(--subhead);
+    }
+
+    input,
+    textarea {
+        font: var(--callout);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        font: var(--subhead);
+        color: var(--text-muted);
+    }
+}

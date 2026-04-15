@@ -1,9 +1,9 @@
 import { UserProfileDto } from '@/dtos/UserDto';
-import { STORE_KEYS } from '@/utils/contants/stores';
+import { STORE_KEYS } from '@/utils/contants/Stores';
 import {
-    getAuthToken,
-    removeAuthToken,
-    setAuthToken as setStoreAuthToken,
+    getStoreAuthToken,
+    removeStoreAuthToken,
+    setStoreAuthToken,
 } from '@/utils/stores/auth';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
@@ -16,19 +16,19 @@ import React, {
 } from 'react';
 
 interface AuthProviderProps {
-    user: UserProfileDto | null;
+    isHydrated: boolean;
+    user: UserProfileDto | null | undefined;
     isLogged: () => boolean;
     setAuthToken: (token?: string, rememberMe?: boolean) => void;
     logout: () => void;
-    removeAuthToken: () => void;
 }
 
 const AuthContext = createContext<AuthProviderProps>({
+    isHydrated: false,
     user: null,
     isLogged: () => false,
     setAuthToken: () => {},
-    logout: () => {},
-    removeAuthToken: () => {},
+    logout: () => null,
 });
 
 const AuthProvider: React.FC<{ children?: ReactNode }> = ({
@@ -36,7 +36,10 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
 }: {
     children?: ReactNode;
 }) => {
-    const [user, setUser] = useState<UserProfileDto | null>(null);
+    const [user, setUser] = useState<UserProfileDto | null | undefined>(
+        undefined,
+    );
+    const [isHydrated, setIsHydrated] = useState<boolean>(false);
     const [token, setToken] = useState<string | undefined>();
     const router = useRouter();
 
@@ -44,41 +47,48 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
         const token = localStorage.getItem(STORE_KEYS.token);
         if (token) {
             setAuthToken(token);
+        } else {
+            setUser(null);
         }
     }, []);
 
     useEffect(() => {
         if (token) {
-            const decoded = jwtDecode(token) as UserProfileDto;
+            const decoded = jwtDecode<UserProfileDto>(token);
             setUser({ ...decoded });
         } else {
             setUser(null);
         }
     }, [token]);
 
-    const isLogged = () => !!getAuthToken();
+    useEffect(() => {
+        if (user === undefined) return;
+        setIsHydrated(true);
+    }, [user]);
+
+    const isLogged = () => !!getStoreAuthToken();
 
     const setAuthToken = (token?: string, rememberMe?: boolean) => {
         setToken(token);
         if (token) {
             setStoreAuthToken(token, rememberMe);
         } else {
-            removeAuthToken();
+            removeStoreAuthToken();
         }
     };
 
     const logout = () => {
-        setToken(undefined); // undefined em vez de string vazia
-        removeAuthToken(); // limpa localStorage
+        setToken(undefined);
+        removeStoreAuthToken();
         router.push('/login');
     };
 
     const value = {
+        isHydrated,
         user,
         isLogged,
         setAuthToken,
         logout,
-        removeAuthToken,
     };
 
     return (

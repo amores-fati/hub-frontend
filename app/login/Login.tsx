@@ -1,4 +1,11 @@
 'use client';
+import { Card } from '@/components/base';
+import {
+    ForgotPassword,
+    LoginForm,
+    LoginInfoPanel,
+    RegisterRoleSelector,
+} from '@/components/Login';
 import { AuthPayload } from '@/dtos/AuthDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
@@ -6,9 +13,10 @@ import { useRouter } from 'next/navigation';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './index.scss';
+import { removeStoreAuthToken } from '@/utils/stores/auth';
 
 export default function Login() {
-    const { setAuthToken, removeAuthToken } = useAuth();
+    const { setAuthToken } = useAuth();
     const router = useRouter();
     const [form, setForm] = useState<AuthPayload>({
         email: '',
@@ -16,6 +24,9 @@ export default function Login() {
     });
     const [disabled, setDisabled] = useState<boolean>(false);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
+    const [view, setView] = useState<
+        'login' | 'registerRole' | 'forgotPassword'
+    >('login');
     const { mutate: login, data: loginData } = useLoginMutation(form);
 
     const handleClick = () => {
@@ -28,7 +39,7 @@ export default function Login() {
 
     useEffect(() => {
         if (loginData && loginData.accessToken) {
-            removeAuthToken();
+            removeStoreAuthToken();
             setAuthToken(loginData.accessToken, rememberMe);
             toast.success('Login realizado com sucesso!');
             router.push('/');
@@ -53,9 +64,64 @@ export default function Login() {
         }));
     };
 
+    const handleForgotPasswordSubmit = () => {
+        setDisabled(true);
+        // mock do envio do email de recuperação
+        setTimeout(() => {
+            setDisabled(false);
+            toast.success('Link de redefinição enviado com sucesso!');
+            setView('login');
+        }, 1000);
+    };
+
     return (
         <div className='login-page'>
-            <p>Login</p>
+            <LoginInfoPanel />
+            <div className='login-page__right'>
+                <div className='login-page__card'>
+                    <Card>
+                        <div className='login-page__card-wrapper'>
+                            {view === 'registerRole' && (
+                                <RegisterRoleSelector
+                                    onBack={() => setView('login')}
+                                    onSelectStudent={() =>
+                                        router.push('/cadastro/aluno')
+                                    }
+                                    onSelectCompany={() =>
+                                        router.push('/cadastro/empresa')
+                                    }
+                                />
+                            )}
+                            {view === 'forgotPassword' && (
+                                <ForgotPassword
+                                    email={form.email}
+                                    disabled={disabled}
+                                    onEmailChange={onEmailChange}
+                                    onBack={() => setView('login')}
+                                    onSubmit={handleForgotPasswordSubmit}
+                                />
+                            )}
+                            {view === 'login' && (
+                                <LoginForm
+                                    form={form}
+                                    disabled={disabled}
+                                    rememberMe={rememberMe}
+                                    onEmailChange={onEmailChange}
+                                    onPasswordChange={onPasswordChange}
+                                    onRememberMeChange={setRememberMe}
+                                    onSubmit={handleClick}
+                                    onGoToRegister={() =>
+                                        setView('registerRole')
+                                    }
+                                    onGoToForgotPassword={() =>
+                                        setView('forgotPassword')
+                                    }
+                                />
+                            )}
+                        </div>
+                    </Card>
+                </div>
+            </div>
         </div>
     );
 }

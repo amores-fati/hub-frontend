@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
-import { getAuthToken } from '../utils/stores/auth';
+import { getStoreAuthToken } from '@/utils/stores/auth';
 
 export type HttpClient = {
     url: string;
@@ -18,7 +18,7 @@ export const createHttpClient = (url: string, parent?: HttpClient) => {
     }) as HttpClient;
     httpClient.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
-            const token = getAuthToken();
+            const token = getStoreAuthToken();
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }

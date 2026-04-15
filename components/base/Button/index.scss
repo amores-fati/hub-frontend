@@ -16,6 +16,10 @@
         filter: brightness(1.15);
     }
 
+    span {
+        text-transform: none;
+    }
+
     &--primary {
         background: var(--tertiary-color) !important;
 

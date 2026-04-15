@@ -10,27 +10,31 @@ import './index.scss';
 import { Navbar } from '@/components/Navbar';
 import { useRouter } from 'next/navigation';
 import { P401, P403 } from './Placeholders';
+import { getStoreAuthToken } from '../../utils/stores/auth';
 
 export default function ClientLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const router = useRouter();
-    const { user, logout } = useAuth();
-    const { currentPage, setCurrentPage } = useRoute();
+    const { user, logout, isHydrated } = useAuth();
+    const { currentPage } = useRoute();
 
     useEffect(() => {
+        if (!isHydrated) return;
         if (currentPage?.requireAuth && !user) {
             toast.warning(
                 'Você precisa estar logado para acessar essa página.',
             );
             logout();
         }
-    }, [currentPage]);
+    }, [currentPage, user]);
 
-    // Redirecionar para o login se a página exigir autenticação e o usuário não estiver logado
+    if (!isHydrated) {
+        return <></>;
+    }
+
     if (!user && currentPage?.requireAuth) {
         return <P401 />;
     }

@@ -1,3 +1,46 @@
-.custom-input {
-    background-color: var(--secondary-color);
+@use '../../scss/globals.scss' as *;
+
+.login-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    width: 100%;
+    background-color: var(--background);
+    overflow: hidden;
+
+    @include lg {
+        flex-direction: row;
+    }
+
+    &__right {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-md);
+        background-color: var(--tertiary-color);
+
+        @include lg {
+            flex: 0 0 500px;
+            padding: var(--spacing-lg);
+        }
+
+        @include xl {
+            flex: 0 0 650px;
+            padding: var(--spacing-xl);
+        }
+
+        @include xxl {
+            flex: 0 0 850px;
+        }
+    }
+
+    &__card {
+        width: 100%;
+        max-width: 680px;
+    }
+
+    &__card-wrapper {
+        padding: 5px !important;
+    }
 }

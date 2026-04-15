@@ -6,7 +6,7 @@ import { useAuth } from '../../providers/Auth/AuthProvider';
 import {
     PAGES,
     NAVIGATION_MAP,
-} from '../../providers/Route/pagesConfiguration';
+} from '../../providers/Route/PagesConfiguration';
 import { UserRole } from '@/dtos/UserDto';
 import './index.scss';
 import { ButtonComponent } from '../base/Button/button';
@@ -23,9 +23,8 @@ export default function Navbar() {
     const navItems = NAVIGATION_MAP[role] || [];
 
     const roleContent =
-        (role === UserRole.STUDENT || role === UserRole.COMPANY) &&
-        user?.friendlyName
-            ? user.friendlyName
+        (role === UserRole.STUDENT || role === UserRole.COMPANY) && user?.email
+            ? user.email
             : role;
 
     return (
