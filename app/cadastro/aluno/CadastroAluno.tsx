@@ -149,7 +149,7 @@ export default function CadastroAluno() {
     return (
         <div className='cadastro-aluno-page w-full'>
             <div className='page-title'>
-                <h1>Cria a sua conta no</h1>
+                <h1>Crie a sua conta no</h1>
                 <h1 className='page-title__highlight'>Instituto Amores Fati</h1>
             </div>
             <div className='stepper-custom'>
