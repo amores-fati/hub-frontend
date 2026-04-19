@@ -27,9 +27,6 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                     institution: payload.institution,
                     activityArea: payload.workField,
                     hasProgrammingExperience: payload.hasWorkExperience,
-                    hasTechCourses: null,
-                    techCoursesList: null,
-                    sendCurriculum: null,
                     fatilabMotivation: payload.whyJoinFatiLab,
                     howHeard: payload.whomInformed,
                     hasComputer: payload.hasOwnComputer,
@@ -47,20 +44,11 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                     },
                     disability: {
                         hasDisability: payload.hasAccessability,
-                        description: null,
-                        hasReport: null,
                         type: payload.typeAccessability,
                     },
                     socialBenefits: [
                         {
-                            benefit: 'Outro',
-                            benefitOther: null,
-                        },
-                    ],
-                    accessibilityResources: [
-                        {
-                            resource: 'Outro',
-                            resourceOther: null,
+                            benefit: payload.socialBenefit || 'NONE',
                         },
                     ],
                 })

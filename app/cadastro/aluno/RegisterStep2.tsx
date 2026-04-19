@@ -9,13 +9,11 @@ import { useGetPublicCep } from '@/services/api-external/cep/queries';
 
 // Opções de escolaridade - valores únicos e labels corretos
 const ScholarshipRadioOptions = [
-    {
-        label: 'Fundamental Incompleto',
-        value: Scholarship.INCOMPLETE_FUNDAMENTAL,
-    },
-    { label: 'Médio Completo', value: Scholarship.COMPLETE_MEDIUM },
-    { label: 'Superior Incompleto', value: Scholarship.INCOMPLETE_SUPERIOR },
-    { label: 'Superior Completo', value: Scholarship.COMPLETE_SUPERIOR },
+    { label: 'Fundamental Incompleto', value: Scholarship.NO_EDUCATION },
+    { label: 'Fundamental Completo', value: Scholarship.PRIMARY },
+    { label: 'Ensino Médio Completo', value: Scholarship.SECONDARY },
+    { label: 'Ensino Superior Completo', value: Scholarship.HIGHER },
+    { label: 'Pós-graduação', value: Scholarship.POSTGRADUATE },
 ];
 
 export function RegisterStep2({
