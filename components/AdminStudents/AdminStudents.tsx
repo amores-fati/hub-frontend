@@ -1,0 +1,1123 @@
+'use client';
+
+import { Input, Loading, MultSelect } from '@/components/base';
+import {
+    AdminStudentCourseType,
+    AdminStudentDisabilityType,
+    AdminStudentDto,
+    AdminStudentsQueryParams,
+    AdminStudentsSortField,
+    AdminStudentsSortOrder,
+} from '@/dtos/AdminStudentDto';
+import { UserRole } from '@/dtos/UserDto';
+import { useAuth } from '@/providers/Auth/AuthProvider';
+import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
+import { getAdminStudentsFilterOptionsMock } from '@/services/api/admin/students/mock';
+import {
+    getAdminStudents,
+    useGetAdminStudents,
+} from '@/services/api/admin/students/queries';
+import { Option } from '@/components/base/Select/select';
+import {
+    Avatar,
+    Chip,
+    CircularProgress,
+    Collapse,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    Pagination,
+    Stack,
+} from '@mui/material';
+import Checkbox from '@/components/base/Checkbox/checkbox';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
+import UnfoldMoreRoundedIcon from '@mui/icons-material/UnfoldMoreRounded';
+import { ButtonComponent } from '@/components/base/Button/button';
+import { useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
+import './index.scss';
+
+const PAGE_SIZE = 20;
+
+const courseTypeLabels: Record<AdminStudentCourseType, string> = {
+    [AdminStudentCourseType.PRESENTIAL]: 'Presencial',
+    [AdminStudentCourseType.ONLINE]: 'Online',
+    [AdminStudentCourseType.NOT_ENROLLED]: 'Nao inscrito',
+};
+
+const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
+    [AdminStudentDisabilityType.NONE]: 'Nao',
+    [AdminStudentDisabilityType.PHYSICAL]: 'Fisica',
+    [AdminStudentDisabilityType.HEARING]: 'Auditiva',
+    [AdminStudentDisabilityType.VISUAL]: 'Visual',
+    [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
+    [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
+    [AdminStudentDisabilityType.MULTIPLE]: 'Multipla',
+    [AdminStudentDisabilityType.OTHER]: 'Outra',
+};
+
+const courseTypeOptions: Option[] = [
+    {
+        value: AdminStudentCourseType.PRESENTIAL,
+        label: courseTypeLabels[AdminStudentCourseType.PRESENTIAL],
+    },
+    {
+        value: AdminStudentCourseType.ONLINE,
+        label: courseTypeLabels[AdminStudentCourseType.ONLINE],
+    },
+    {
+        value: AdminStudentCourseType.NOT_ENROLLED,
+        label: courseTypeLabels[AdminStudentCourseType.NOT_ENROLLED],
+    },
+];
+
+const disabilityOptions: Option[] = [
+    {
+        value: AdminStudentDisabilityType.NONE,
+        label: disabilityLabels[AdminStudentDisabilityType.NONE],
+    },
+    {
+        value: AdminStudentDisabilityType.PHYSICAL,
+        label: disabilityLabels[AdminStudentDisabilityType.PHYSICAL],
+    },
+    {
+        value: AdminStudentDisabilityType.HEARING,
+        label: disabilityLabels[AdminStudentDisabilityType.HEARING],
+    },
+    {
+        value: AdminStudentDisabilityType.VISUAL,
+        label: disabilityLabels[AdminStudentDisabilityType.VISUAL],
+    },
+    {
+        value: AdminStudentDisabilityType.INTELLECTUAL,
+        label: disabilityLabels[AdminStudentDisabilityType.INTELLECTUAL],
+    },
+    {
+        value: AdminStudentDisabilityType.PSYCHOSOCIAL,
+        label: disabilityLabels[AdminStudentDisabilityType.PSYCHOSOCIAL],
+    },
+    {
+        value: AdminStudentDisabilityType.MULTIPLE,
+        label: disabilityLabels[AdminStudentDisabilityType.MULTIPLE],
+    },
+    {
+        value: AdminStudentDisabilityType.OTHER,
+        label: disabilityLabels[AdminStudentDisabilityType.OTHER],
+    },
+];
+
+type AppliedFiltersState = Required<
+    Pick<
+        AdminStudentsQueryParams,
+        'search' | 'courseTypes' | 'disabilityTypes' | 'locations'
+    >
+>;
+
+type SortState = {
+    field: AdminStudentsSortField;
+    order: AdminStudentsSortOrder;
+};
+
+const initialFiltersState: AppliedFiltersState = {
+    search: '',
+    courseTypes: [],
+    disabilityTypes: [],
+    locations: [],
+};
+
+const initialSortState: SortState = {
+    field: 'fullName',
+    order: 'asc',
+};
+
+const locationOptions: Option[] = getAdminStudentsFilterOptionsMock().locations.map(
+    (location) => ({
+        value: location,
+        label: location,
+    }),
+);
+
+const normalizeText = (value: string) =>
+    value
+        .normalize('NFD')
+        .replaceAll(/[\u0300-\u036f]/g, '')
+        .trim();
+
+const formatCpf = (cpf: string) =>
+    cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+
+const formatMaskedCpf = (cpf: string) =>
+    cpf.replace(/(\d{3})\d{3}(\d{3})(\d{2})/, '$1.***.$2-$3');
+
+const formatPhone = (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+
+    if (digits.length === 11) {
+        return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+
+    return phone;
+};
+
+const getCourseType = (student: AdminStudentDto) =>
+    student.enrolledCourse?.modality ?? AdminStudentCourseType.NOT_ENROLLED;
+
+const getCourseBadgeClassName = (student: AdminStudentDto) => {
+    const courseType = getCourseType(student);
+
+    if (courseType === AdminStudentCourseType.PRESENTIAL) {
+        return 'admin-students__badge admin-students__badge--presential';
+    }
+
+    if (courseType === AdminStudentCourseType.ONLINE) {
+        return 'admin-students__badge admin-students__badge--online';
+    }
+
+    return 'admin-students__badge admin-students__badge--neutral';
+};
+
+const getDisabilityBadgeClassName = (student: AdminStudentDto) =>
+    student.isPcd
+        ? 'admin-students__badge admin-students__badge--info'
+        : 'admin-students__badge admin-students__badge--danger';
+
+const buildFiltersSummary = (filters: AppliedFiltersState) => {
+    const appliedFilters: string[] = [];
+
+    if (filters.search) {
+        appliedFilters.push(`Busca: ${filters.search}`);
+    }
+
+    if (filters.courseTypes.length) {
+        appliedFilters.push(
+            `Modalidade: ${filters.courseTypes
+                .map((type) => courseTypeLabels[type as AdminStudentCourseType])
+                .join(', ')}`,
+        );
+    }
+
+    if (filters.locations.length) {
+        appliedFilters.push(`Localizacao: ${filters.locations.join(', ')}`);
+    }
+
+    if (filters.disabilityTypes.length) {
+        appliedFilters.push(
+            `PCD: ${filters.disabilityTypes
+                .map(
+                    (type) =>
+                        disabilityLabels[type as AdminStudentDisabilityType],
+                )
+                .join(', ')}`,
+        );
+    }
+
+    return appliedFilters.length ? appliedFilters.join(' | ') : 'Sem filtros';
+};
+
+const openExportWindow = () =>
+    window.open('', '_blank', 'noopener,noreferrer,width=1120,height=840');
+
+const exportStudentsToPdf = (
+    printWindow: Window | null,
+    students: AdminStudentDto[],
+    filters: AppliedFiltersState,
+    title: string,
+) => {
+    if (!printWindow) {
+        toast.error(
+            'Nao foi possivel abrir a janela de exportacao. Verifique o bloqueador de pop-up.',
+        );
+        return;
+    }
+
+    const generatedAt = new Intl.DateTimeFormat('pt-BR', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+    }).format(new Date());
+
+    const rows = students
+        .map(
+            (student) => `
+                <tr>
+                    <td>${student.fullName}</td>
+                    <td>${formatCpf(student.cpf)}</td>
+                    <td>${student.enrolledCourse?.name ?? 'Nao inscrito'}</td>
+                    <td>${student.email}<br />${formatPhone(student.phone)}</td>
+                    <td>${student.city}/${student.state}</td>
+                    <td>${disabilityLabels[student.disabilityType]}</td>
+                </tr>
+            `,
+        )
+        .join('');
+
+    const summary = buildFiltersSummary(filters);
+
+    printWindow.document.write(`
+        <html lang="pt-BR">
+            <head>
+                <title>${title}</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        padding: 32px;
+                        color: #1d1d1d;
+                    }
+                    h1 {
+                        margin-bottom: 8px;
+                    }
+                    p {
+                        margin: 0 0 8px 0;
+                        color: #4f4f4f;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 24px;
+                    }
+                    th, td {
+                        border: 1px solid #e0e0e0;
+                        padding: 10px;
+                        text-align: left;
+                        font-size: 12px;
+                        vertical-align: top;
+                    }
+                    th {
+                        background: #f8f9fa;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>${title}</h1>
+                <p>Data de geracao: ${generatedAt}</p>
+                <p>Filtros aplicados: ${summary}</p>
+                <p>Total de alunos: ${students.length}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Curso</th>
+                            <th>Contato</th>
+                            <th>Localizacao</th>
+                            <th>PCD</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+};
+
+async function getStudentsForExport(filters: AppliedFiltersState) {
+    const firstPage = await getAdminStudents({
+        ...filters,
+        page: 1,
+        limit: 100,
+    });
+
+    const totalPages = Math.ceil(firstPage.total / firstPage.limit);
+
+    if (totalPages <= 1) {
+        return firstPage.data;
+    }
+
+    const pages = await Promise.all(
+        Array.from({ length: totalPages - 1 }, (_, index) =>
+            getAdminStudents({
+                ...filters,
+                page: index + 2,
+                limit: firstPage.limit,
+            }),
+        ),
+    );
+
+    return [firstPage, ...pages].flatMap((page) => page.data);
+}
+
+export function AdminStudents() {
+    const { user } = useAuth();
+    const [page, setPage] = useState(1);
+    const [searchInput, setSearchInput] = useState('');
+    const [draftCourseTypes, setDraftCourseTypes] = useState<Option[]>([]);
+    const [draftLocations, setDraftLocations] = useState<Option[]>([]);
+    const [draftDisabilityTypes, setDraftDisabilityTypes] = useState<Option[]>(
+        [],
+    );
+    const [filters, setFilters] =
+        useState<AppliedFiltersState>(initialFiltersState);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [selectedStudent, setSelectedStudent] =
+        useState<AdminStudentDto | null>(null);
+    const [studentsPendingDelete, setStudentsPendingDelete] = useState<
+        AdminStudentDto[]
+    >([]);
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+    const [isExportingAll, setIsExportingAll] = useState(false);
+    const [isExportingSelected, setIsExportingSelected] = useState(false);
+    const [sort, setSort] = useState<SortState>(initialSortState);
+
+    const isAdmin = !user || user.role === UserRole.ADMIN;
+    const queryParams = useMemo<AdminStudentsQueryParams>(
+        () => ({
+            page,
+            limit: PAGE_SIZE,
+            search: filters.search || undefined,
+            courseTypes: filters.courseTypes,
+            disabilityTypes: filters.disabilityTypes,
+            locations: filters.locations,
+            sortBy: sort.field,
+            sortOrder: sort.order,
+        }),
+        [filters, page, sort],
+    );
+
+    const {
+        data,
+        isLoading,
+        isFetching,
+        isError,
+    } = useGetAdminStudents(queryParams, isAdmin);
+    const deleteStudentsMutation = useDeleteAdminStudents();
+
+    const students = data?.data ?? [];
+    const totalStudents = data?.total ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalStudents / PAGE_SIZE));
+    const visibleStudentIds = students.map((student) => student.id);
+    const selectedVisibleCount = visibleStudentIds.filter((id) =>
+        selectedIds.includes(id),
+    ).length;
+    const allVisibleSelected =
+        visibleStudentIds.length > 0 &&
+        selectedVisibleCount === visibleStudentIds.length;
+    const someVisibleSelected =
+        selectedVisibleCount > 0 && selectedVisibleCount < visibleStudentIds.length;
+
+    const selectedCountLabel = `${selectedIds.length} aluno${
+        selectedIds.length === 1 ? '' : 's'
+    } selecionado${selectedIds.length === 1 ? '' : 's'}`;
+
+    if (!isAdmin) {
+        return (
+            <section className='admin-students admin-students--restricted'>
+                <div className='admin-students__empty-state'>
+                    <span className='admin-students__eyebrow'>
+                        Acesso restrito
+                    </span>
+                    <h1>Somente administradores podem acessar esta tela.</h1>
+                </div>
+            </section>
+        );
+    }
+
+    const handleApplyAllFilters = () => {
+        setPage(1);
+        setFilters({
+            search: searchInput.trim(),
+            courseTypes: draftCourseTypes.map((option) => String(option.value)),
+            locations: draftLocations.map((option) => String(option.value)),
+            disabilityTypes: draftDisabilityTypes.map((option) =>
+                String(option.value),
+            ),
+        });
+    };
+
+    const handleClearFilters = () => {
+        setPage(1);
+        setSearchInput('');
+        setDraftCourseTypes([]);
+        setDraftLocations([]);
+        setDraftDisabilityTypes([]);
+        setFilters(initialFiltersState);
+        setSelectedIds([]);
+        setSort(initialSortState);
+    };
+
+    const handleSort = (field: AdminStudentsSortField) => {
+        setPage(1);
+        setSort((currentSort) => ({
+            field,
+            order:
+                currentSort.field === field && currentSort.order === 'asc'
+                    ? 'desc'
+                    : 'asc',
+        }));
+    };
+
+    const renderSortButton = (
+        label: string,
+        field: AdminStudentsSortField,
+    ) => {
+        const isActive = sort.field === field;
+        const icon = isActive ? (
+            sort.order === 'asc' ? (
+                <KeyboardArrowUpRoundedIcon fontSize='small' />
+            ) : (
+                <KeyboardArrowDownRoundedIcon fontSize='small' />
+            )
+        ) : (
+            <UnfoldMoreRoundedIcon fontSize='small' />
+        );
+
+        return (
+            <button
+                type='button'
+                className={`admin-students__sort-button${
+                    isActive ? ' admin-students__sort-button--active' : ''
+                }`}
+                onClick={() => handleSort(field)}
+            >
+                <span>{label}</span>
+                {icon}
+            </button>
+        );
+    };
+
+    const toggleStudentSelection = (studentId: string) => {
+        setSelectedIds((currentSelection) =>
+            currentSelection.includes(studentId)
+                ? currentSelection.filter((id) => id !== studentId)
+                : [...currentSelection, studentId],
+        );
+    };
+
+    const toggleVisibleSelection = () => {
+        if (allVisibleSelected) {
+            setSelectedIds((currentSelection) =>
+                currentSelection.filter((id) => !visibleStudentIds.includes(id)),
+            );
+            return;
+        }
+
+        setSelectedIds((currentSelection) => [
+            ...new Set([...currentSelection, ...visibleStudentIds]),
+        ]);
+    };
+
+    const handleDeleteStudents = async () => {
+        if (studentsPendingDelete.length === 0) {
+            return;
+        }
+
+        const idsToDelete = studentsPendingDelete.map((student) => student.id);
+
+        await deleteStudentsMutation.mutateAsync(idsToDelete);
+        setSelectedIds((currentSelection) =>
+            currentSelection.filter((id) => !idsToDelete.includes(id)),
+        );
+        setStudentsPendingDelete([]);
+        setSelectedStudent((currentStudent) =>
+            currentStudent && idsToDelete.includes(currentStudent.id)
+                ? null
+                : currentStudent,
+        );
+    };
+
+    const openSingleDeleteConfirmation = (student: AdminStudentDto) => {
+        setStudentsPendingDelete([student]);
+    };
+
+    const openBulkDeleteConfirmation = async () => {
+        const studentsForDelete = await getStudentsForExport(filters);
+        const selectedStudents = studentsForDelete.filter((student) =>
+            selectedIds.includes(student.id),
+        );
+
+        if (selectedStudents.length === 0) {
+            toast.info('Selecione pelo menos um aluno para excluir.');
+            return;
+        }
+
+        setStudentsPendingDelete(selectedStudents);
+    };
+
+    const handleExportAll = async () => {
+        const printWindow = openExportWindow();
+        setIsExportingAll(true);
+
+        try {
+            const studentsForExport = await getStudentsForExport(filters);
+
+            if (studentsForExport.length === 0) {
+                printWindow?.close();
+                toast.info('Nao ha alunos para exportar com os filtros atuais.');
+                return;
+            }
+
+            exportStudentsToPdf(
+                printWindow,
+                studentsForExport,
+                filters,
+                'Lista de alunos',
+            );
+        } catch {
+            printWindow?.close();
+            toast.error('Nao foi possivel exportar a lista agora.');
+        } finally {
+            setIsExportingAll(false);
+        }
+    };
+
+    const handleExportSelected = async () => {
+        const printWindow = openExportWindow();
+        setIsExportingSelected(true);
+
+        try {
+            const studentsForExport = await getStudentsForExport(filters);
+            const selectedStudents = studentsForExport.filter((student) =>
+                selectedIds.includes(student.id),
+            );
+
+            if (selectedStudents.length === 0) {
+                printWindow?.close();
+                toast.info('Selecione pelo menos um aluno para exportar.');
+                return;
+            }
+
+            exportStudentsToPdf(
+                printWindow,
+                selectedStudents,
+                filters,
+                'Alunos selecionados',
+            );
+        } catch {
+            printWindow?.close();
+            toast.error('Nao foi possivel exportar os alunos selecionados.');
+        } finally {
+            setIsExportingSelected(false);
+        }
+    };
+
+    const rangeStart = totalStudents === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+    const rangeEnd = Math.min(page * PAGE_SIZE, totalStudents);
+
+    return (
+        <section className='admin-students'>
+            <div className='admin-students__header'>
+                <div>
+                    <span className='admin-students__eyebrow'>
+                        Area administrativa
+                    </span>
+                    <h1>Gestao de Alunos</h1>
+                    <p>
+                        Administracao centralizada de estudantes e matriculas do
+                        instituto.
+                    </p>
+                </div>
+
+                <div className='admin-students__header-action'>
+                    <ButtonComponent
+                        variant='secondary'
+                        onClick={() => {
+                            void handleExportAll();
+                        }}
+                        disabled={isExportingAll || isLoading}
+                    >
+                        <span className='admin-students__button-content'>
+                            {isExportingAll ? (
+                                <CircularProgress size={16} />
+                            ) : (
+                                <FileDownloadOutlinedIcon fontSize='small' />
+                            )}
+                            Exportar Lista
+                        </span>
+                    </ButtonComponent>
+                </div>
+            </div>
+
+            <div className='admin-students__filters-card'>
+                <div className='admin-students__search-row'>
+                    <div className='admin-students__search-input'>
+                        <Input
+                            value={searchInput}
+                            onChange={(event) => setSearchInput(event.target.value)}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') {
+                                    handleApplyAllFilters();
+                                }
+                            }}
+                            placeholder='Buscar por nome, CPF, email...'
+                            icon={<SearchRoundedIcon fontSize='small' />}
+                        />
+                    </div>
+
+                    <ButtonComponent
+                        onClick={handleApplyAllFilters}
+                        disabled={isLoading}
+                    >
+                        <span className='admin-students__button-content'>
+                            <SearchRoundedIcon fontSize='small' />
+                            Buscar
+                        </span>
+                    </ButtonComponent>
+
+                    <ButtonComponent
+                        variant='secondary'
+                        onClick={handleClearFilters}
+                    >
+                        <span className='admin-students__button-content'>
+                            <RestartAltRoundedIcon fontSize='small' />
+                            Limpar
+                        </span>
+                    </ButtonComponent>
+                </div>
+
+                <button
+                    className='admin-students__advanced-toggle'
+                    onClick={() => setShowAdvancedFilters((value) => !value)}
+                    type='button'
+                >
+                    <span>
+                        <FilterListRoundedIcon fontSize='small' />
+                        Filtros avançados
+                    </span>
+                    {showAdvancedFilters ? (
+                        <KeyboardArrowUpRoundedIcon fontSize='small' />
+                    ) : (
+                        <KeyboardArrowDownRoundedIcon fontSize='small' />
+                    )}
+                </button>
+
+                <Collapse in={showAdvancedFilters}>
+                    <div className='admin-students__advanced-grid'>
+                        <div>
+                            <label className='admin-students__field-label'>
+                                Modalidade do curso
+                            </label>
+                            <MultSelect
+                                placeholder='Selecione as modalidades'
+                                options={courseTypeOptions}
+                                value={draftCourseTypes}
+                                onChange={(options) =>
+                                    setDraftCourseTypes([...(options ?? [])])
+                                }
+                                isSearchable
+                            />
+                        </div>
+
+                        <div>
+                            <label className='admin-students__field-label'>
+                                Localizacao
+                            </label>
+                            <MultSelect
+                                placeholder='Selecione as cidades'
+                                options={locationOptions}
+                                value={draftLocations}
+                                onChange={(options) =>
+                                    setDraftLocations([...(options ?? [])])
+                                }
+                                isSearchable
+                            />
+                        </div>
+
+                        <div>
+                            <label className='admin-students__field-label'>
+                                Status PCD
+                            </label>
+                            <MultSelect
+                                placeholder='Selecione os status'
+                                options={disabilityOptions}
+                                value={draftDisabilityTypes}
+                                onChange={(options) =>
+                                    setDraftDisabilityTypes([...(options ?? [])])
+                                }
+                                isSearchable
+                            />
+                        </div>
+                    </div>
+                </Collapse>
+            </div>
+
+            {selectedIds.length > 0 && (
+                <div className='admin-students__bulk-bar'>
+                    <strong>{selectedCountLabel}</strong>
+
+                    <div className='admin-students__bulk-actions'>
+                        <button
+                            type='button'
+                            onClick={() => {
+                                void handleExportSelected();
+                            }}
+                            disabled={isExportingSelected}
+                        >
+                            {isExportingSelected ? (
+                                <CircularProgress size={14} />
+                            ) : (
+                                <PictureAsPdfRoundedIcon fontSize='small' />
+                            )}
+                            Exportar selecionados
+                        </button>
+
+                        <button
+                            type='button'
+                            onClick={() => {
+                                void openBulkDeleteConfirmation();
+                            }}
+                        >
+                            <DeleteOutlineRoundedIcon fontSize='small' />
+                            Excluir selecionados
+                        </button>
+
+                        <button
+                            type='button'
+                            onClick={() => setSelectedIds([])}
+                        >
+                            Limpar selecao
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <div className='admin-students__table-card'>
+                {isLoading && !data ? (
+                    <div className='admin-students__loading-state'>
+                        <Loading />
+                    </div>
+                ) : isError ? (
+                    <div className='admin-students__empty-state'>
+                        <span className='admin-students__eyebrow'>
+                            Erro ao carregar
+                        </span>
+                        <h2>Nao foi possivel carregar os alunos agora.</h2>
+                    </div>
+                ) : students.length === 0 ? (
+                    <div className='admin-students__empty-state'>
+                        <span className='admin-students__eyebrow'>
+                            Nenhum resultado
+                        </span>
+                        <h2>Nenhum aluno encontrado com os filtros aplicados.</h2>
+                        <p>Tente ajustar a busca ou limpar os filtros.</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className='admin-students__table-wrapper'>
+                            <table className='admin-students__table'>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <Checkbox
+                                                checked={allVisibleSelected}
+                                                indeterminate={someVisibleSelected}
+                                                onChange={toggleVisibleSelection}
+                                            />
+                                        </th>
+                                        <th>{renderSortButton('Nome', 'fullName')}</th>
+                                        <th>{renderSortButton('Curso', 'course')}</th>
+                                        <th>{renderSortButton('Contato', 'contact')}</th>
+                                        <th>{renderSortButton('Localizacao', 'location')}</th>
+                                        <th>{renderSortButton('PCD', 'pcd')}</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {students.map((student) => (
+                                        <tr key={student.id}>
+                                            <td>
+                                                <Checkbox
+                                                    checked={selectedIds.includes(
+                                                        student.id,
+                                                    )}
+                                                    onChange={() =>
+                                                        toggleStudentSelection(
+                                                            student.id,
+                                                        )
+                                                    }
+                                                />
+                                            </td>
+                                            <td>
+                                                <div className='admin-students__student-cell'>
+                                                    <Avatar
+                                                        src={
+                                                            student.photoUrl ||
+                                                            undefined
+                                                        }
+                                                        className='admin-students__avatar'
+                                                    >
+                                                        {student.fullName
+                                                            .split(' ')
+                                                            .slice(0, 2)
+                                                            .map((name) =>
+                                                                name[0]?.toUpperCase(),
+                                                            )
+                                                            .join('')}
+                                                    </Avatar>
+
+                                                    <div>
+                                                        <button
+                                                            type='button'
+                                                            className='admin-students__name-button'
+                                                            onClick={() =>
+                                                                setSelectedStudent(
+                                                                    student,
+                                                                )
+                                                            }
+                                                        >
+                                                            {student.fullName}
+                                                        </button>
+                                                        <span>
+                                                            {formatMaskedCpf(
+                                                                student.cpf,
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <Chip
+                                                    label={
+                                                        courseTypeLabels[
+                                                            getCourseType(
+                                                                student,
+                                                            )
+                                                        ]
+                                                    }
+                                                    className={getCourseBadgeClassName(
+                                                        student,
+                                                    )}
+                                                />
+                                            </td>
+                                            <td>
+                                                <div className='admin-students__meta-cell'>
+                                                    <span>{student.email}</span>
+                                                    <small>
+                                                        {formatPhone(
+                                                            student.phone,
+                                                        )}
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {normalizeText(student.city)}/
+                                                {student.state}
+                                            </td>
+                                            <td>
+                                                <Chip
+                                                    label={
+                                                        disabilityLabels[
+                                                            student.disabilityType
+                                                        ]
+                                                    }
+                                                    className={getDisabilityBadgeClassName(
+                                                        student,
+                                                    )}
+                                                />
+                                            </td>
+                                            <td>
+                                                <div className='admin-students__actions'>
+                                                    <IconButton
+                                                        className='admin-students__action-button'
+                                                        component='a'
+                                                        href={`https://wa.me/55${student.phone.replace(/\D/g, '')}`}
+                                                        target='_blank'
+                                                        rel='noreferrer'
+                                                    >
+                                                        <WhatsAppIcon fontSize='small' />
+                                                    </IconButton>
+
+                                                    <IconButton
+                                                        className='admin-students__action-button admin-students__action-button--danger'
+                                                        onClick={() =>
+                                                            openSingleDeleteConfirmation(
+                                                                student,
+                                                            )
+                                                        }
+                                                    >
+                                                        <DeleteOutlineRoundedIcon fontSize='small' />
+                                                    </IconButton>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className='admin-students__footer'>
+                            <p>
+                                Exibindo {rangeStart} a {rangeEnd} de{' '}
+                                {totalStudents} alunos
+                            </p>
+
+                            <Stack
+                                direction='row'
+                                spacing={1}
+                                alignItems='center'
+                            >
+                                {isFetching && <CircularProgress size={16} />}
+                                <Pagination
+                                    page={page}
+                                    count={totalPages}
+                                    onChange={(_, nextPage) => setPage(nextPage)}
+                                    shape='rounded'
+                                    color='primary'
+                                />
+                            </Stack>
+                        </div>
+                    </>
+                )}
+            </div>
+
+            <Dialog
+                open={!!selectedStudent}
+                onClose={() => setSelectedStudent(null)}
+                fullWidth
+                maxWidth='sm'
+            >
+                <DialogTitle>Informacoes do aluno</DialogTitle>
+                <DialogContent dividers>
+                    {selectedStudent && (
+                        <div className='admin-students__details'>
+                            <div className='admin-students__details-header'>
+                                <Avatar
+                                    src={selectedStudent.photoUrl || undefined}
+                                    className='admin-students__avatar admin-students__avatar--large'
+                                >
+                                    {selectedStudent.fullName
+                                        .split(' ')
+                                        .slice(0, 2)
+                                        .map((name) => name[0]?.toUpperCase())
+                                        .join('')}
+                                </Avatar>
+
+                                <div>
+                                    <h3>{selectedStudent.fullName}</h3>
+                                    <p>
+                                        {selectedStudent.enrolledCourse?.name ??
+                                            'Nao inscrito'}
+                                    </p>
+                                    <small>
+                                        {
+                                            courseTypeLabels[
+                                                getCourseType(selectedStudent)
+                                            ]
+                                        }
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div className='admin-students__details-grid'>
+                                <div>
+                                    <strong>CPF</strong>
+                                    <span>{formatCpf(selectedStudent.cpf)}</span>
+                                </div>
+                                <div>
+                                    <strong>E-mail</strong>
+                                    <span>{selectedStudent.email}</span>
+                                </div>
+                                <div>
+                                    <strong>Telefone</strong>
+                                    <span>
+                                        {formatPhone(selectedStudent.phone)}
+                                    </span>
+                                </div>
+                                <div>
+                                    <strong>Localizacao</strong>
+                                    <span>
+                                        {normalizeText(selectedStudent.city)}/
+                                        {selectedStudent.state}
+                                    </span>
+                                </div>
+                                <div>
+                                    <strong>Status PCD</strong>
+                                    <span>
+                                        {
+                                            disabilityLabels[
+                                                selectedStudent.disabilityType
+                                            ]
+                                        }
+                                    </span>
+                                </div>
+                                <div>
+                                    <strong>Modalidade</strong>
+                                    <span>
+                                        {
+                                            courseTypeLabels[
+                                                getCourseType(selectedStudent)
+                                            ]
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <ButtonComponent
+                        variant='secondary'
+                        onClick={() => setSelectedStudent(null)}
+                    >
+                        Fechar
+                    </ButtonComponent>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={studentsPendingDelete.length > 0}
+                onClose={() => setStudentsPendingDelete([])}
+                fullWidth
+                maxWidth='xs'
+            >
+                <DialogTitle>
+                    {studentsPendingDelete.length > 1
+                        ? 'Excluir alunos'
+                        : 'Excluir aluno'}
+                </DialogTitle>
+                <DialogContent dividers>
+                    <p>
+                        {studentsPendingDelete.length > 1 ? (
+                            <>
+                                Deseja realmente excluir{' '}
+                                <strong>
+                                    {studentsPendingDelete.length} alunos
+                                </strong>
+                                {' '}selecionados?
+                            </>
+                        ) : (
+                            <>
+                                Deseja realmente excluir{' '}
+                                <strong>
+                                    {studentsPendingDelete[0]?.fullName}
+                                </strong>
+                                ?
+                            </>
+                        )}
+                    </p>
+                </DialogContent>
+                <DialogActions>
+                    <ButtonComponent
+                        variant='secondary'
+                        onClick={() => setStudentsPendingDelete([])}
+                    >
+                        Cancelar
+                    </ButtonComponent>
+                    <ButtonComponent
+                        onClick={() => {
+                            void handleDeleteStudents();
+                        }}
+                        disabled={deleteStudentsMutation.isPending}
+                    >
+                        <span className='admin-students__button-content'>
+                            {deleteStudentsMutation.isPending ? (
+                                <CircularProgress size={16} />
+                            ) : null}
+                            Confirmar exclusao
+                        </span>
+                    </ButtonComponent>
+                </DialogActions>
+            </Dialog>
+        </section>
+    );
+}

@@ -57,6 +57,14 @@ export const PAGES: Page[] = [
         requireAuth: false,
         name: 'Cadastro Empresa',
     },
+    {
+        path: '/alunos',
+        navbarEnabled: true,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Gestão de Alunos',
+        icon: <GroupIcon className='sidebar-icon' />,
+    },
 ];
 
 export type NavItem = {
