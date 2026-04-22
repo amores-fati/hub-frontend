@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Loading, MultSelect } from '@/components/base';
+import { Input, Loading, MultSelect, Table } from '@/components/base';
 import {
     FamilyIncome,
     Gender,
@@ -26,19 +26,7 @@ import {
     useGetAdminStudents,
 } from '@/services/api/admin/students/queries';
 import { Option } from '@/components/base/Select/select';
-import {
-    Avatar,
-    Chip,
-    CircularProgress,
-    Collapse,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-    Pagination,
-    Stack,
-} from '@mui/material';
+import { Avatar, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import Checkbox from '@/components/base/Checkbox/checkbox';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
@@ -49,7 +37,6 @@ import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
 import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
-import UnfoldMoreRoundedIcon from '@mui/icons-material/UnfoldMoreRounded';
 import { ButtonComponent } from '@/components/base/Button/button';
 import { useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -528,35 +515,6 @@ export function AdminStudents() {
         }));
     };
 
-    const renderSortButton = (
-        label: string,
-        field: AdminStudentsSortField,
-    ) => {
-        const isActive = sort.field === field;
-        const icon = isActive ? (
-            sort.order === 'asc' ? (
-                <KeyboardArrowUpRoundedIcon fontSize='small' />
-            ) : (
-                <KeyboardArrowDownRoundedIcon fontSize='small' />
-            )
-        ) : (
-            <UnfoldMoreRoundedIcon fontSize='small' />
-        );
-
-        return (
-            <button
-                type='button'
-                className={`admin-students__sort-button${
-                    isActive ? ' admin-students__sort-button--active' : ''
-                }`}
-                onClick={() => handleSort(field)}
-            >
-                <span>{label}</span>
-                {icon}
-            </button>
-        );
-    };
-
     const toggleStudentSelection = (studentId: string) => {
         setSelectedIds((currentSelection) =>
             currentSelection.includes(studentId)
@@ -674,6 +632,96 @@ export function AdminStudents() {
 
     const rangeStart = totalStudents === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
     const rangeEnd = Math.min(page * PAGE_SIZE, totalStudents);
+    const columns = useMemo(
+        () => [
+            {
+                key: 'name',
+                header: 'Nome',
+                sortable: true,
+                sortField: 'fullName',
+                render: (student: AdminStudentDto) => (
+                    <div className='admin-students__student-cell'>
+                        <Avatar
+                            src={student.photoUrl || undefined}
+                            className='admin-students__avatar'
+                        >
+                            {student.fullName
+                                .split(' ')
+                                .slice(0, 2)
+                                .map((name) => name[0]?.toUpperCase())
+                                .join('')}
+                        </Avatar>
+
+                        <div>
+                            <button
+                                type='button'
+                                className='admin-students__name-button'
+                                onClick={() => setSelectedStudent(student)}
+                            >
+                                {student.fullName}
+                            </button>
+                            <span>{formatMaskedCpf(student.cpf)}</span>
+                        </div>
+                    </div>
+                ),
+            },
+            {
+                key: 'course',
+                header: 'Curso',
+                sortable: true,
+                sortField: 'course',
+                render: (student: AdminStudentDto) => (
+                    <Chip
+                        label={courseTypeLabels[getCourseType(student)]}
+                        className={getCourseBadgeClassName(student)}
+                    />
+                ),
+            },
+            {
+                key: 'contact',
+                header: 'Contato',
+                sortable: true,
+                sortField: 'contact',
+                render: (student: AdminStudentDto) => (
+                    <div className='admin-students__meta-cell'>
+                        <span>{student.email}</span>
+                        <small>
+                            <a
+                                href={buildWhatsAppLink(student.phone)}
+                                target='_blank'
+                                rel='noreferrer'
+                                className='admin-students__contact-link'
+                            >
+                                {formatPhone(student.phone)}
+                            </a>
+                        </small>
+                    </div>
+                ),
+            },
+            {
+                key: 'location',
+                header: 'Localização',
+                sortable: true,
+                sortField: 'location',
+                render: (student: AdminStudentDto) => (
+                    <>{normalizeText(student.city)}/{student.state}</>
+                ),
+            },
+            {
+                key: 'pcd',
+                header: 'PCD',
+                sortable: true,
+                sortField: 'pcd',
+                render: (student: AdminStudentDto) => (
+                    <Chip
+                        label={disabilityLabels[student.disabilityType]}
+                        className={getDisabilityBadgeClassName(student)}
+                    />
+                ),
+            },
+        ],
+        [],
+    );
 
     return (
         <section className='admin-students'>
@@ -865,188 +913,41 @@ export function AdminStudents() {
                     </div>
                 ) : students.length === 0 ? (
                     <div className='admin-students__empty-state'>
-                        <span className='admin-students__eyebrow'>
-                            Nenhum resultado
-                        </span>
                         <h2>Nenhum aluno encontrado com os filtros aplicados.</h2>
                         <p>Tente ajustar a busca ou limpar os filtros.</p>
                     </div>
                 ) : (
                     <>
-                        <div className='admin-students__table-wrapper'>
-                            <table className='admin-students__table'>
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <Checkbox
-                                                checked={allVisibleSelected}
-                                                indeterminate={someVisibleSelected}
-                                                onChange={toggleVisibleSelection}
-                                            />
-                                        </th>
-                                        <th>{renderSortButton('Nome', 'fullName')}</th>
-                                        <th>{renderSortButton('Curso', 'course')}</th>
-                                        <th>{renderSortButton('Contato', 'contact')}</th>
-                                        <th>{renderSortButton('Localizacao', 'location')}</th>
-                                        <th>{renderSortButton('PCD', 'pcd')}</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {students.map((student) => (
-                                        <tr key={student.id}>
-                                            <td>
-                                                <Checkbox
-                                                    checked={selectedIds.includes(
-                                                        student.id,
-                                                    )}
-                                                    onChange={() =>
-                                                        toggleStudentSelection(
-                                                            student.id,
-                                                        )
-                                                    }
-                                                />
-                                            </td>
-                                            <td>
-                                                <div className='admin-students__student-cell'>
-                                                    <Avatar
-                                                        src={
-                                                            student.photoUrl ||
-                                                            undefined
-                                                        }
-                                                        className='admin-students__avatar'
-                                                    >
-                                                        {student.fullName
-                                                            .split(' ')
-                                                            .slice(0, 2)
-                                                            .map((name) =>
-                                                                name[0]?.toUpperCase(),
-                                                            )
-                                                            .join('')}
-                                                    </Avatar>
-
-                                                    <div>
-                                                        <button
-                                                            type='button'
-                                                            className='admin-students__name-button'
-                                                            onClick={() =>
-                                                                setSelectedStudent(
-                                                                    student,
-                                                                )
-                                                            }
-                                                        >
-                                                            {student.fullName}
-                                                        </button>
-                                                        <span>
-                                                            {formatMaskedCpf(
-                                                                student.cpf,
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <Chip
-                                                    label={
-                                                        courseTypeLabels[
-                                                            getCourseType(
-                                                                student,
-                                                            )
-                                                        ]
-                                                    }
-                                                    className={getCourseBadgeClassName(
-                                                        student,
-                                                    )}
-                                                />
-                                            </td>
-                                            <td>
-                                                <div className='admin-students__meta-cell'>
-                                                    <span>{student.email}</span>
-                                                    <small>
-                                                        <a
-                                                            href={buildWhatsAppLink(
-                                                                student.phone,
-                                                            )}
-                                                            target='_blank'
-                                                            rel='noreferrer'
-                                                            className='admin-students__contact-link'
-                                                        >
-                                                            {formatPhone(
-                                                                student.phone,
-                                                            )}
-                                                        </a>
-                                                    </small>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                {normalizeText(student.city)}/
-                                                {student.state}
-                                            </td>
-                                            <td>
-                                                <Chip
-                                                    label={
-                                                        disabilityLabels[
-                                                            student.disabilityType
-                                                        ]
-                                                    }
-                                                    className={getDisabilityBadgeClassName(
-                                                        student,
-                                                    )}
-                                                />
-                                            </td>
-                                            <td>
-                                                <div className='admin-students__actions'>
-                                                    <IconButton
-                                                        className='admin-students__action-button'
-                                                        component='a'
-                                                        href={buildWhatsAppLink(
-                                                            student.phone,
-                                                        )}
-                                                        target='_blank'
-                                                        rel='noreferrer'
-                                                    >
-                                                        <WhatsAppIcon fontSize='small' />
-                                                    </IconButton>
-
-                                                    <IconButton
-                                                        className='admin-students__action-button admin-students__action-button--danger'
-                                                        onClick={() =>
-                                                            openSingleDeleteConfirmation(
-                                                                student,
-                                                            )
-                                                        }
-                                                    >
-                                                        <DeleteOutlineRoundedIcon fontSize='small' />
-                                                    </IconButton>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className='admin-students__footer'>
-                            <p>
-                                Exibindo {rangeStart} a {rangeEnd} de{' '}
-                                {totalStudents} alunos
-                            </p>
-
-                            <Stack
-                                direction='row'
-                                spacing={1}
-                                alignItems='center'
-                            >
-                                {isFetching && <CircularProgress size={16} />}
-                                <Pagination
-                                    page={page}
-                                    count={totalPages}
-                                    onChange={(_, nextPage) => setPage(nextPage)}
-                                    shape='rounded'
-                                    color='primary'
-                                />
-                            </Stack>
-                        </div>
+                        <Table
+                            values={students}
+                            columns={columns}
+                            getRowId={(student) => student.id}
+                            selectable
+                            selectedIds={selectedIds}
+                            allVisibleSelected={allVisibleSelected}
+                            someVisibleSelected={someVisibleSelected}
+                            onToggleSelect={toggleStudentSelection}
+                            onToggleSelectAll={toggleVisibleSelection}
+                            sortField={sort.field}
+                            sortOrder={sort.order}
+                            onSortChange={(field) =>
+                                handleSort(field as AdminStudentsSortField)
+                            }
+                            actionColumnConfig={{
+                                showWhatsapp: true,
+                                getWhatsappHref: (student) =>
+                                    buildWhatsAppLink(student.phone),
+                                showDelete: true,
+                                onDelete: openSingleDeleteConfirmation,
+                            }}
+                            pagination={{
+                                page,
+                                count: totalPages,
+                                onChange: setPage,
+                                isFetching,
+                                summaryText: `Exibindo ${rangeStart} a ${rangeEnd} de ${totalStudents} alunos`,
+                            }}
+                        />
                     </>
                 )}
             </div>
