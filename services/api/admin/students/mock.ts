@@ -1,4 +1,12 @@
 import {
+    FamilyIncome,
+    Gender,
+    Race,
+    Scholarship,
+    SocialBenefit,
+    WhoInformed,
+} from '@/dtos/StudentDto';
+import {
     AdminStudentCourseDto,
     AdminStudentCourseType,
     AdminStudentDisabilityType,
@@ -14,9 +22,31 @@ type MockStudentSeed = {
     cpf: string;
     email: string;
     phone: string;
+    socialName?: string;
+    birthDate?: string;
+    gender?: Gender;
+    race?: Race;
     city: string;
     state: string;
+    cep?: string;
+    address?: string;
+    complement?: string;
+    neighbourhood?: string;
     disabilityType: AdminStudentDisabilityType;
+    scholarship?: Scholarship;
+    institution?: string;
+    whyJoinFatiLab?: string;
+    whomInformed?: WhoInformed;
+    hasOwnComputer?: boolean;
+    hasInternetAccess?: boolean;
+    compromisedToClasses?: boolean;
+    familyIncome?: FamilyIncome;
+    peopleInHouse?: string;
+    socialBenefit?: SocialBenefit;
+    hasWorkExperience?: boolean;
+    hasParticipatedOnCourses?: boolean;
+    currentlyWorking?: boolean;
+    workField?: string;
     course: AdminStudentCourseDto | null;
 };
 
@@ -50,9 +80,29 @@ const studentSeeds: MockStudentSeed[] = [
         cpf: '12345678900',
         email: 'ana.julia@email.com',
         phone: '11988881234',
+        socialName: '',
+        birthDate: '1998-05-12',
+        gender: Gender.FEMALE,
+        race: Race.BROWN,
         city: 'Florianopolis',
         state: 'SC',
+        cep: '88000-120',
+        address: 'Rua das Gaivotas, 120',
+        neighbourhood: 'Centro',
         disabilityType: AdminStudentDisabilityType.NONE,
+        scholarship: Scholarship.COMPLETE_MEDIUM,
+        institution: 'E.E.B. Santa Catarina',
+        whyJoinFatiLab: 'Quero iniciar minha carreira em tecnologia e ampliar minhas oportunidades.',
+        whomInformed: WhoInformed.INSTAGRAM,
+        hasOwnComputer: true,
+        hasInternetAccess: true,
+        compromisedToClasses: true,
+        familyIncome: FamilyIncome.BETWEEN_1_3,
+        peopleInHouse: '3',
+        socialBenefit: SocialBenefit.NONE,
+        hasWorkExperience: false,
+        hasParticipatedOnCourses: true,
+        currentlyWorking: false,
         course: courses.frontend,
     },
     {
@@ -61,9 +111,30 @@ const studentSeeds: MockStudentSeed[] = [
         cpf: '98765432111',
         email: 'maria.eduarda@email.com',
         phone: '21977774321',
+        socialName: '',
+        birthDate: '1996-11-03',
+        gender: Gender.FEMALE,
+        race: Race.BLACK,
         city: 'Porto Alegre',
         state: 'RS',
+        cep: '90010-200',
+        address: 'Av. Borges de Medeiros, 450',
+        neighbourhood: 'Centro Historico',
         disabilityType: AdminStudentDisabilityType.PHYSICAL,
+        scholarship: Scholarship.INCOMPLETE_SUPERIOR,
+        institution: 'UFRGS',
+        whyJoinFatiLab: 'Busco recolocacao e atualizacao profissional para atuar com dados.',
+        whomInformed: WhoInformed.LINKEDIN,
+        hasOwnComputer: true,
+        hasInternetAccess: true,
+        compromisedToClasses: true,
+        familyIncome: FamilyIncome.BETWEEN_1_3,
+        peopleInHouse: '2',
+        socialBenefit: SocialBenefit.BPC,
+        hasWorkExperience: true,
+        hasParticipatedOnCourses: true,
+        currentlyWorking: true,
+        workField: 'Administrativo',
         course: courses.data,
     },
     {
@@ -72,9 +143,29 @@ const studentSeeds: MockStudentSeed[] = [
         cpf: '45612378922',
         email: 'beatriz.silva@email.com',
         phone: '48966665555',
+        socialName: '',
+        birthDate: '2000-01-21',
+        gender: Gender.FEMALE,
+        race: Race.WHITE,
         city: 'Florianopolis',
         state: 'SC',
+        cep: '88015-330',
+        address: 'Rua Bocaiuva, 890',
+        neighbourhood: 'Centro',
         disabilityType: AdminStudentDisabilityType.NONE,
+        scholarship: Scholarship.COMPLETE_MEDIUM,
+        institution: 'IFSC',
+        whyJoinFatiLab: 'Tenho interesse em frontend e quero construir portfolio.',
+        whomInformed: WhoInformed.REFEREE,
+        hasOwnComputer: true,
+        hasInternetAccess: true,
+        compromisedToClasses: true,
+        familyIncome: FamilyIncome.TO1_SALARY,
+        peopleInHouse: '4',
+        socialBenefit: SocialBenefit.BOLSA_FAMILIA,
+        hasWorkExperience: false,
+        hasParticipatedOnCourses: false,
+        currentlyWorking: false,
         course: courses.frontend,
     },
     {
@@ -83,9 +174,29 @@ const studentSeeds: MockStudentSeed[] = [
         cpf: '78945612333',
         email: 'carlos.oliveira@email.com',
         phone: '21977777777',
+        socialName: '',
+        birthDate: '1994-08-19',
+        gender: Gender.MALE,
+        race: Race.BROWN,
         city: 'Porto Alegre',
         state: 'RS',
+        cep: '90110-110',
+        address: 'Rua Riachuelo, 78',
+        neighbourhood: 'Cidade Baixa',
         disabilityType: AdminStudentDisabilityType.VISUAL,
+        scholarship: Scholarship.COMPLETE_MEDIUM,
+        institution: 'EEEM Julio de Castilhos',
+        whyJoinFatiLab: 'Quero voltar a estudar e migrar para a area digital.',
+        whomInformed: WhoInformed.OTHERS,
+        hasOwnComputer: false,
+        hasInternetAccess: true,
+        compromisedToClasses: true,
+        familyIncome: FamilyIncome.TO1_SALARY,
+        peopleInHouse: '2',
+        socialBenefit: SocialBenefit.BPC,
+        hasWorkExperience: true,
+        hasParticipatedOnCourses: false,
+        currentlyWorking: false,
         course: null,
     },
     {
@@ -94,9 +205,30 @@ const studentSeeds: MockStudentSeed[] = [
         cpf: '12312312344',
         email: 'fernanda.costa@email.com',
         phone: '11988889999',
+        socialName: '',
+        birthDate: '1999-03-07',
+        gender: Gender.FEMALE,
+        race: Race.BROWN,
         city: 'Curitiba',
         state: 'PR',
+        cep: '80010-010',
+        address: 'Rua Marechal Deodoro, 600',
+        neighbourhood: 'Centro',
         disabilityType: AdminStudentDisabilityType.NONE,
+        scholarship: Scholarship.COMPLETE_SUPERIOR,
+        institution: 'PUC-PR',
+        whyJoinFatiLab: 'Procuro qualificacao complementar para ingressar em QA.',
+        whomInformed: WhoInformed.INSTAGRAM,
+        hasOwnComputer: true,
+        hasInternetAccess: true,
+        compromisedToClasses: true,
+        familyIncome: FamilyIncome.MORE_THAN_3,
+        peopleInHouse: '1',
+        socialBenefit: SocialBenefit.NONE,
+        hasWorkExperience: true,
+        hasParticipatedOnCourses: true,
+        currentlyWorking: true,
+        workField: 'Atendimento',
         course: courses.qa,
     },
     {
@@ -105,9 +237,29 @@ const studentSeeds: MockStudentSeed[] = [
         cpf: '32165498755',
         email: 'joao.souza@email.com',
         phone: '41999998888',
+        socialName: '',
+        birthDate: '1997-09-14',
+        gender: Gender.MALE,
+        race: Race.BLACK,
         city: 'Curitiba',
         state: 'PR',
+        cep: '80020-210',
+        address: 'Rua XV de Novembro, 150',
+        neighbourhood: 'Centro',
         disabilityType: AdminStudentDisabilityType.HEARING,
+        scholarship: Scholarship.INCOMPLETE_SUPERIOR,
+        institution: 'UTFPR',
+        whyJoinFatiLab: 'Quero desenvolver novas habilidades para trabalhar remotamente.',
+        whomInformed: WhoInformed.LINKEDIN,
+        hasOwnComputer: true,
+        hasInternetAccess: true,
+        compromisedToClasses: true,
+        familyIncome: FamilyIncome.BETWEEN_1_3,
+        peopleInHouse: '3',
+        socialBenefit: SocialBenefit.NONE,
+        hasWorkExperience: false,
+        hasParticipatedOnCourses: true,
+        currentlyWorking: false,
         course: courses.data,
     },
     {
@@ -346,6 +498,8 @@ const normalize = (value: string) =>
         .toLowerCase()
         .trim();
 
+const normalizeDigits = (value: string) => value.replaceAll(/\D/g, '');
+
 const getCourseType = (student: AdminStudentDto) =>
     student.enrolledCourse?.modality ?? AdminStudentCourseType.NOT_ENROLLED;
 
@@ -355,14 +509,43 @@ const buildStudents = (): AdminStudentDto[] =>
         .map((student) => ({
             id: student.id,
             fullName: student.fullName,
+            socialName: student.socialName ?? '',
             cpf: student.cpf,
+            birthDate: student.birthDate ?? '1998-01-01',
             email: student.email,
             phone: student.phone,
+            gender: student.gender,
+            race: student.race,
             city: student.city,
             state: student.state,
+            cep: student.cep ?? '00000-000',
+            address: student.address ?? `Rua Principal, ${student.id.slice(-3)}`,
+            complement: student.complement ?? '',
+            neighbourhood: student.neighbourhood ?? 'Centro',
             isPcd: student.disabilityType !== AdminStudentDisabilityType.NONE,
             disabilityType: student.disabilityType,
             enrolledCourse: student.course,
+            scholarship: student.scholarship ?? Scholarship.COMPLETE_MEDIUM,
+            institution: student.institution ?? 'Instituicao nao informada',
+            whyJoinFatiLab:
+                student.whyJoinFatiLab ??
+                'Busca qualificacao para ampliar oportunidades na area de tecnologia.',
+            whomInformed: student.whomInformed ?? WhoInformed.INSTAGRAM,
+            hasOwnComputer: student.hasOwnComputer ?? true,
+            hasInternetAccess: student.hasInternetAccess ?? true,
+            compromisedToClasses: student.compromisedToClasses ?? true,
+            familyIncome: student.familyIncome ?? FamilyIncome.BETWEEN_1_3,
+            peopleInHouse: student.peopleInHouse ?? '3',
+            socialBenefit: student.socialBenefit ?? SocialBenefit.NONE,
+            hasWorkExperience: student.hasWorkExperience ?? false,
+            hasParticipatedOnCourses:
+                student.hasParticipatedOnCourses ?? false,
+            currentlyWorking: student.currentlyWorking ?? false,
+            workField: student.workField ?? '',
+            lgpd: {
+                terms: true,
+                imageUsage: true,
+            },
             photoUrl: null,
         }));
 
@@ -371,7 +554,8 @@ const filterStudents = (
     params: AdminStudentsQueryParams,
 ) => {
     const search = normalize(params.search ?? '');
-    const searchDigits = (params.search ?? '').replaceAll(/\D/g, '');
+    const searchDigits = normalizeDigits(params.search ?? '');
+    const searchTerms = search.split(/\s+/).filter(Boolean);
     const disabilityTypes = new Set(params.disabilityTypes ?? []);
     const locations = new Set((params.locations ?? []).map(normalize));
     const courseTypes = new Set(params.courseTypes ?? []);
@@ -379,21 +563,17 @@ const filterStudents = (
     return students.filter((student) => {
         const searchText = normalize(
             [
-            student.fullName,
-            student.email,
-            student.cpf,
-            student.phone,
-            student.city,
-            student.state,
-            student.enrolledCourse?.name ?? '',
-        ].join(' '),
+                student.fullName,
+                student.email,
+                student.cpf,
+            ].join(' '),
         );
 
-        const studentDigits = [student.cpf, student.phone].join('');
+        const studentDigits = normalizeDigits(student.cpf);
 
         const matchesSearch =
             !search ||
-            searchText.includes(search) ||
+            searchTerms.every((term) => searchText.includes(term)) ||
             (!!searchDigits && studentDigits.includes(searchDigits));
 
         const studentLocation = normalize(`${student.city}/${student.state}`);
@@ -425,7 +605,9 @@ const getSortableValue = (
     }
 
     if (sortBy === 'course') {
-        return normalize(student.enrolledCourse?.name ?? 'Nao inscrito');
+        return normalize(
+            student.enrolledCourse?.modality ?? AdminStudentCourseType.NOT_ENROLLED,
+        );
     }
 
     if (sortBy === 'contact') {

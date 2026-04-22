@@ -1,3 +1,12 @@
+import {
+    FamilyIncome,
+    Gender,
+    Race,
+    Scholarship,
+    SocialBenefit,
+    WhoInformed,
+} from './StudentDto';
+
 export enum AdminStudentCourseType {
     PRESENTIAL = 'PRESENTIAL',
     ONLINE = 'ONLINE',
@@ -24,14 +33,40 @@ export type AdminStudentCourseDto = {
 export type AdminStudentDto = {
     id: string;
     fullName: string;
+    socialName?: string | null;
     cpf: string;
+    birthDate?: string | null;
     email: string;
     phone: string;
+    gender?: Gender;
+    race?: Race;
     city: string;
     state: string;
+    cep?: string;
+    address?: string;
+    complement?: string | null;
+    neighbourhood?: string | null;
     isPcd: boolean;
     disabilityType: AdminStudentDisabilityType;
     enrolledCourse: AdminStudentCourseDto | null;
+    scholarship?: Scholarship | null;
+    institution?: string | null;
+    whyJoinFatiLab?: string | null;
+    whomInformed?: WhoInformed;
+    hasOwnComputer?: boolean;
+    hasInternetAccess?: boolean;
+    compromisedToClasses?: boolean;
+    familyIncome?: FamilyIncome;
+    peopleInHouse?: string | null;
+    socialBenefit?: SocialBenefit;
+    hasWorkExperience?: boolean;
+    hasParticipatedOnCourses?: boolean;
+    currentlyWorking?: boolean;
+    workField?: string | null;
+    lgpd?: {
+        terms: boolean;
+        imageUsage: boolean;
+    };
     photoUrl?: string | null;
 };
 

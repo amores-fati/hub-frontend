@@ -2,6 +2,14 @@
 
 import { Input, Loading, MultSelect } from '@/components/base';
 import {
+    FamilyIncome,
+    Gender,
+    Race,
+    Scholarship,
+    SocialBenefit,
+    WhoInformed,
+} from '@/dtos/StudentDto';
+import {
     AdminStudentCourseType,
     AdminStudentDisabilityType,
     AdminStudentDto,
@@ -52,18 +60,61 @@ const PAGE_SIZE = 20;
 const courseTypeLabels: Record<AdminStudentCourseType, string> = {
     [AdminStudentCourseType.PRESENTIAL]: 'Presencial',
     [AdminStudentCourseType.ONLINE]: 'Online',
-    [AdminStudentCourseType.NOT_ENROLLED]: 'Nao inscrito',
+    [AdminStudentCourseType.NOT_ENROLLED]: 'Não inscrito',
 };
 
 const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
-    [AdminStudentDisabilityType.NONE]: 'Nao',
-    [AdminStudentDisabilityType.PHYSICAL]: 'Fisica',
+    [AdminStudentDisabilityType.NONE]: 'Não',
+    [AdminStudentDisabilityType.PHYSICAL]: 'Física',
     [AdminStudentDisabilityType.HEARING]: 'Auditiva',
     [AdminStudentDisabilityType.VISUAL]: 'Visual',
     [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
     [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
     [AdminStudentDisabilityType.MULTIPLE]: 'Multipla',
     [AdminStudentDisabilityType.OTHER]: 'Outra',
+};
+
+const genderLabels: Record<Gender, string> = {
+    [Gender.FEMALE]: 'Feminino',
+    [Gender.MALE]: 'Masculino',
+    [Gender.NON_BINARY]: 'Não-binário',
+    [Gender.PREFER_NOT_TO_SAY]: 'Prefiro não informar',
+    [Gender.OTHER]: 'Outro',
+};
+
+const raceLabels: Record<Race, string> = {
+    [Race.WHITE]: 'Branco',
+    [Race.BLACK]: 'Preto',
+    [Race.BROWN]: 'Pardo',
+    [Race.INDIGENOUS]: 'Indígena',
+    [Race.PREFER_NOT_TO_SAY]: 'Prefiro não dizer',
+};
+
+const scholarshipLabels: Record<Scholarship, string> = {
+    [Scholarship.INCOMPLETE_FUNDAMENTAL]: 'Fundamental incompleto',
+    [Scholarship.COMPLETE_MEDIUM]: 'Médio completo',
+    [Scholarship.INCOMPLETE_SUPERIOR]: 'Superior incompleto',
+    [Scholarship.COMPLETE_SUPERIOR]: 'Superior completo',
+};
+
+const whoInformedLabels: Record<WhoInformed, string> = {
+    [WhoInformed.INSTAGRAM]: 'Instagram',
+    [WhoInformed.REFEREE]: 'Indicação',
+    [WhoInformed.LINKEDIN]: 'LinkedIn',
+    [WhoInformed.OTHERS]: 'Outros',
+};
+
+const familyIncomeLabels: Record<FamilyIncome, string> = {
+    [FamilyIncome.TO1_SALARY]: 'Até 1 salário mínimo',
+    [FamilyIncome.BETWEEN_1_3]: '1 a 3 salários mínimos',
+    [FamilyIncome.MORE_THAN_3]: 'Mais de 3 salários',
+};
+
+const socialBenefitLabels: Record<SocialBenefit, string> = {
+    [SocialBenefit.BOLSA_FAMILIA]: 'Bolsa Família',
+    [SocialBenefit.BPC]: 'BPC',
+    [SocialBenefit.NONE]: 'Nenhum',
+    [SocialBenefit.OTHERS]: 'Outros',
 };
 
 const courseTypeOptions: Option[] = [
@@ -169,6 +220,26 @@ const formatPhone = (phone: string) => {
     return phone;
 };
 
+const formatDate = (value?: string | null) => {
+    if (!value) {
+        return 'Não informado';
+    }
+
+    const date = new Date(`${value}T00:00:00`);
+
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat('pt-BR').format(date);
+};
+
+const buildWhatsAppLink = (phone: string) =>
+    `https://wa.me/55${phone.replace(/\D/g, '')}`;
+
+const getBooleanLabel = (value?: boolean) =>
+    value === undefined ? 'Não informado' : value ? 'Sim' : 'Não';
+
 const getCourseType = (student: AdminStudentDto) =>
     student.enrolledCourse?.modality ?? AdminStudentCourseType.NOT_ENROLLED;
 
@@ -235,7 +306,7 @@ const exportStudentsToPdf = (
 ) => {
     if (!printWindow) {
         toast.error(
-            'Nao foi possivel abrir a janela de exportacao. Verifique o bloqueador de pop-up.',
+            'Não foi possivel abrir a janela de exportação. Verifique o bloqueador de pop-up.',
         );
         return;
     }
@@ -251,7 +322,7 @@ const exportStudentsToPdf = (
                 <tr>
                     <td>${student.fullName}</td>
                     <td>${formatCpf(student.cpf)}</td>
-                    <td>${student.enrolledCourse?.name ?? 'Nao inscrito'}</td>
+                    <td>${student.enrolledCourse?.name ?? 'Não inscrito'}</td>
                     <td>${student.email}<br />${formatPhone(student.phone)}</td>
                     <td>${student.city}/${student.state}</td>
                     <td>${disabilityLabels[student.disabilityType]}</td>
@@ -553,7 +624,7 @@ export function AdminStudents() {
 
             if (studentsForExport.length === 0) {
                 printWindow?.close();
-                toast.info('Nao ha alunos para exportar com os filtros atuais.');
+                toast.info('Não há alunos para exportar com os filtros atuais.');
                 return;
             }
 
@@ -565,7 +636,7 @@ export function AdminStudents() {
             );
         } catch {
             printWindow?.close();
-            toast.error('Nao foi possivel exportar a lista agora.');
+            toast.error('Não foi possível exportar a lista agora.');
         } finally {
             setIsExportingAll(false);
         }
@@ -595,7 +666,7 @@ export function AdminStudents() {
             );
         } catch {
             printWindow?.close();
-            toast.error('Nao foi possivel exportar os alunos selecionados.');
+            toast.error('Não foi possível exportar os alunos selecionados.');
         } finally {
             setIsExportingSelected(false);
         }
@@ -611,11 +682,7 @@ export function AdminStudents() {
                     <span className='admin-students__eyebrow'>
                         Area administrativa
                     </span>
-                    <h1>Gestao de Alunos</h1>
-                    <p>
-                        Administracao centralizada de estudantes e matriculas do
-                        instituto.
-                    </p>
+                    <h1>Gestão de Alunos</h1>
                 </div>
 
                 <div className='admin-students__header-action'>
@@ -652,6 +719,9 @@ export function AdminStudents() {
                             placeholder='Buscar por nome, CPF, email...'
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
+                        <small className='admin-students__search-helper'>
+                            A busca funciona com qualquer quantidade de caracteres.
+                        </small>
                     </div>
 
                     <ButtonComponent
@@ -710,7 +780,7 @@ export function AdminStudents() {
 
                         <div>
                             <label className='admin-students__field-label'>
-                                Localizacao
+                                Localização
                             </label>
                             <MultSelect
                                 placeholder='Selecione as cidades'
@@ -791,7 +861,7 @@ export function AdminStudents() {
                         <span className='admin-students__eyebrow'>
                             Erro ao carregar
                         </span>
-                        <h2>Nao foi possivel carregar os alunos agora.</h2>
+                        <h2>Não foi possível carregar os alunos.</h2>
                     </div>
                 ) : students.length === 0 ? (
                     <div className='admin-students__empty-state'>
@@ -819,7 +889,7 @@ export function AdminStudents() {
                                         <th>{renderSortButton('Contato', 'contact')}</th>
                                         <th>{renderSortButton('Localizacao', 'location')}</th>
                                         <th>{renderSortButton('PCD', 'pcd')}</th>
-                                        <th>Acoes</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -893,9 +963,18 @@ export function AdminStudents() {
                                                 <div className='admin-students__meta-cell'>
                                                     <span>{student.email}</span>
                                                     <small>
-                                                        {formatPhone(
-                                                            student.phone,
-                                                        )}
+                                                        <a
+                                                            href={buildWhatsAppLink(
+                                                                student.phone,
+                                                            )}
+                                                            target='_blank'
+                                                            rel='noreferrer'
+                                                            className='admin-students__contact-link'
+                                                        >
+                                                            {formatPhone(
+                                                                student.phone,
+                                                            )}
+                                                        </a>
                                                     </small>
                                                 </div>
                                             </td>
@@ -920,7 +999,9 @@ export function AdminStudents() {
                                                     <IconButton
                                                         className='admin-students__action-button'
                                                         component='a'
-                                                        href={`https://wa.me/55${student.phone.replace(/\D/g, '')}`}
+                                                        href={buildWhatsAppLink(
+                                                            student.phone,
+                                                        )}
                                                         target='_blank'
                                                         rel='noreferrer'
                                                     >
@@ -974,10 +1055,12 @@ export function AdminStudents() {
                 open={!!selectedStudent}
                 onClose={() => setSelectedStudent(null)}
                 fullWidth
-                maxWidth='sm'
+                maxWidth='md'
             >
-                <DialogTitle>Informacoes do aluno</DialogTitle>
-                <DialogContent dividers>
+                <DialogTitle className='admin-students__dialog-title'>
+                    Perfil do aluno
+                </DialogTitle>
+                <DialogContent dividers className='admin-students__dialog-content'>
                     {selectedStudent && (
                         <div className='admin-students__details'>
                             <div className='admin-students__details-header'>
@@ -994,63 +1077,318 @@ export function AdminStudents() {
 
                                 <div>
                                     <h3>{selectedStudent.fullName}</h3>
-                                    <p>
-                                        {selectedStudent.enrolledCourse?.name ??
-                                            'Nao inscrito'}
-                                    </p>
-                                    <small>
-                                        {
-                                            courseTypeLabels[
-                                                getCourseType(selectedStudent)
-                                            ]
-                                        }
-                                    </small>
+                                    <p>{selectedStudent.email}</p>
+                                    <div className='admin-students__details-badges'>
+                                        <Chip
+                                            label={
+                                                courseTypeLabels[
+                                                    getCourseType(
+                                                        selectedStudent,
+                                                    )
+                                                ]
+                                            }
+                                            className={getCourseBadgeClassName(
+                                                selectedStudent,
+                                            )}
+                                        />
+                                        <Chip
+                                            label={
+                                                disabilityLabels[
+                                                    selectedStudent
+                                                        .disabilityType
+                                                ]
+                                            }
+                                            className={getDisabilityBadgeClassName(
+                                                selectedStudent,
+                                            )}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className='admin-students__details-grid'>
-                                <div>
-                                    <strong>CPF</strong>
-                                    <span>{formatCpf(selectedStudent.cpf)}</span>
+                            <section className='admin-students__details-section'>
+                                <div className='admin-students__details-section-header'>
+                                    <h4>Dados pessoais</h4>
+                                    <span>Informações principais do cadastro</span>
                                 </div>
-                                <div>
-                                    <strong>E-mail</strong>
-                                    <span>{selectedStudent.email}</span>
+                                <div className='admin-students__details-grid'>
+                                    <div>
+                                        <strong>Nome completo</strong>
+                                        <span>{selectedStudent.fullName}</span>
+                                    </div>
+                                    <div>
+                                        <strong>Nome social</strong>
+                                        <span>
+                                            {selectedStudent.socialName ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>CPF</strong>
+                                        <span>{formatCpf(selectedStudent.cpf)}</span>
+                                    </div>
+                                    <div>
+                                        <strong>Data de nascimento</strong>
+                                        <span>
+                                            {formatDate(
+                                                selectedStudent.birthDate,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Telefone</strong>
+                                        <span>
+                                            {formatPhone(selectedStudent.phone)}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Gênero</strong>
+                                        <span>
+                                            {selectedStudent.gender
+                                                ? genderLabels[
+                                                      selectedStudent.gender
+                                                  ]
+                                                : 'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Raça/Cor</strong>
+                                        <span>
+                                            {selectedStudent.race
+                                                ? raceLabels[
+                                                      selectedStudent.race
+                                                  ]
+                                                : 'Não informado'}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <strong>Telefone</strong>
+                            </section>
+
+                            <section className='admin-students__details-section'>
+                                <div className='admin-students__details-section-header'>
+                                    <h4>Endereço e escolaridade</h4>
+                                    <span>Dados de localização e formação</span>
+                                </div>
+                                <div className='admin-students__details-grid'>
+                                    <div>
+                                        <strong>CEP</strong>
+                                        <span>
+                                            {selectedStudent.cep ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Cidade / Estado</strong>
+                                        <span>
+                                            {selectedStudent.city}/
+                                            {selectedStudent.state}
+                                        </span>
+                                    </div>
+                                    <div className='admin-students__details-grid-item--full'>
+                                        <strong>Endereço</strong>
+                                        <span>
+                                            {selectedStudent.address ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Bairro</strong>
+                                        <span>
+                                            {selectedStudent.neighbourhood ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Complemento</strong>
+                                        <span>
+                                            {selectedStudent.complement ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Escolaridade</strong>
+                                        <span>
+                                            {selectedStudent.scholarship
+                                                ? scholarshipLabels[
+                                                      selectedStudent
+                                                          .scholarship
+                                                  ]
+                                                : 'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Instituição</strong>
+                                        <span>
+                                            {selectedStudent.institution ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Curso atual</strong>
+                                        <span>
+                                            {selectedStudent.enrolledCourse
+                                                ?.name || 'Não inscrito'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section className='admin-students__details-section'>
+                                <div className='admin-students__details-section-header'>
+                                    <h4>FatiLab e perfil socioeconômico</h4>
                                     <span>
-                                        {formatPhone(selectedStudent.phone)}
+                                        Motivação, recursos e contexto familiar
                                     </span>
                                 </div>
-                                <div>
-                                    <strong>Localizacao</strong>
+                                <div className='admin-students__details-grid'>
+                                    <div>
+                                        <strong>Como conheceu</strong>
+                                        <span>
+                                            {selectedStudent.whomInformed
+                                                ? whoInformedLabels[
+                                                      selectedStudent
+                                                          .whomInformed
+                                                  ]
+                                                : 'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Renda familiar</strong>
+                                        <span>
+                                            {selectedStudent.familyIncome
+                                                ? familyIncomeLabels[
+                                                      selectedStudent
+                                                          .familyIncome
+                                                  ]
+                                                : 'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Pessoas na casa</strong>
+                                        <span>
+                                            {selectedStudent.peopleInHouse ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Benefício social</strong>
+                                        <span>
+                                            {selectedStudent.socialBenefit
+                                                ? socialBenefitLabels[
+                                                      selectedStudent
+                                                          .socialBenefit
+                                                  ]
+                                                : 'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Computador próprio</strong>
+                                        <span>
+                                            {getBooleanLabel(
+                                                selectedStudent.hasOwnComputer,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Acesso à internet</strong>
+                                        <span>
+                                            {getBooleanLabel(
+                                                selectedStudent.hasInternetAccess,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Compromisso com as aulas</strong>
+                                        <span>
+                                            {getBooleanLabel(
+                                                selectedStudent.compromisedToClasses,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div className='admin-students__details-grid-item--full'>
+                                        <strong>Motivação para o FatiLab</strong>
+                                        <span>
+                                            {selectedStudent.whyJoinFatiLab ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section className='admin-students__details-section'>
+                                <div className='admin-students__details-section-header'>
+                                    <h4>Experiência e acessibilidade</h4>
                                     <span>
-                                        {normalizeText(selectedStudent.city)}/
-                                        {selectedStudent.state}
+                                        Histórico profissional e informações PCD
                                     </span>
                                 </div>
-                                <div>
-                                    <strong>Status PCD</strong>
-                                    <span>
-                                        {
-                                            disabilityLabels[
-                                                selectedStudent.disabilityType
-                                            ]
-                                        }
-                                    </span>
+                                <div className='admin-students__details-grid'>
+                                    <div>
+                                        <strong>Experiência em programação</strong>
+                                        <span>
+                                            {getBooleanLabel(
+                                                selectedStudent.hasWorkExperience,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Cursos de tecnologia</strong>
+                                        <span>
+                                            {getBooleanLabel(
+                                                selectedStudent.hasParticipatedOnCourses,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Trabalhando atualmente</strong>
+                                        <span>
+                                            {getBooleanLabel(
+                                                selectedStudent.currentlyWorking,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Área de atuação</strong>
+                                        <span>
+                                            {selectedStudent.workField ||
+                                                'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Status PCD</strong>
+                                        <span>
+                                            {
+                                                disabilityLabels[
+                                                    selectedStudent
+                                                        .disabilityType
+                                                ]
+                                            }
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>LGPD - termos</strong>
+                                        <span>
+                                            {selectedStudent.lgpd
+                                                ? getBooleanLabel(
+                                                      selectedStudent.lgpd
+                                                          .terms,
+                                                  )
+                                                : 'Não informado'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>LGPD - uso de imagem</strong>
+                                        <span>
+                                            {selectedStudent.lgpd
+                                                ? getBooleanLabel(
+                                                      selectedStudent.lgpd
+                                                          .imageUsage,
+                                                  )
+                                                : 'Não informado'}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <strong>Modalidade</strong>
-                                    <span>
-                                        {
-                                            courseTypeLabels[
-                                                getCourseType(selectedStudent)
-                                            ]
-                                        }
-                                    </span>
-                                </div>
-                            </div>
+                            </section>
                         </div>
                     )}
                 </DialogContent>
