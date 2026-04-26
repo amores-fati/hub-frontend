@@ -14,8 +14,6 @@ import {
     AdminStudentDisabilityType,
     AdminStudentDto,
     AdminStudentsQueryParams,
-    AdminStudentsSortField,
-    AdminStudentsSortOrder,
 } from '@/dtos/AdminStudentDto';
 import { UserRole } from '@/dtos/UserDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
@@ -26,7 +24,7 @@ import {
     useGetAdminStudents,
 } from '@/services/api/admin/students/queries';
 import { Option } from '@/components/base/Select/select';
-import { Avatar, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Avatar, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import Checkbox from '@/components/base/Checkbox/checkbox';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
@@ -38,9 +36,13 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
 import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
 import { ButtonComponent } from '@/components/base/Button/button';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import './index.scss';
+import { Action, State, TableStoreProvider, useTableStore } from '@/stores/TableStoreProvider';
+import { Cells, CellType } from '../../components/base/Table2/types';
+import BasicTable from '../../components/base/Table2/table';
+import { deleteConfirmation } from './swal';
 
 const PAGE_SIZE = 20;
 
@@ -161,21 +163,11 @@ type AppliedFiltersState = Required<
     >
 >;
 
-type SortState = {
-    field: AdminStudentsSortField;
-    order: AdminStudentsSortOrder;
-};
-
 const initialFiltersState: AppliedFiltersState = {
     search: '',
     courseTypes: [],
     disabilityTypes: [],
     locations: [],
-};
-
-const initialSortState: SortState = {
-    field: 'fullName',
-    order: 'asc',
 };
 
 const locationOptions: Option[] = getAdminStudentsFilterOptionsMock().locations.map(
@@ -282,13 +274,9 @@ const buildFiltersSummary = (filters: AppliedFiltersState) => {
     return appliedFilters.length ? appliedFilters.join(' | ') : 'Sem filtros';
 };
 
-const openExportWindow = () =>
-    window.open('', '_blank', 'noopener,noreferrer,width=1120,height=840');
-
 const exportStudentsToPdf = (
     printWindow: Window | null,
     students: AdminStudentDto[],
-    filters: AppliedFiltersState,
     title: string,
 ) => {
     if (!printWindow) {
@@ -317,8 +305,6 @@ const exportStudentsToPdf = (
             `,
         )
         .join('');
-
-    const summary = buildFiltersSummary(filters);
 
     printWindow.document.write(`
         <html lang="pt-BR">
@@ -357,7 +343,6 @@ const exportStudentsToPdf = (
             <body>
                 <h1>${title}</h1>
                 <p>Data de geracao: ${generatedAt}</p>
-                <p>Filtros aplicados: ${summary}</p>
                 <p>Total de alunos: ${students.length}</p>
                 <table>
                     <thead>
@@ -406,9 +391,42 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
     return [firstPage, ...pages].flatMap((page) => page.data);
 }
 
-export function AdminStudents() {
+const handleExportSelected = async (selectedStudents: AdminStudentDto[]) => {
+    if (selectedStudents.length === 0) {
+        toast.info('Selecione pelo menos um aluno para exportar.');
+        return;
+    }
+
+    // window.open deve ser chamado ANTES de qualquer await
+    const printWindow = window.open('', '_blank', 'width=1120,height=840');
+
+    try {
+        exportStudentsToPdf(printWindow, selectedStudents, 'Alunos selecionados');
+    } catch {
+        printWindow?.close();
+        toast.error('Não foi possível exportar os alunos selecionados.');
+    }
+};
+
+export default function Index() {
+
+    return (
+        <TableStoreProvider>
+            <AdminStudents />
+        </TableStoreProvider>
+    )
+}
+
+function AdminStudents() {
+    const paginator = useTableStore((state) => ({
+        ...state.paginator,
+    }));
+    const setPaginator = useTableStore((state) => state.setPaginator);
+    const setCells = useTableStore((s: State<AdminStudentDto> & Action<AdminStudentDto>) => s.setCells);
+    const setContent = useTableStore((s: State<AdminStudentDto> & Action<AdminStudentDto>) => s.setContent);
+    const selectedStudents = useTableStore((state) => state.selectedRows);
+
     const { user } = useAuth();
-    const [page, setPage] = useState(1);
     const [searchInput, setSearchInput] = useState('');
     const [draftCourseTypes, setDraftCourseTypes] = useState<Option[]>([]);
     const [draftLocations, setDraftLocations] = useState<Option[]>([]);
@@ -417,72 +435,39 @@ export function AdminStudents() {
     );
     const [filters, setFilters] =
         useState<AppliedFiltersState>(initialFiltersState);
-    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [selectedStudent, setSelectedStudent] =
         useState<AdminStudentDto | null>(null);
-    const [studentsPendingDelete, setStudentsPendingDelete] = useState<
-        AdminStudentDto[]
-    >([]);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-    const [isExportingAll, setIsExportingAll] = useState(false);
-    const [isExportingSelected, setIsExportingSelected] = useState(false);
-    const [sort, setSort] = useState<SortState>(initialSortState);
 
     const isAdmin = !user || user.role === UserRole.ADMIN;
-    const queryParams = useMemo<AdminStudentsQueryParams>(
-        () => ({
-            page,
-            limit: PAGE_SIZE,
+
+    const getParameters = (): AdminStudentsQueryParams => {
+        return {
+            page: paginator.page,
+            limit: paginator.rowsPerPage,
             search: filters.search || undefined,
             courseTypes: filters.courseTypes,
             disabilityTypes: filters.disabilityTypes,
             locations: filters.locations,
-            sortBy: sort.field,
-            sortOrder: sort.order,
-        }),
-        [filters, page, sort],
-    );
+            sortBy: paginator.orderColumn,
+            sortOrder: paginator.orderDirection,
+        }
+    }
 
     const {
         data,
         isLoading,
         isFetching,
         isError,
-    } = useGetAdminStudents(queryParams, isAdmin);
+    } = useGetAdminStudents(getParameters(), isAdmin);
 
-    const deleteStudentsMutation = useDeleteAdminStudents(Object.keys(selectedStudents));
+    const { mutate: deleteStudentsMutation } = useDeleteAdminStudents(Object.keys(selectedStudents));
 
     const students = data?.data ?? [];
-    const totalStudents = data?.total ?? 0;
-    const totalPages = Math.max(1, Math.ceil(totalStudents / PAGE_SIZE));
-    const visibleStudentIds = students.map((student) => student.id);
-    const selectedVisibleCount = visibleStudentIds.filter((id) =>
-        selectedIds.includes(id),
-    ).length;
-    const allVisibleSelected =
-        visibleStudentIds.length > 0 &&
-        selectedVisibleCount === visibleStudentIds.length;
-    const someVisibleSelected =
-        selectedVisibleCount > 0 && selectedVisibleCount < visibleStudentIds.length;
-
-    const selectedCountLabel = `${selectedIds.length} aluno${selectedIds.length === 1 ? '' : 's'
-        } selecionado${selectedIds.length === 1 ? '' : 's'}`;
-
-    if (!isAdmin) {
-        return (
-            <section className='admin-students admin-students--restricted'>
-                <div className='admin-students__empty-state'>
-                    <span className='admin-students__eyebrow'>
-                        Acesso restrito
-                    </span>
-                    <h1>Somente administradores podem acessar esta tela.</h1>
-                </div>
-            </section>
-        );
-    }
+    const selectedCountLabel = `${Object.keys(selectedStudents).length} aluno${Object.keys(selectedStudents).length === 1 ? '' : 's'
+        } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
 
     const handleApplyAllFilters = () => {
-        setPage(1);
         setFilters({
             search: searchInput.trim(),
             courseTypes: draftCourseTypes.map((option) => String(option.value)),
@@ -494,234 +479,140 @@ export function AdminStudents() {
     };
 
     const handleClearFilters = () => {
-        setPage(1);
         setSearchInput('');
         setDraftCourseTypes([]);
         setDraftLocations([]);
         setDraftDisabilityTypes([]);
         setFilters(initialFiltersState);
-        setSelectedIds([]);
-        setSort(initialSortState);
     };
 
-    const handleSort = (field: AdminStudentsSortField) => {
-        setPage(1);
-        setSort((currentSort) => ({
-            field,
-            order:
-                currentSort.field === field && currentSort.order === 'asc'
-                    ? 'desc'
-                    : 'asc',
-        }));
-    };
+    // key: keyof (T & { id: number | string; });
+    // name: string;
+    // type: CellType;
+    // // type: CellType;
+    // component?: (row: T & { id: number | string; }) => ReactNode;
+    // sortable: boolean;
 
-    const toggleStudentSelection = (studentId: string) => {
-        setSelectedIds((currentSelection) =>
-            currentSelection.includes(studentId)
-                ? currentSelection.filter((id) => id !== studentId)
-                : [...currentSelection, studentId],
-        );
-    };
+    const cells: Cells<AdminStudentDto>[] = [
+        {
+            key: 'id',
+            header: '',
+            type: CellType.CHECKBOX,
+            sortable: false
+        },
+        {
+            key: 'fullName',
+            header: 'Nome',
+            type: CellType.TEXT,
+            sortable: true,
+            render: (student: AdminStudentDto) => (
+                <div className='admin-students__student-cell'>
+                    <Avatar
+                        src={student.photoUrl || undefined}
+                        className='admin-students__avatar'
+                    >
+                        {student.fullName
+                            .split(' ')
+                            .slice(0, 2)
+                            .map((name) => name[0]?.toUpperCase())
+                            .join('')}
+                    </Avatar>
 
-    const toggleVisibleSelection = () => {
-        if (allVisibleSelected) {
-            setSelectedIds((currentSelection) =>
-                currentSelection.filter((id) => !visibleStudentIds.includes(id)),
-            );
-            return;
-        }
-
-        setSelectedIds((currentSelection) => [
-            ...new Set([...currentSelection, ...visibleStudentIds]),
-        ]);
-    };
-
-    const handleDeleteStudents = async () => {
-        if (studentsPendingDelete.length === 0) {
-            return;
-        }
-
-        const idsToDelete = studentsPendingDelete.map((student) => student.id);
-
-        await deleteStudentsMutation.mutateAsync(idsToDelete);
-        setSelectedIds((currentSelection) =>
-            currentSelection.filter((id) => !idsToDelete.includes(id)),
-        );
-        setStudentsPendingDelete([]);
-        setSelectedStudent((currentStudent) =>
-            currentStudent && idsToDelete.includes(currentStudent.id)
-                ? null
-                : currentStudent,
-        );
-    };
-
-    const openSingleDeleteConfirmation = (student: AdminStudentDto) => {
-        setStudentsPendingDelete([student]);
-    };
-
-    const openBulkDeleteConfirmation = async () => {
-        const studentsForDelete = await getStudentsForExport(filters);
-        const selectedStudents = studentsForDelete.filter((student) =>
-            selectedIds.includes(student.id),
-        );
-
-        if (selectedStudents.length === 0) {
-            toast.info('Selecione pelo menos um aluno para excluir.');
-            return;
-        }
-
-        setStudentsPendingDelete(selectedStudents);
-    };
-
-    const handleExportAll = async () => {
-        const printWindow = openExportWindow();
-        setIsExportingAll(true);
-
-        try {
-            const studentsForExport = await getStudentsForExport(filters);
-
-            if (studentsForExport.length === 0) {
-                printWindow?.close();
-                toast.info('Não há alunos para exportar com os filtros atuais.');
-                return;
-            }
-
-            exportStudentsToPdf(
-                printWindow,
-                studentsForExport,
-                filters,
-                'Lista de alunos',
-            );
-        } catch {
-            printWindow?.close();
-            toast.error('Não foi possível exportar a lista agora.');
-        } finally {
-            setIsExportingAll(false);
-        }
-    };
-
-    const handleExportSelected = async () => {
-        const printWindow = openExportWindow();
-        setIsExportingSelected(true);
-
-        try {
-            const studentsForExport = await getStudentsForExport(filters);
-            const selectedStudents = studentsForExport.filter((student) =>
-                selectedIds.includes(student.id),
-            );
-
-            if (selectedStudents.length === 0) {
-                printWindow?.close();
-                toast.info('Selecione pelo menos um aluno para exportar.');
-                return;
-            }
-
-            exportStudentsToPdf(
-                printWindow,
-                selectedStudents,
-                filters,
-                'Alunos selecionados',
-            );
-        } catch {
-            printWindow?.close();
-            toast.error('Não foi possível exportar os alunos selecionados.');
-        } finally {
-            setIsExportingSelected(false);
-        }
-    };
-
-    const rangeStart = totalStudents === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-    const rangeEnd = Math.min(page * PAGE_SIZE, totalStudents);
-    const columns = useMemo(
-        () => [
-            {
-                key: 'name',
-                header: 'Nome',
-                sortable: true,
-                sortField: 'fullName',
-                render: (student: AdminStudentDto) => (
-                    <div className='admin-students__student-cell'>
-                        <Avatar
-                            src={student.photoUrl || undefined}
-                            className='admin-students__avatar'
+                    <div>
+                        <button
+                            type='button'
+                            className='admin-students__name-button'
+                            onClick={() => setSelectedStudent(student)}
                         >
-                            {student.fullName
-                                .split(' ')
-                                .slice(0, 2)
-                                .map((name) => name[0]?.toUpperCase())
-                                .join('')}
-                        </Avatar>
+                            {student.fullName}
+                        </button>
+                        <span>{formatMaskedCpf(student.cpf)}</span>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            key: 'course',
+            header: 'Curso',
+            sortable: true,
+            render: (student: AdminStudentDto) => (
+                <Chip
+                    label={courseTypeLabels[getCourseType(student)]}
+                    className={getCourseBadgeClassName(student)}
+                />
+            ),
+        },
+        {
+            key: 'phone',
+            header: 'Contato',
+            sortable: true,
+            render: (student: AdminStudentDto) => (
+                <div className='admin-students__meta-cell'>
+                    <span>{student.email}</span>
+                    <small>
+                        <a
+                            href={buildWhatsAppLink(student.phone)}
+                            target='_blank'
+                            rel='noreferrer'
+                            className='admin-students__contact-link'
+                        >
+                            {formatPhone(student.phone)}
+                        </a>
+                    </small>
+                </div>
+            ),
+        },
+        {
+            key: 'city',
+            header: 'Localização',
+            sortable: true,
+            render: (student: AdminStudentDto) => (
+                <>{normalizeText(student.city)}/{student.state}</>
+            ),
+        },
+        {
+            key: 'isPcd',
+            header: 'PCD',
+            sortable: true,
+            render: (student: AdminStudentDto) => (
+                <Chip
+                    label={disabilityLabels[student.disabilityType]}
+                    className={getDisabilityBadgeClassName(student)}
+                />
+            ),
+        },
+        {
+            key: 'actions',
+            header: 'Ações',
+            sortable: false,
+            render: (student: AdminStudentDto) => (
+                <IconButton
+                    className='custom-table__action-button'
+                    component='a'
+                    href={buildWhatsAppLink(student.phone)}
+                    target='_blank'
+                    rel='noreferrer'
+                >
+                    <WhatsAppIcon fontSize='small' />
+                </IconButton>
+            ),
+        },
+    ];
 
-                        <div>
-                            <button
-                                type='button'
-                                className='admin-students__name-button'
-                                onClick={() => setSelectedStudent(student)}
-                            >
-                                {student.fullName}
-                            </button>
-                            <span>{formatMaskedCpf(student.cpf)}</span>
-                        </div>
-                    </div>
-                ),
-            },
-            {
-                key: 'course',
-                header: 'Curso',
-                sortable: true,
-                sortField: 'course',
-                render: (student: AdminStudentDto) => (
-                    <Chip
-                        label={courseTypeLabels[getCourseType(student)]}
-                        className={getCourseBadgeClassName(student)}
-                    />
-                ),
-            },
-            {
-                key: 'contact',
-                header: 'Contato',
-                sortable: true,
-                sortField: 'contact',
-                render: (student: AdminStudentDto) => (
-                    <div className='admin-students__meta-cell'>
-                        <span>{student.email}</span>
-                        <small>
-                            <a
-                                href={buildWhatsAppLink(student.phone)}
-                                target='_blank'
-                                rel='noreferrer'
-                                className='admin-students__contact-link'
-                            >
-                                {formatPhone(student.phone)}
-                            </a>
-                        </small>
-                    </div>
-                ),
-            },
-            {
-                key: 'location',
-                header: 'Localização',
-                sortable: true,
-                sortField: 'location',
-                render: (student: AdminStudentDto) => (
-                    <>{normalizeText(student.city)}/{student.state}</>
-                ),
-            },
-            {
-                key: 'pcd',
-                header: 'PCD',
-                sortable: true,
-                sortField: 'pcd',
-                render: (student: AdminStudentDto) => (
-                    <Chip
-                        label={disabilityLabels[student.disabilityType]}
-                        className={getDisabilityBadgeClassName(student)}
-                    />
-                ),
-            },
-        ],
-        [],
-    );
+    useEffect(() => {
+        setCells(cells)
+    }, [])
+
+    useEffect(() => {
+        if (!data || !data?.data) return
+        setContent(data?.data!)
+        setPaginator({
+            ...paginator,
+            itemsCount: data.total,
+            page: data.page,
+            isLoading: false
+        })
+    }, [isLoading])
 
     return (
         <section className='admin-students'>
@@ -739,10 +630,10 @@ export function AdminStudents() {
                         onClick={() => {
                             void handleExportAll();
                         }}
-                        disabled={isExportingAll || isLoading}
+                        disabled={true || isLoading}
                     >
                         <span className='admin-students__button-content'>
-                            {isExportingAll ? (
+                            {true ? (
                                 <CircularProgress size={16} />
                             ) : (
                                 <FileDownloadOutlinedIcon fontSize='small' />
@@ -859,41 +750,27 @@ export function AdminStudents() {
                 </Collapse>
             </div>
 
-            {selectedIds.length > 0 && (
+            {(Object.keys(selectedStudents).length) > 0 && (
                 <div className='admin-students__bulk-bar'>
                     <strong>{selectedCountLabel}</strong>
 
                     <div className='admin-students__bulk-actions'>
                         <button
                             type='button'
-                            onClick={() => {
-                                void handleExportSelected();
-                            }}
-                            disabled={isExportingSelected}
+                            onClick={() => handleExportSelected(Object.values(selectedStudents) as AdminStudentDto[])}
                         >
-                            {isExportingSelected ? (
-                                <CircularProgress size={14} />
-                            ) : (
-                                <PictureAsPdfRoundedIcon fontSize='small' />
-                            )}
+                            <PictureAsPdfRoundedIcon fontSize='small' />
                             Exportar selecionados
                         </button>
 
                         <button
                             type='button'
                             onClick={() => {
-                                void openBulkDeleteConfirmation();
+                                deleteConfirmation(deleteStudentsMutation, Object.keys(selectedStudents))
                             }}
                         >
                             <DeleteOutlineRoundedIcon fontSize='small' />
                             Excluir selecionados
-                        </button>
-
-                        <button
-                            type='button'
-                            onClick={() => setSelectedIds([])}
-                        >
-                            Limpar selecao
                         </button>
                     </div>
                 </div>
@@ -918,36 +795,7 @@ export function AdminStudents() {
                     </div>
                 ) : (
                     <>
-                        <Table
-                            values={students}
-                            columns={columns}
-                            getRowId={(student) => student.id}
-                            selectable
-                            selectedIds={selectedIds}
-                            allVisibleSelected={allVisibleSelected}
-                            someVisibleSelected={someVisibleSelected}
-                            onToggleSelect={toggleStudentSelection}
-                            onToggleSelectAll={toggleVisibleSelection}
-                            sortField={sort.field}
-                            sortOrder={sort.order}
-                            onSortChange={(field) =>
-                                handleSort(field as AdminStudentsSortField)
-                            }
-                            actionColumnConfig={{
-                                showWhatsapp: true,
-                                getWhatsappHref: (student) =>
-                                    buildWhatsAppLink(student.phone),
-                                showDelete: true,
-                                onDelete: openSingleDeleteConfirmation,
-                            }}
-                            pagination={{
-                                page,
-                                count: totalPages,
-                                onChange: setPage,
-                                isFetching,
-                                summaryText: `Exibindo ${rangeStart} a ${rangeEnd} de ${totalStudents} alunos`,
-                            }}
-                        />
+                        <BasicTable />
                     </>
                 )}
             </div>
@@ -1299,61 +1147,6 @@ export function AdminStudents() {
                         onClick={() => setSelectedStudent(null)}
                     >
                         Fechar
-                    </ButtonComponent>
-                </DialogActions>
-            </Dialog>
-
-            <Dialog
-                open={studentsPendingDelete.length > 0}
-                onClose={() => setStudentsPendingDelete([])}
-                fullWidth
-                maxWidth='xs'
-            >
-                <DialogTitle>
-                    {studentsPendingDelete.length > 1
-                        ? 'Excluir alunos'
-                        : 'Excluir aluno'}
-                </DialogTitle>
-                <DialogContent dividers>
-                    <p>
-                        {studentsPendingDelete.length > 1 ? (
-                            <>
-                                Deseja realmente excluir{' '}
-                                <strong>
-                                    {studentsPendingDelete.length} alunos
-                                </strong>
-                                {' '}selecionados?
-                            </>
-                        ) : (
-                            <>
-                                Deseja realmente excluir{' '}
-                                <strong>
-                                    {studentsPendingDelete[0]?.fullName}
-                                </strong>
-                                ?
-                            </>
-                        )}
-                    </p>
-                </DialogContent>
-                <DialogActions>
-                    <ButtonComponent
-                        variant='secondary'
-                        onClick={() => setStudentsPendingDelete([])}
-                    >
-                        Cancelar
-                    </ButtonComponent>
-                    <ButtonComponent
-                        onClick={() => {
-                            void handleDeleteStudents();
-                        }}
-                        disabled={deleteStudentsMutation.isPending}
-                    >
-                        <span className='admin-students__button-content'>
-                            {deleteStudentsMutation.isPending ? (
-                                <CircularProgress size={16} />
-                            ) : null}
-                            Confirmar exclusao
-                        </span>
                     </ButtonComponent>
                 </DialogActions>
             </Dialog>

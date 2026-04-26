@@ -19,7 +19,7 @@ const deleteAdminStudents = async (studentIds: string[]) => {
     );
 };
 
-export const useDeleteAdminStudents = () =>
+export const useDeleteAdminStudents = (studentIds: string[]) =>
     useMutation({
         mutationFn: deleteAdminStudents,
         onSuccess: (_, studentIds) => {

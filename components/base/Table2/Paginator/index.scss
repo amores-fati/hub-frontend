@@ -1,0 +1,42 @@
+.sass-showing {
+    margin-top: 0;
+    margin-left: 0;
+    margin-bottom: 0;
+    padding: 0;
+    margin-right: 10;
+}
+
+.sass-arrow {
+    margin: 0;
+    padding: 0;
+}
+
+.sass-arrow > button {
+    background: none;
+    border: none;
+}
+
+.sass-arrow[aria-disabled='false'] > button {
+    cursor: pointer;
+}
+
+.sass-arrow[aria-disabled='true'] > button {
+    cursor: default;
+}
+
+.sass-arrow[aria-disabled='true'] > button > svg {
+    color: gray;
+}
+
+.sass-paginator {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10px;
+    margin: 0 1rem;
+}
+
+.sass-paginator > div:first-of-type {
+    margin: 1rem;
+}

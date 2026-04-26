@@ -1,3 +1,4 @@
+import { Sort } from '@/stores/TableStoreProvider';
 import {
     FamilyIncome,
     Gender,
@@ -33,6 +34,7 @@ export type AdminStudentCourseDto = {
 export type AdminStudentDto = {
     id: string;
     fullName: string;
+    course: string;
     socialName?: string | null;
     cpf: string;
     birthDate?: string | null;
@@ -77,18 +79,9 @@ export type AdminStudentsQueryParams = {
     disabilityTypes?: string[];
     locations?: string[];
     courseTypes?: string[];
-    sortBy?: AdminStudentsSortField;
-    sortOrder?: AdminStudentsSortOrder;
+    sortBy?: string;
+    sortOrder?: Sort;
 };
-
-export type AdminStudentsSortField =
-    | 'fullName'
-    | 'course'
-    | 'contact'
-    | 'location'
-    | 'pcd';
-
-export type AdminStudentsSortOrder = 'asc' | 'desc';
 
 export type AdminStudentsResponseDto = {
     data: AdminStudentDto[];

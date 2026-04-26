@@ -39,7 +39,17 @@ export const useGetAdminStudents = (
 ) =>
     useQuery({
         enabled,
-        queryKey: [QUERY_KEYS.ADMIN_STUDENTS, params],
+        queryKey: [
+            QUERY_KEYS.ADMIN_STUDENTS,
+            params.sortOrder,
+            params.sortBy,
+            params.search,
+            params.page,
+            params.locations,
+            params.limit,
+            params.disabilityTypes,
+            params.courseTypes,
+        ],
         queryFn: () => getAdminStudents(params),
         placeholderData: (previousData) => previousData,
     });
