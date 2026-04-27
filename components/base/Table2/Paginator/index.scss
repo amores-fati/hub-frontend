@@ -33,8 +33,15 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    margin-top: 10px;
     margin: 0 1rem;
+
+    // sticky footer
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background-color: #fff; // ou sua var, ex: var(--background-color)
+    border-top: 1px solid #e0e0e0;
+    padding: 4px 0;
 }
 
 .sass-paginator > div:first-of-type {

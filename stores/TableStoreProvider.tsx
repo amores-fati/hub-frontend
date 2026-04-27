@@ -61,7 +61,7 @@ export function createTableStoreProvider<T>() {
             isLoading: true,
             page: 1,
             itemsCount: 0,
-            rowsPerPage: ROWS_PER_PAGE_OPTIONS[3].value,
+            rowsPerPage: ROWS_PER_PAGE_OPTIONS[0].value,
             orderDirection: 'desc' as SortDirection,
             orderColumn: 'id',
             from: 0,
