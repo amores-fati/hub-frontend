@@ -1,0 +1,122 @@
+.cursos-aluno {
+    width: min(1240px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: var(--spacing-xl) 0 var(--spacing-3xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.cursos-aluno--centered {
+    min-height: calc(100vh - 120px);
+    display: grid;
+    place-items: center;
+}
+
+.cursos-aluno__loading {
+    min-height: 240px;
+}
+
+.cursos-aluno__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    h1 {
+        margin: 0;
+        font-size: clamp(1.75rem, 3vw, 2.25rem);
+    }
+}
+
+.cursos-aluno__eyebrow {
+    display: inline-flex;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(103, 58, 183, 0.1);
+    color: var(--tertiary-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.cursos-aluno__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-lg);
+    align-items: start;
+}
+
+.cursos-aluno__empty {
+    padding: clamp(1.5rem, 2vw, 2.5rem);
+    border-radius: var(--border-radius-xl);
+    background: var(--surface);
+    border: 1px dashed var(--border-color);
+    text-align: center;
+
+    p {
+        font: var(--body-2-semibold);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-xs);
+    }
+
+    small {
+        color: var(--text-muted);
+    }
+}
+
+.cursos-aluno__whatsapp-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: var(--z-raised);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.75rem 1.25rem;
+    border-radius: 999px;
+    background: #25d366;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    box-shadow: var(--shadow-lg);
+    transition:
+        background var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+
+    svg {
+        font-size: 1.35rem;
+    }
+
+    &:hover {
+        background: #1ebe5d;
+        color: #ffffff;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(37, 211, 102, 0.4);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .cursos-aluno__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cursos-aluno__whatsapp-fab {
+        bottom: 1rem;
+        right: 1rem;
+
+        span {
+            display: none;
+        }
+
+        padding: 0.85rem;
+    }
+}
