@@ -186,19 +186,10 @@ export default function PerfilAluno({
   }
 
   function onPerfilChange(field: keyof PerfilProfissional, value: string) {
-  setPerfil((prev) => {
-    const updated = { ...prev, [field]: value };
+    setPerfil((prev) => ({ ...prev, [field]: value }));
+  }
 
-    // se desmarcou que está trabalhando, limpa a área de atuação
-    if (field === 'trabalhando' && value === 'nao') {
-      updated.areaAtuacao = '';
-    }
-
-    return updated;
-  });
-}
-
- {/*Seção Mensagem de validação*/}
+  // FIX: await no onSave para o saving refletir corretamente
   async function handleSave() {
     try {
       validateContato(form);
