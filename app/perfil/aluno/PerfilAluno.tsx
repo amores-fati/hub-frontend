@@ -98,7 +98,9 @@ export default function PerfilAluno({
     tipoDeficiencia: dadosPessoais?.tipoDeficiencia ?? 'Nenhuma',
   };
 
+
   {/*Seção States*/}
+
   const [form, setForm] = useState<ContatoForm>({
     cep: initialContato?.cep ?? '',
     address: initialContato?.address ?? '',
@@ -186,10 +188,20 @@ export default function PerfilAluno({
   }
 
   function onPerfilChange(field: keyof PerfilProfissional, value: string) {
-    setPerfil((prev) => ({ ...prev, [field]: value }));
-  }
 
-  // FIX: await no onSave para o saving refletir corretamente
+  setPerfil((prev) => {
+    const updated = { ...prev, [field]: value };
+
+    // se desmarcou que está trabalhando, limpa a área de atuação
+    if (field === 'trabalhando' && value === 'nao') {
+      updated.areaAtuacao = '';
+    }
+
+    return updated;
+  });
+}
+
+ {/*Seção Mensagem de validação*/}
   async function handleSave() {
     try {
       validateContato(form);
