@@ -89,17 +89,16 @@ export default function PerfilAluno({
   onSave,
 }: PerfilAlunoProps) {
 
-  /* ───── Safe values ───── */
+  {/*Seção safe values*/}
 
   const safeDadosPessoais: DadosPessoais = {
-    nomeCompleto: dadosPessoais?.nomeCompleto ?? '',
-    nomeSocial: dadosPessoais?.nomeSocial ?? '',
-    cpf: dadosPessoais?.cpf ?? '',
-    tipoDeficiencia: dadosPessoais?.tipoDeficiencia ?? '',
+    nomeCompleto: dadosPessoais?.nomeCompleto ?? 'Mayra Bordin de Abreu',
+    nomeSocial: dadosPessoais?.nomeSocial ?? 'Mayra Bordin',
+    cpf: dadosPessoais?.cpf ?? '123.456.789-00',
+    tipoDeficiencia: dadosPessoais?.tipoDeficiencia ?? 'Nenhuma',
   };
 
-  /* ───── States ───── */
-
+  {/*Seção States*/}
   const [form, setForm] = useState<ContatoForm>({
     cep: initialContato?.cep ?? '',
     address: initialContato?.address ?? '',
@@ -126,7 +125,7 @@ export default function PerfilAluno({
 
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /* ───── CEP API ───── */
+  {/*Seção CEP API*/}
 
   const {
     data: cepData,
@@ -134,7 +133,7 @@ export default function PerfilAluno({
     isLoading: loadingCep,
   } = useGetPublicCep(cepInput);
 
-  /* ───── Effects ───── */
+ {/*Seção Effects*/}
 
   useEffect(() => {
     if (!cepData || error) return;
@@ -187,10 +186,19 @@ export default function PerfilAluno({
   }
 
   function onPerfilChange(field: keyof PerfilProfissional, value: string) {
-    setPerfil((prev) => ({ ...prev, [field]: value }));
-  }
+  setPerfil((prev) => {
+    const updated = { ...prev, [field]: value };
 
-  // FIX: await no onSave para o saving refletir corretamente
+    // se desmarcou que está trabalhando, limpa a área de atuação
+    if (field === 'trabalhando' && value === 'nao') {
+      updated.areaAtuacao = '';
+    }
+
+    return updated;
+  });
+}
+
+ {/*Seção Mensagem de validação*/}
   async function handleSave() {
     try {
       validateContato(form);
@@ -215,7 +223,7 @@ export default function PerfilAluno({
         </p>
       </div>
 
-      {/* Dados Pessoais */}
+       {/*Seção Dados Pessoais*/}
       <div className="perfil-aluno-card">
         <div className="perfil-aluno-card__title">
           <PersonIcon />
@@ -245,7 +253,7 @@ export default function PerfilAluno({
         </div>
       </div>
 
-      {/* Contato */}
+      {/*Seção Contato*/}
       <div className="perfil-aluno-card">
         <div className="perfil-aluno-card__title">
           <HomeIcon />
@@ -302,7 +310,7 @@ export default function PerfilAluno({
         </div>
       </div>
 
-      {/* Escolaridade */}
+     {/*Seção Escolaridade*/}
       <div className="perfil-aluno-card">
         <div className="perfil-aluno-card__title">
           <SchoolIcon />
