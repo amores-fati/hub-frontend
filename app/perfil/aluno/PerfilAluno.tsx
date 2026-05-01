@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 
 import { Input } from '@/components/base';
-import { StudentRegisterPayload } from '@/dtos/StudentDto';
 import { toast } from 'react-toastify';
 import { useGetPublicCep } from '@/services/api-external/cep/queries';
 
@@ -36,10 +35,52 @@ type ContatoForm = {
   telefone?: string;
 };
 
+type PerfilProfissional = {
+  escolaridade: string;
+  curso: string;
+  instituicao: string;
+  trabalhando: string;
+  areaAtuacao: string;
+  programacao: string;
+  cursoTecnologia: string;
+};
+
 interface PerfilAlunoProps {
   dadosPessoais?: DadosPessoais;
   contato?: ContatoForm;
   onSave?: (contato: ContatoForm) => Promise<void>;
+}
+
+/* ───── RadioGroup fora do componente pai para evitar re-mounts ───── */
+
+function RadioGroup({
+  name,
+  value,
+  onChange,
+}: {
+  name: string;
+  value: string;
+  onChange: (val: string) => void;
+}) {
+  return (
+    <div className="perfil-aluno-radio-group">
+      {['sim', 'nao'].map((opcao) => (
+        <label
+          key={opcao}
+          className={`perfil-aluno-radio-card ${value === opcao ? 'perfil-aluno-radio-card--selected' : ''}`}
+        >
+          <input
+            type="radio"
+            name={name}
+            value={opcao}
+            checked={value === opcao}
+            onChange={(e) => onChange(e.target.value)}
+          />
+          <span>{opcao === 'sim' ? 'Sim' : 'Não'}</span>
+        </label>
+      ))}
+    </div>
+  );
 }
 
 export default function PerfilAluno({
@@ -57,7 +98,9 @@ export default function PerfilAluno({
     tipoDeficiencia: dadosPessoais?.tipoDeficiencia ?? '',
   };
 
-  const safeContato: ContatoForm = {
+  /* ───── States ───── */
+
+  const [form, setForm] = useState<ContatoForm>({
     cep: initialContato?.cep ?? '',
     address: initialContato?.address ?? '',
     complement: initialContato?.complement ?? '',
@@ -65,22 +108,21 @@ export default function PerfilAluno({
     city: initialContato?.city ?? '',
     state: initialContato?.state ?? '',
     telefone: initialContato?.telefone ?? '',
-  };
+  });
 
-  /* ───── States ───── */
-
-  const [form, setForm] = useState<ContatoForm>(safeContato);
-  const [cepInput, setCepInput] = useState<string>(safeContato.cep ?? '');
+  const [cepInput, setCepInput] = useState<string>(initialContato?.cep ?? '');
   const [saving, setSaving] = useState(false);
 
-  const [escolaridade, setEscolaridade] = useState('');
-  const [curso, setCurso] = useState('');
-  const [instituicao, setInstituicao] = useState('');
-
-  const [trabalhando, setTrabalhando] = useState('');
-  const [areaAtuacao, setAreaAtuacao] = useState('');
-  const [programacao, setProgramacao] = useState('');
-  const [cursoTecnologia, setCursoTecnologia] = useState('');
+  // estados de perfil agrupados
+  const [perfil, setPerfil] = useState<PerfilProfissional>({
+    escolaridade: '',
+    curso: '',
+    instituicao: '',
+    trabalhando: '',
+    areaAtuacao: '',
+    programacao: '',
+    cursoTecnologia: '',
+  });
 
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -135,22 +177,25 @@ export default function PerfilAluno({
     typingTimeout.current = setTimeout(() => setCepInput(sanitized), 400);
   }
 
-  // FIX: função estava sendo usada no JSX mas não havia sido definida
   function onTelefoneChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value.replace(/\D/g, '').slice(0, 11);
     setForm((prev: ContatoForm) => ({ ...prev, telefone: value }));
   }
 
-  // FIX: função estava sendo usada no JSX mas não havia sido definida
   function onComplementChange(e: ChangeEvent<HTMLInputElement>) {
     setForm((prev: ContatoForm) => ({ ...prev, complement: e.target.value }));
   }
 
-  function handleSave() {
+  function onPerfilChange(field: keyof PerfilProfissional, value: string) {
+    setPerfil((prev) => ({ ...prev, [field]: value }));
+  }
+
+  // FIX: await no onSave para o saving refletir corretamente
+  async function handleSave() {
     try {
       validateContato(form);
       setSaving(true);
-      onSave?.(form);
+      await onSave?.(form);
       toast.success('Contato atualizado com sucesso!');
     } catch (e) {
       console.error(e);
@@ -159,7 +204,6 @@ export default function PerfilAluno({
     }
   }
 
-  // FIX: div "perfil-aluno-page" estava duplicada/aninhada — removida a segunda abertura
   return (
     <div className="perfil-aluno-page">
 
@@ -269,40 +313,45 @@ export default function PerfilAluno({
           <div className="perfil-aluno-field perfil-aluno-field--full">
             <label>Nível de escolaridade</label>
 
-            {[
-              'fundamental-incompleto',
-              'medio-completo',
-              'superior-incompleto',
-              'superior-completo',
-            ].map((nivel) => (
-              <label key={nivel}>
-                <input
-                  type="radio"
-                  name="escolaridade"
-                  value={nivel}
-                  checked={escolaridade === nivel}
-                  onChange={(e) => setEscolaridade(e.target.value)}
-                />
-                <span>{nivel.replace('-', ' ')}</span>
-              </label>
-            ))}
+            <div className="perfil-aluno-radio-group">
+              {[
+                { value: 'fundamental-incompleto', label: 'Fundamental Incompleto' },
+                { value: 'medio-completo',         label: 'Médio Completo'         },
+                { value: 'superior-incompleto',    label: 'Superior Incompleto'    },
+                { value: 'superior-completo',      label: 'Superior Completo'      },
+              ].map((opcao) => (
+                <label
+                  key={opcao.value}
+                  className={`perfil-aluno-radio-card ${perfil.escolaridade === opcao.value ? 'perfil-aluno-radio-card--selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="escolaridade"
+                    value={opcao.value}
+                    checked={perfil.escolaridade === opcao.value}
+                    onChange={(e) => onPerfilChange('escolaridade', e.target.value)}
+                  />
+                  <span>{opcao.label}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           <div className="perfil-aluno-field">
             <label>Curso</label>
             <Input
               placeholder="Nome do curso"
-              value={curso}
-              onChange={(e) => setCurso(e.target.value)}
+              value={perfil.curso}
+              onChange={(e) => onPerfilChange('curso', e.target.value)}
             />
           </div>
 
           <div className="perfil-aluno-field">
-            <label>Instituição</label>
+            <label>Instituição de ensino</label>
             <Input
               placeholder="Nome da instituição"
-              value={instituicao}
-              onChange={(e) => setInstituicao(e.target.value)}
+              value={perfil.instituicao}
+              onChange={(e) => onPerfilChange('instituicao', e.target.value)}
             />
           </div>
         </div>
@@ -318,99 +367,38 @@ export default function PerfilAluno({
         <div className="perfil-aluno-grid">
           <div className="perfil-aluno-field perfil-aluno-field--full">
             <label>Você está trabalhando atualmente?</label>
-
-            <div className="perfil-aluno-radio-inline">
-              {/* FIX: value e onChange vinculados ao estado */}
-              <label className="perfil-aluno-radio">
-                <input
-                  type="radio"
-                  name="trabalhando"
-                  value="sim"
-                  checked={trabalhando === 'sim'}
-                  onChange={(e) => setTrabalhando(e.target.value)}
-                />
-                <span>Sim</span>
-              </label>
-
-              <label className="perfil-aluno-radio">
-                <input
-                  type="radio"
-                  name="trabalhando"
-                  value="nao"
-                  checked={trabalhando === 'nao'}
-                  onChange={(e) => setTrabalhando(e.target.value)}
-                />
-                <span>Não</span>
-              </label>
-            </div>
+            <RadioGroup
+              name="trabalhando"
+              value={perfil.trabalhando}
+              onChange={(val) => onPerfilChange('trabalhando', val)}
+            />
           </div>
 
           <div className="perfil-aluno-field perfil-aluno-field--full">
             <label>Área de atuação (se sim)</label>
-            {/* FIX: value estava hardcoded como "" em vez de usar o estado */}
             <Input
               placeholder="Ex: Vendas, Administrativo..."
-              value={areaAtuacao}
-              onChange={(e) => setAreaAtuacao(e.target.value)}
+              value={perfil.areaAtuacao}
+              onChange={(e) => onPerfilChange('areaAtuacao', e.target.value)}
             />
           </div>
 
           <div className="perfil-aluno-field">
             <label>Já trabalhou com programação?</label>
-
-            <div className="perfil-aluno-radio-inline">
-              {/* FIX: value e onChange vinculados ao estado */}
-              <label className="perfil-aluno-radio">
-                <input
-                  type="radio"
-                  name="programacao"
-                  value="sim"
-                  checked={programacao === 'sim'}
-                  onChange={(e) => setProgramacao(e.target.value)}
-                />
-                <span>Sim</span>
-              </label>
-
-              <label className="perfil-aluno-radio">
-                <input
-                  type="radio"
-                  name="programacao"
-                  value="nao"
-                  checked={programacao === 'nao'}
-                  onChange={(e) => setProgramacao(e.target.value)}
-                />
-                <span>Não</span>
-              </label>
-            </div>
+            <RadioGroup
+              name="programacao"
+              value={perfil.programacao}
+              onChange={(val) => onPerfilChange('programacao', val)}
+            />
           </div>
 
           <div className="perfil-aluno-field">
             <label>Já participou de curso de tecnologia?</label>
-
-            <div className="perfil-aluno-radio-inline">
-              {/* FIX: value e onChange vinculados ao estado */}
-              <label className="perfil-aluno-radio">
-                <input
-                  type="radio"
-                  name="curso-tecnologia"
-                  value="sim"
-                  checked={cursoTecnologia === 'sim'}
-                  onChange={(e) => setCursoTecnologia(e.target.value)}
-                />
-                <span>Sim</span>
-              </label>
-
-              <label className="perfil-aluno-radio">
-                <input
-                  type="radio"
-                  name="curso-tecnologia"
-                  value="nao"
-                  checked={cursoTecnologia === 'nao'}
-                  onChange={(e) => setCursoTecnologia(e.target.value)}
-                />
-                <span>Não</span>
-              </label>
-            </div>
+            <RadioGroup
+              name="curso-tecnologia"
+              value={perfil.cursoTecnologia}
+              onChange={(val) => onPerfilChange('cursoTecnologia', val)}
+            />
           </div>
         </div>
 
