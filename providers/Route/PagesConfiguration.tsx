@@ -22,7 +22,15 @@ export const PAGES: Page[] = [
     {
         path: '/',
         navbarEnabled: true,
-        requireAuth: true,
+        requireAuth: false,
+        requireRoles: [],
+        name: 'Home',
+        icon: <HomeFilled className='sidebar-icon' />,
+    },
+    {
+        path: '/perfil/aluno',
+        navbarEnabled: true,
+        requireAuth: false,
         requireRoles: [],
         name: 'Home',
         icon: <HomeFilled className='sidebar-icon' />,
