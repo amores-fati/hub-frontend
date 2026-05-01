@@ -98,12 +98,9 @@ export default function PerfilAluno({
     tipoDeficiencia: dadosPessoais?.tipoDeficiencia ?? 'Nenhuma',
   };
 
-<<<<<<< HEAD
-  {/*Seção States*/}
-=======
-  /* ───── States ───── */
 
->>>>>>> 0a2ee5adf4e8ee592bf2d7338afa60c84d704467
+  {/*Seção States*/}
+
   const [form, setForm] = useState<ContatoForm>({
     cep: initialContato?.cep ?? '',
     address: initialContato?.address ?? '',
@@ -191,7 +188,7 @@ export default function PerfilAluno({
   }
 
   function onPerfilChange(field: keyof PerfilProfissional, value: string) {
-<<<<<<< HEAD
+
   setPerfil((prev) => {
     const updated = { ...prev, [field]: value };
 
@@ -205,12 +202,6 @@ export default function PerfilAluno({
 }
 
  {/*Seção Mensagem de validação*/}
-=======
-    setPerfil((prev) => ({ ...prev, [field]: value }));
-  }
-
-  // FIX: await no onSave para o saving refletir corretamente
->>>>>>> 0a2ee5adf4e8ee592bf2d7338afa60c84d704467
   async function handleSave() {
     try {
       validateContato(form);
