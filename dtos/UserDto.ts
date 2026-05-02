@@ -5,7 +5,8 @@ export enum UserRole {
 }
 
 export interface UserProfileDto {
-    userId: number;
+    sub?: string;
+    userId?: string;
     role: UserRole;
     email: string;
 }
