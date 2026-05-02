@@ -1,454 +1,168 @@
 'use client';
+import { Button, Loading } from '@/components/base';
+import Card from '@/components/base/Card/card';
+import { StudentRegisterPayload } from '@/dtos/StudentDto';
+import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
+import CheckIcon from '@mui/icons-material/Check';
+import { CardActions, CardContent } from '@mui/material';
+import { useState } from 'react';
+import { RegisterStep1, validateFormStep1 } from '@/app/cadastro/aluno/RegisterStep1';
+import { RegisterStep2, validateFormStep2 } from '@/app/cadastro/aluno/RegisterStep2';
+import { RegisterStep3, validateFormStep3 } from '@/app/cadastro/aluno/RegisterStep3';
+import { RegisterStep4, validateFormStep4 } from '@/app/cadastro/aluno/RegisterStep4';
+import './index.scss';
+import { useStudentRegister } from '@/services/api/students/mutations';
+import { useGetStudent } from '@/services/api/students/queries';
+import { DEFAULT_FORM } from '@/app/cadastro/aluno/CadastroAluno';
 
-import './PerfilAluno.scss';
-
-import React, {
-  ChangeEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-
-import { Input } from '@/components/base';
-import { toast } from 'react-toastify';
-import { useGetPublicCep } from '@/services/api-external/cep/queries';
-
-import HomeIcon from '@mui/icons-material/Home';
-import PersonIcon from '@mui/icons-material/Person';
-import SchoolIcon from '@mui/icons-material/School';
-import WorkIcon from '@mui/icons-material/Work';
-
-interface DadosPessoais {
-  nomeCompleto: string;
-  nomeSocial: string;
-  cpf: string;
-  tipoDeficiencia: string;
+export enum StepperSteps {
+    STEP1 = 1,
+    STEP2 = 2,
+    STEP3 = 3,
+    STEP4 = 4,
 }
 
-type ContatoForm = {
-  cep?: string;
-  address?: string;
-  complement?: string;
-  neighbourhood?: string;
-  city?: string;
-  state?: string;
-  telefone?: string;
-};
+const steps = [
+    'Dados pessoais',
+    'Endereço e experiência',
+    'Informações adicionais',
+    'Confirmação',
+];
 
-type PerfilProfissional = {
-  escolaridade: string;
-  curso: string;
-  instituicao: string;
-  trabalhando: string;
-  areaAtuacao: string;
-  programacao: string;
-  cursoTecnologia: string;
-};
+export default function PerfilAluno() {
+    const studentId = 1; // TODO: pegar id do aluno logado
+    const { data, isLoading } = useGetStudent(studentId);
 
-interface PerfilAlunoProps {
-  dadosPessoais?: DadosPessoais;
-  contato?: ContatoForm;
-  onSave?: (contato: ContatoForm) => Promise<void>;
+    // if (isLoading || !data) {
+    //     return <Loading />
+    // }
+
+    return (
+        <CadastroAluno data={data! ?? { ...DEFAULT_FORM }} />
+    )
 }
 
-/* ───── RadioGroup fora do componente pai para evitar re-mounts ───── */
+function CadastroAluno({ data }: { data: StudentRegisterPayload }) {
+    const [activeStep, setActiveStep] = useState<StepperSteps>(
+        StepperSteps.STEP1,
+    );
+    const [form, setForm] = useState<StudentRegisterPayload>({ ...data });
 
-function RadioGroup({
-  name,
-  value,
-  onChange,
-}: {
-  name: string;
-  value: string;
-  onChange: (val: string) => void;
-}) {
-  return (
-    <div className="perfil-aluno-radio-group">
-      {['sim', 'nao'].map((opcao) => (
-        <label
-          key={opcao}
-          className={`perfil-aluno-radio-card ${value === opcao ? 'perfil-aluno-radio-card--selected' : ''}`}
-        >
-          <input
-            type="radio"
-            name={name}
-            value={opcao}
-            checked={value === opcao}
-            onChange={(e) => onChange(e.target.value)}
-          />
-          <span>{opcao === 'sim' ? 'Sim' : 'Não'}</span>
-        </label>
-      ))}
-    </div>
-  );
-}
+    const { mutate, error } = useStudentRegister(form);
 
-export default function PerfilAluno({
-  dadosPessoais,
-  contato: initialContato,
-  onSave,
-}: PerfilAlunoProps) {
+    const handleNext = () => {
+        try {
+            switch (activeStep) {
+                case StepperSteps.STEP1:
+                    validateFormStep1(form);
+                    handleForward();
+                    return;
+                case StepperSteps.STEP2:
+                    validateFormStep2(form);
+                    handleForward();
+                    return;
+                case StepperSteps.STEP3:
+                    validateFormStep3(form);
+                    handleForward();
+                    return;
+                case StepperSteps.STEP4:
+                    validateFormStep4(form);
+            }
+            mutate();
+        } catch {
+            return null;
+        }
+    };
 
-  {/*Seção safe values*/}
+    const handleForward = () => {
+        setActiveStep((prevActiveStep) =>
+            Math.min(prevActiveStep + 1, StepperSteps.STEP4),
+        );
+    };
 
-  const safeDadosPessoais: DadosPessoais = {
-    nomeCompleto: dadosPessoais?.nomeCompleto ?? 'Mayra Bordin de Abreu',
-    nomeSocial: dadosPessoais?.nomeSocial ?? 'Mayra Bordin',
-    cpf: dadosPessoais?.cpf ?? '123.456.789-00',
-    tipoDeficiencia: dadosPessoais?.tipoDeficiencia ?? 'Nenhuma',
-  };
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) =>
+            Math.max(prevActiveStep - 1, StepperSteps.STEP1),
+        );
+    };
 
+    const onForward = () => {
+        handleNext();
+    };
 
-  {/*Seção States*/}
+    const onBack = () => {
+        handleBack();
+    };
 
-  const [form, setForm] = useState<ContatoForm>({
-    cep: initialContato?.cep ?? '',
-    address: initialContato?.address ?? '',
-    complement: initialContato?.complement ?? '',
-    neighbourhood: initialContato?.neighbourhood ?? '',
-    city: initialContato?.city ?? '',
-    state: initialContato?.state ?? '',
-    telefone: initialContato?.telefone ?? '',
-  });
+    return (
+        <div className='cadastro-aluno-page w-full'>
+            <div className='stepper-custom'>
+                {steps.map((label, index) => {
+                    const stepNumber = index + 1;
+                    const isActive =
+                        (stepNumber as StepperSteps) === activeStep;
+                    const isCompleted =
+                        (stepNumber as StepperSteps) < activeStep;
 
-  const [cepInput, setCepInput] = useState<string>(initialContato?.cep ?? '');
-  const [saving, setSaving] = useState(false);
-
-  // estados de perfil agrupados
-  const [perfil, setPerfil] = useState<PerfilProfissional>({
-    escolaridade: '',
-    curso: '',
-    instituicao: '',
-    trabalhando: '',
-    areaAtuacao: '',
-    programacao: '',
-    cursoTecnologia: '',
-  });
-
-  const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  {/*Seção CEP API*/}
-
-  const {
-    data: cepData,
-    error,
-    isLoading: loadingCep,
-  } = useGetPublicCep(cepInput);
-
- {/*Seção Effects*/}
-
-  useEffect(() => {
-    if (!cepData || error) return;
-
-    if (cepData.erro === 'true') {
-      if (cepInput.length === 8) toast.error('CEP inválido');
-      return;
-    }
-
-    setForm((prev: ContatoForm) => ({
-      ...prev,
-      address: cepData.logradouro ?? '',
-      neighbourhood: cepData.bairro ?? '',
-      city: cepData.localidade ?? '',
-      state: cepData.uf ?? '',
-    }));
-  }, [cepData, error, cepInput]);
-
-  useEffect(() => {
-    if (cepInput.length < 8) {
-      setForm((prev: ContatoForm) => ({
-        ...prev,
-        address: '',
-        neighbourhood: '',
-        city: '',
-        state: '',
-      }));
-    }
-  }, [cepInput]);
-
-  /* ───── Handlers ───── */
-
-  function onCepChange(e: ChangeEvent<HTMLInputElement>) {
-    const sanitized = e.target.value.replace(/\D/g, '');
-    if (sanitized.length > 8) return;
-
-    setForm((prev: ContatoForm) => ({ ...prev, cep: sanitized }));
-
-    if (typingTimeout.current) clearTimeout(typingTimeout.current);
-    typingTimeout.current = setTimeout(() => setCepInput(sanitized), 400);
-  }
-
-  function onTelefoneChange(e: ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 11);
-    setForm((prev: ContatoForm) => ({ ...prev, telefone: value }));
-  }
-
-  function onComplementChange(e: ChangeEvent<HTMLInputElement>) {
-    setForm((prev: ContatoForm) => ({ ...prev, complement: e.target.value }));
-  }
-
-  function onPerfilChange(field: keyof PerfilProfissional, value: string) {
-
-  setPerfil((prev) => {
-    const updated = { ...prev, [field]: value };
-
-    // se desmarcou que está trabalhando, limpa a área de atuação
-    if (field === 'trabalhando' && value === 'nao') {
-      updated.areaAtuacao = '';
-    }
-
-    return updated;
-  });
-}
-
- {/*Seção Mensagem de validação*/}
-  async function handleSave() {
-    try {
-      validateContato(form);
-      setSaving(true);
-      await onSave?.(form);
-      toast.success('Contato atualizado com sucesso!');
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <div className="perfil-aluno-page">
-
-      {/* Header */}
-      <div className="perfil-aluno-page__header">
-        <h1>Meu Perfil</h1>
-        <p>
-          Gerencie suas <span>informações pessoais</span> e dados de <span>contato</span>.
-        </p>
-      </div>
-
-       {/*Seção Dados Pessoais*/}
-      <div className="perfil-aluno-card">
-        <div className="perfil-aluno-card__title">
-          <PersonIcon />
-          <span>Dados Pessoais</span>
-        </div>
-
-        <div className="perfil-aluno-grid">
-          <div className="perfil-aluno-field">
-            <label>Nome Completo</label>
-            <Input value={safeDadosPessoais.nomeCompleto} disabled />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>CPF</label>
-            <Input value={safeDadosPessoais.cpf} disabled />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Nome Social</label>
-            <Input value={safeDadosPessoais.nomeSocial} disabled />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Tipo de Deficiência</label>
-            <Input value={safeDadosPessoais.tipoDeficiencia} disabled />
-          </div>
-        </div>
-      </div>
-
-      {/*Seção Contato*/}
-      <div className="perfil-aluno-card">
-        <div className="perfil-aluno-card__title">
-          <HomeIcon />
-          <span>Contato</span>
-        </div>
-
-        <div className="perfil-aluno-grid">
-          <div className="perfil-aluno-field">
-            <label>Telefone</label>
-            <Input
-              placeholder="(00) 00000-0000"
-              onChange={onTelefoneChange}
-              value={form.telefone ?? ''}
-            />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>CEP</label>
-            <Input
-              placeholder="00000-000"
-              onChange={onCepChange}
-              value={form.cep ?? ''}
-              disabled={loadingCep}
-            />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Endereço</label>
-            <Input
-              disabled
-              placeholder="Preenchido automaticamente"
-              value={form.address ?? ''}
-            />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Complemento</label>
-            <Input
-              placeholder="Apto 101"
-              onChange={onComplementChange}
-              value={form.complement ?? ''}
-            />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Cidade</label>
-            <Input disabled placeholder="Cidade" value={form.city ?? ''} />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Estado</label>
-            <Input disabled placeholder="UF" value={form.state ?? ''} />
-          </div>
-        </div>
-      </div>
-
-     {/*Seção Escolaridade*/}
-      <div className="perfil-aluno-card">
-        <div className="perfil-aluno-card__title">
-          <SchoolIcon />
-          <span>Escolaridade</span>
-        </div>
-
-        <div className="perfil-aluno-grid">
-          <div className="perfil-aluno-field perfil-aluno-field--full">
-            <label>Nível de escolaridade</label>
-
-            <div className="perfil-aluno-radio-group">
-              {[
-                { value: 'fundamental-incompleto', label: 'Fundamental Incompleto' },
-                { value: 'medio-completo',         label: 'Médio Completo'         },
-                { value: 'superior-incompleto',    label: 'Superior Incompleto'    },
-                { value: 'superior-completo',      label: 'Superior Completo'      },
-              ].map((opcao) => (
-                <label
-                  key={opcao.value}
-                  className={`perfil-aluno-radio-card ${perfil.escolaridade === opcao.value ? 'perfil-aluno-radio-card--selected' : ''}`}
-                >
-                  <input
-                    type="radio"
-                    name="escolaridade"
-                    value={opcao.value}
-                    checked={perfil.escolaridade === opcao.value}
-                    onChange={(e) => onPerfilChange('escolaridade', e.target.value)}
-                  />
-                  <span>{opcao.label}</span>
-                </label>
-              ))}
+                    return (
+                        <div
+                            key={label}
+                            className={`stepper-custom__step ${isActive ? 'stepper-custom__step--active' : ''} ${isCompleted ? 'stepper-custom__step--completed' : ''}`}
+                        >
+                            <div className='stepper-custom__indicator'>
+                                {isCompleted ? (
+                                    <CheckIcon fontSize='small' />
+                                ) : (
+                                    <span>{stepNumber}</span>
+                                )}
+                            </div>
+                            <span className='stepper-custom__label'>
+                                {label}
+                            </span>
+                        </div>
+                    );
+                })}
             </div>
-          </div>
 
-          <div className="perfil-aluno-field">
-            <label>Curso</label>
-            <Input
-              placeholder="Nome do curso"
-              value={perfil.curso}
-              onChange={(e) => onPerfilChange('curso', e.target.value)}
-            />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Instituição de ensino</label>
-            <Input
-              placeholder="Nome da instituição"
-              value={perfil.instituicao}
-              onChange={(e) => onPerfilChange('instituicao', e.target.value)}
-            />
-          </div>
+            <Card>
+                <CardContent aria-label='content'>
+                    {activeStep === StepperSteps.STEP1 && (
+                        <RegisterStep1 form={form} setForm={setForm} />
+                    )}
+                    {activeStep === StepperSteps.STEP2 && (
+                        <RegisterStep2 form={form} setForm={setForm} />
+                    )}
+                    {activeStep === StepperSteps.STEP3 && (
+                        <RegisterStep3 form={form} setForm={setForm} />
+                    )}
+                    {activeStep === StepperSteps.STEP4 && (
+                        <RegisterStep4 form={form} setForm={setForm} />
+                    )}
+                </CardContent>
+                <CardActions aria-label='actions'>
+                    <Button
+                        onClick={onBack}
+                        variant='secondary'
+                        disabled={activeStep === StepperSteps.STEP1}
+                        style={{
+                            visibility:
+                                activeStep === StepperSteps.STEP1
+                                    ? 'hidden'
+                                    : 'visible',
+                        }}
+                    >
+                        <ArrowBackSharpIcon color='action' />
+                        <span>Voltar</span>
+                    </Button>
+                    <Button onClick={onForward}>
+                        <span>
+                            {activeStep === StepperSteps.STEP4
+                                ? 'Salvar'
+                                : 'Avançar'}
+                        </span>
+                    </Button>
+                </CardActions>
+            </Card>
         </div>
-      </div>
-
-      {/* Perfil Profissional */}
-      <div className="perfil-aluno-card">
-        <div className="perfil-aluno-card__title">
-          <WorkIcon />
-          <span>Perfil Profissional</span>
-        </div>
-
-        <div className="perfil-aluno-grid">
-          <div className="perfil-aluno-field perfil-aluno-field--full">
-            <label>Você está trabalhando atualmente?</label>
-            <RadioGroup
-              name="trabalhando"
-              value={perfil.trabalhando}
-              onChange={(val) => onPerfilChange('trabalhando', val)}
-            />
-          </div>
-
-          <div className="perfil-aluno-field perfil-aluno-field--full">
-            <label>Área de atuação (se sim)</label>
-            <Input
-              placeholder="Ex: Vendas, Administrativo..."
-              value={perfil.areaAtuacao}
-              onChange={(e) => onPerfilChange('areaAtuacao', e.target.value)}
-            />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Já trabalhou com programação?</label>
-            <RadioGroup
-              name="programacao"
-              value={perfil.programacao}
-              onChange={(val) => onPerfilChange('programacao', val)}
-            />
-          </div>
-
-          <div className="perfil-aluno-field">
-            <label>Já participou de curso de tecnologia?</label>
-            <RadioGroup
-              name="curso-tecnologia"
-              value={perfil.cursoTecnologia}
-              onChange={(val) => onPerfilChange('cursoTecnologia', val)}
-            />
-          </div>
-        </div>
-
-        <div className="perfil-aluno-actions">
-          <button
-            type="button"
-            className="perfil-aluno-button"
-            onClick={handleSave}
-            disabled={saving || loadingCep}
-          >
-            {saving ? 'Salvando...' : 'Salvar alterações'}
-          </button>
-        </div>
-      </div>
-
-    </div>
-  );
-}
-
-export function validateContato(form: ContatoForm) {
-  const cep = form.cep?.replace(/\D/g, '');
-
-  if (!cep || cep.length !== 8) {
-    toast.error('CEP inválido ou faltante');
-    throw new Error('Missing parameter');
-  }
-
-  if (!form.address?.trim()) {
-    toast.error('Endereço é obrigatório');
-    throw new Error('Missing parameter');
-  }
-
-  if (!form.city?.trim()) {
-    toast.error('Cidade é obrigatória');
-    throw new Error('Missing parameter');
-  }
-
-  if (!form.state?.trim()) {
-    toast.error('Estado é obrigatório');
-    throw new Error('Missing parameter');
-  }
+    );
 }

@@ -18,6 +18,47 @@ import { toast } from 'react-toastify';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { removeStoreAuthToken } from '@/utils/stores/auth';
 
+export const DEFAULT_FORM = {
+    fullName: '',
+    socialName: undefined,
+    cpf: '',
+    birthDate: '',
+    phoneNumber: '',
+    email: '',
+    password: '',
+    passwordConfirmation: '',
+    gender: undefined,
+    race: undefined,
+    cep: '',
+    address: '',
+    complement: undefined,
+    neighbourhood: undefined,
+    city: undefined,
+    state: undefined,
+    scholarship: null,
+    course: '',
+    institution: '',
+    whyJoinFatiLab: '',
+    whomInformed: undefined,
+    hasOwnComputer: false,
+    hasInternetAccess: false,
+    compromisedToClasses: false,
+    // familyIncome: undefined,
+    // Ajustar para receber array
+    hasWorkExperience: false,
+    hasParticipatedOnCourses: false,
+    currentlyWorking: false,
+    workField: undefined,
+    hasAccessability: false,
+    typeAccessability: '',
+    lgpd: {
+        terms: false,
+        imageUsage: false,
+    },
+    peopleInHouse: '',
+    socialBenefit: undefined,
+}
+
 export enum StepperSteps {
     STEP1 = 1,
     STEP2 = 2,
@@ -40,46 +81,7 @@ export default function CadastroAluno() {
     const [activeStep, setActiveStep] = useState<StepperSteps>(
         StepperSteps.STEP1,
     );
-    const [form, setForm] = useState<StudentRegisterPayload>({
-        fullName: '',
-        socialName: undefined,
-        cpf: '',
-        birthDate: '',
-        phoneNumber: '',
-        email: '',
-        password: '',
-        passwordConfirmation: '',
-        gender: undefined,
-        race: undefined,
-        cep: '',
-        address: '',
-        complement: undefined,
-        neighbourhood: undefined,
-        city: undefined,
-        state: undefined,
-        scholarship: null,
-        course: '',
-        institution: '',
-        whyJoinFatiLab: '',
-        whomInformed: undefined,
-        hasOwnComputer: false,
-        hasInternetAccess: false,
-        compromisedToClasses: false,
-        // familyIncome: undefined,
-        // Ajustar para receber array
-        hasWorkExperience: false,
-        hasParticipatedOnCourses: false,
-        currentlyWorking: false,
-        workField: undefined,
-        hasAccessability: false,
-        typeAccessability: '',
-        lgpd: {
-            terms: false,
-            imageUsage: false,
-        },
-        peopleInHouse: '',
-        socialBenefit: undefined,
-    });
+    const [form, setForm] = useState<StudentRegisterPayload>({ ...DEFAULT_FORM });
 
     const { mutate, error, data } = useStudentRegister(form);
 

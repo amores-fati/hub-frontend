@@ -6,6 +6,7 @@ const QUERY_KEYS = {
     EXAMPLES: 'examples',
     STUDENT_PROFILE: 'student-profile',
     STUDENT_RESUME: 'student-resume',
+    STUDENT: 'student',
 };
 
 export default QUERY_KEYS;
