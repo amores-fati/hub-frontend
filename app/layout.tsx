@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Zilla_Slab } from 'next/font/google';
+import { DM_Sans, Zilla_Slab } from 'next/font/google';
 
 import '@/scss/globals.scss';
 import { Client } from './client';
@@ -15,13 +15,19 @@ const zillaSlab = Zilla_Slab({
     variable: '--font-zilla-next',
 });
 
+const dmSans = DM_Sans({
+    weight: ['400', '500', '600', '700', '800'],
+    subsets: ['latin'],
+    variable: '--font-dm-sans',
+});
+
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
     return (
-        <html lang='en' suppressHydrationWarning className={zillaSlab.variable}>
+        <html lang='en' suppressHydrationWarning className={`${zillaSlab.variable} ${dmSans.variable}`}>
             <body suppressHydrationWarning className='custom-body antialiased'>
                 <Client>{children}</Client>
             </body>

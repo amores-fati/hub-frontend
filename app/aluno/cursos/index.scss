@@ -1,10 +1,12 @@
+
+
 .cursos-aluno {
-    width: min(1240px, calc(100% - 2rem));
+    width: min(1800px, calc(100% - 120px));
     margin: 0 auto;
-    padding: var(--spacing-xl) 0 var(--spacing-3xl);
+    padding: 32px 0 64px;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xl);
+    gap: 32px;
 }
 
 .cursos-aluno--centered {
@@ -17,106 +19,264 @@
     min-height: 240px;
 }
 
-.cursos-aluno__header {
+// ─── Banner ────────────────────────────────────────────────────
+// Figma: padding 32, borderRadius 16, flex row, gap entre texto e botões
+
+.ca-banner {
+    align-self: stretch;
+    padding: 32px;
+    background: linear-gradient(90deg, #673ab7 0%, #2f1e42 100%);
+    border-radius: 16px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.ca-banner__text {
+    flex: 1 1 0;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-width: 0;
 
     h1 {
+        // Figma: DM Sans 34px/800, lineHeight 60
+        font-family: var(--font-dm-sans, 'DM Sans', var(--font-sf-pro));
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 60px;
+        color: #ffffff;
         margin: 0;
-        font-size: clamp(1.75rem, 3vw, 2.25rem);
+        word-wrap: break-word;
+    }
+
+    p {
+        // Figma: SF Pro 15px/400, lineHeight 22.4
+        align-self: stretch;
+        color: #ffffff;
+        font-family: var(--font-sf-pro);
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 22.4px;
+        margin: 0;
+        word-wrap: break-word;
     }
 }
 
-.cursos-aluno__eyebrow {
+.ca-banner__name {
+    color: #ffd100;
+}
+
+// Botões do banner — gap 16 entre eles, px 16 py 12, borderRadius 12
+.ca-banner__actions {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.ca-banner__btn {
     display: inline-flex;
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    background: rgba(103, 58, 183, 0.1);
-    color: var(--tertiary-color);
-    font-size: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: none;
+    font-family: var(--font-sf-pro);
+    font-size: 15px;
     font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    width: fit-content;
+    line-height: 25.2px;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: filter 150ms ease;
+
+    &:hover {
+        filter: brightness(1.08);
+        text-decoration: none;
+    }
+
+    &--green {
+        background: #7ed298;
+        color: #ffffff;
+    }
+
+    &--yellow {
+        background: #ffd100;
+        color: #1d1d1d;
+    }
+
+    &--outline {
+        background: transparent;
+        color: #ffffff;
+        outline: 1.5px solid #ffffff;
+        outline-offset: -1.5px;
+    }
 }
 
-.cursos-aluno__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--spacing-lg);
-    align-items: start;
+// ─── Seção de cursos ───────────────────────────────────────────
+// Figma: padding 16, white, boxShadow, borderRadius 16, outline 1px cinza5, gap 8
+
+.ca-section {
+    align-self: stretch;
+    padding: 16px;
+    background: #ffffff;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 16px;
+    outline: 1px solid #e0e0e0;
+    outline-offset: -1px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.cursos-aluno__empty {
-    padding: clamp(1.5rem, 2vw, 2.5rem);
-    border-radius: var(--border-radius-xl);
-    background: var(--surface);
-    border: 1px dashed var(--border-color);
+// Título da seção — Zilla Slab 28px/700, lineHeight 52
+.ca-section__title {
+    align-self: stretch;
+    color: #212121;
+    font-family: var(--font-zilla);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 52px;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+// Wrapper interno — Figma tem gap: 40 entre fileiras de cards
+.ca-section__content {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+// Grid de cards — flex row igual ao Figma, gap 24, cards com flex: 1 1 0
+.ca-grid {
+    align-self: stretch;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+// Estado vazio
+.ca-empty {
+    padding: 40px 24px;
+    border-radius: 16px;
+    background: #f5f5f5;
+    border: 2px dashed #e0e0e0;
     text-align: center;
 
     p {
-        font: var(--body-2-semibold);
-        color: var(--text-secondary);
-        margin-bottom: var(--spacing-xs);
+        font-family: var(--font-sf-pro);
+        font-size: 15px;
+        font-weight: 600;
+        color: #4f4f4f;
+        margin-bottom: 4px;
     }
 
     small {
-        color: var(--text-muted);
+        font-family: var(--font-sf-pro);
+        font-size: 13px;
+        color: #828282;
     }
 }
 
-.cursos-aluno__whatsapp-fab {
+// ─── WhatsApp FAB ──────────────────────────────────────────────
+
+.ca-whatsapp-fab {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
     z-index: var(--z-raised);
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    padding: 0.75rem 1.25rem;
+    gap: 8px;
+    padding: 12px 20px;
     border-radius: 999px;
     background: #25d366;
     color: #ffffff;
+    font-family: var(--font-sf-pro);
+    font-size: 15px;
     font-weight: 700;
-    font-size: 0.9rem;
     text-decoration: none;
-    box-shadow: var(--shadow-lg);
-    transition:
-        background var(--transition-fast),
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast);
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+    transition: background 150ms ease, transform 150ms ease;
 
-    svg {
-        font-size: 1.35rem;
-    }
+    svg { font-size: 1.35rem; }
 
     &:hover {
         background: #1ebe5d;
         color: #ffffff;
         text-decoration: none;
         transform: translateY(-2px);
-        box-shadow: 0 10px 28px rgba(37, 211, 102, 0.4);
+    }
+}
+
+// ─── Responsividade ────────────────────────────────────────────
+
+@media (max-width: 1024px) {
+    .cursos-aluno {
+        width: calc(100% - 2rem);
     }
 
-    &:active {
-        transform: translateY(0);
+    .ca-grid {
+        flex-wrap: wrap;
+    }
+
+    // Em telas menores, limitar largura mínima dos cards
+    .ca-grid > .course-card {
+        min-width: min(100%, 280px);
+    }
+}
+
+@media (max-width: 768px) {
+    .ca-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 24px;
+    }
+
+    .ca-banner__text h1 {
+        font-size: 24px;
+        line-height: 1.3;
+    }
+
+    .ca-banner__actions {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .ca-grid {
+        flex-direction: column;
+    }
+
+    .ca-grid > .course-card {
+        flex: unset;
+        width: 100%;
+    }
+
+    .ca-section__title {
+        font-size: 22px;
+        line-height: 1.4;
     }
 }
 
 @media (max-width: 480px) {
-    .cursos-aluno__grid {
-        grid-template-columns: 1fr;
+    .cursos-aluno {
+        padding: 16px 0 48px;
+        gap: 16px;
     }
 
-    .cursos-aluno__whatsapp-fab {
+    .ca-whatsapp-fab {
         bottom: 1rem;
         right: 1rem;
+        padding: 12px;
 
-        span {
-            display: none;
-        }
-
-        padding: 0.85rem;
+        span { display: none; }
     }
 }

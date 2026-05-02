@@ -7,7 +7,7 @@ import { settingsApi } from '.';
 const USE_MOCK_SETTINGS = true;
 
 const MOCK_SETTINGS: Record<string, string> = {
-    support_whatsapp_number: '5511999999999',
+    support_whatsapp_number: '+5511999999999',
 };
 
 const getPublicSetting = async (key: string): Promise<PublicSettingDto> => {
