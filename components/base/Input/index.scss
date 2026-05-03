@@ -11,17 +11,11 @@
     & div {
         border-radius: var(--border-radius);
     }
-}
 
-.custom-input {
-    label {
-        font-size: 0.8rem;
+    .MuiInputBase-input::placeholder {
+        color: var(--cinza-3);
+        opacity: 1;
     }
-}
-
-.custom-input label.Mui-focused {
-    /* Altera cor do label flutuante */
-    color: var(--text-primary);
 }
 
 .custom-input .MuiOutlinedInput-root.Mui-focused {

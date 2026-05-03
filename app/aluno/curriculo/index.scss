@@ -1,0 +1,421 @@
+.student-resume-page {
+    width: min(1440px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: clamp(1.5rem, 3vw, 3rem) 0;
+}
+
+.student-resume-page--centered {
+    min-height: calc(100vh - 120px);
+    display: grid;
+    place-items: center;
+}
+
+.student-resume-page__loading {
+    min-height: 260px;
+}
+
+.student-resume-page__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.9fr) minmax(320px, 0.95fr);
+    gap: clamp(1.5rem, 3vw, 4rem);
+    align-items: start;
+}
+
+.student-resume-card,
+.student-resume-panel,
+.student-resume-feedback {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 4px 14px rgba(11, 18, 21, 0.14);
+}
+
+.student-resume-card {
+    overflow: hidden;
+}
+
+.student-resume-card__cover {
+    height: clamp(7rem, 13vw, 10rem);
+    background: linear-gradient(110deg, #763ec4 0%, #2f1b45 100%);
+}
+
+.student-resume-card__profile {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    align-items: start;
+    padding: 0 clamp(1.25rem, 3vw, 2rem);
+    margin-top: -4rem;
+}
+
+.student-resume-card__photo {
+    display: grid;
+    justify-items: center;
+    gap: 0.65rem;
+}
+
+.student-resume-card__avatar {
+    width: clamp(6.5rem, 10vw, 8rem);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border: 4px solid var(--surface);
+    border-radius: 50%;
+    background-color: var(--tertiary-color);
+    background-position: center;
+    background-size: cover;
+    color: var(--branco);
+    font-size: clamp(2rem, 3vw, 2.6rem);
+    font-weight: 800;
+    box-shadow: var(--shadow);
+}
+
+.student-resume-card__identity {
+    min-width: 0;
+    padding-top: 4.35rem;
+
+    h1 {
+        overflow: hidden;
+        margin: 0;
+        font: var(--titulo-1);
+        line-height: 1.12;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.student-resume-card__headline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.25rem;
+
+    p {
+        margin: 0;
+        color: var(--text-muted);
+        font: var(--heading);
+        font-weight: 500;
+    }
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        min-height: 1.35rem;
+        padding: 0.12rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(103, 58, 183, 0.12);
+        color: var(--tertiary-color);
+        font-size: 0.78rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+}
+
+.student-resume-card__photo-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    width: min(11rem, 100%);
+}
+
+.student-resume-card__file-input {
+    display: none;
+}
+
+.student-resume-card__photo-status {
+    width: 100%;
+    color: var(--tertiary-color);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.student-resume-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 4.7rem;
+}
+
+.student-resume-form {
+    display: grid;
+    gap: 1.35rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.student-resume-form__links,
+.student-resume-form__profile {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.student-resume-field {
+    display: grid;
+    gap: 0.45rem;
+
+    span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    textarea,
+    input {
+        width: 100%;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        outline: none;
+        background: var(--background-2);
+        color: var(--text-primary);
+        font: var(--callout);
+        transition:
+            border-color var(--transition-fast),
+            box-shadow var(--transition-fast),
+            background-color var(--transition-fast);
+
+        &:focus {
+            border-color: var(--tertiary-color);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.14);
+        }
+
+        &:disabled {
+            cursor: default;
+            border-color: var(--border-color);
+            background: var(--background-2);
+            color: var(--text-primary);
+            opacity: 1;
+        }
+    }
+
+    textarea {
+        min-height: 13rem;
+        resize: vertical;
+        padding: 0.9rem 1rem;
+    }
+
+    input {
+        min-height: 3.15rem;
+        padding: 0 2.75rem 0 1rem;
+    }
+}
+
+.student-resume-field__input {
+    position: relative;
+
+    svg {
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        color: var(--text-muted);
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+}
+
+.student-resume-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 800;
+    line-height: 1;
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast);
+
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.68;
+    }
+}
+
+.student-resume-button--primary {
+    background: var(--tertiary-color);
+    color: var(--branco);
+}
+
+.student-resume-button--secondary {
+    border: 1px solid rgba(103, 58, 183, 0.35);
+    background: rgba(103, 58, 183, 0.08);
+    color: var(--tertiary-color);
+}
+
+.student-resume-button--ghost {
+    border: 1px solid var(--border-color);
+    background: var(--surface);
+    color: var(--text-primary);
+}
+
+.student-resume-form__save {
+    justify-self: end;
+    min-width: 13rem;
+}
+
+.student-resume-sidebar {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.student-resume-panel,
+.student-resume-feedback {
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.student-resume-panel__title {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    svg {
+        color: var(--tertiary-color);
+        font-size: 1.9rem;
+    }
+
+    h2 {
+        margin: 0;
+        font: var(--titulo-2);
+        line-height: 1.15;
+    }
+}
+
+.student-resume-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 1.35rem;
+}
+
+.student-resume-skills__empty {
+    width: 100%;
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.student-resume-skill {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    gap: 0.45rem;
+    padding: 0.45rem 0.55rem 0.45rem 0.75rem;
+    border: 1px solid rgba(103, 58, 183, 0.28);
+    border-radius: 999px;
+    background: #f2e9ff;
+    color: #593493;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.student-resume-skill__dot {
+    width: 0.72rem;
+    height: 0.72rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+}
+
+.student-resume-skill button {
+    display: inline-grid;
+    width: 1.45rem;
+    height: 1.45rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 50%;
+    color: #593493;
+
+    &:hover:not(:disabled) {
+        background: rgba(103, 58, 183, 0.12);
+    }
+}
+
+.student-resume-skill-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    margin-top: 1.35rem;
+
+    input {
+        min-width: 0;
+        min-height: 2.75rem;
+        padding: 0 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        outline: none;
+        background: var(--background-2);
+
+        &:focus {
+            border-color: var(--tertiary-color);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.14);
+        }
+    }
+}
+
+.student-resume-feedback {
+    max-width: 560px;
+
+    h1 {
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        margin: 0;
+    }
+}
+
+@media (max-width: 1100px) {
+    .student-resume-page__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .student-resume-page {
+        width: min(100% - 1rem, 100%);
+    }
+
+    .student-resume-card__profile {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .student-resume-card__identity {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .student-resume-card__actions {
+        justify-content: center;
+        padding-top: 0;
+    }
+
+    .student-resume-card__identity h1 {
+        white-space: normal;
+    }
+
+    .student-resume-form__links,
+    .student-resume-form__profile,
+    .student-resume-skill-form {
+        grid-template-columns: 1fr;
+    }
+
+    .student-resume-form__save,
+    .student-resume-skill-form .student-resume-button {
+        width: 100%;
+    }
+}

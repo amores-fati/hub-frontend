@@ -33,9 +33,11 @@ const AccessibilityOptions = [
 export function RegisterStep4({
     form,
     setForm,
+    editing = false,
 }: {
     form: StudentRegisterPayload;
     setForm: React.Dispatch<React.SetStateAction<StudentRegisterPayload>>;
+    editing?: boolean;
 }) {
     // ── Experiência ───────────────────────────────────────────────────────────
 
@@ -293,58 +295,62 @@ export function RegisterStep4({
             </div>
 
             {/* ── Autorizações ─────────────────────────────────────────────── */}
-            <div className='register-steps__section-title'>
-                <InputAdornment position='start'>
-                    <VerifiedUserIcon />
-                </InputAdornment>
-                <span>Autorizações</span>
-            </div>
+            {!editing &&
+                <>
+                    <div className='register-steps__section-title'>
+                        <InputAdornment position='start'>
+                            <VerifiedUserIcon />
+                        </InputAdornment>
+                        <span>Autorizações</span>
+                    </div>
 
-            <div className='register-steps__terms-card'>
-                <div className='register-steps__terms-header'>
-                    <span className='terms-title'>TERMOS E PRIVACIDADE</span>
-                    <a
-                        className='terms-link'
-                        href='/termos'
-                        target='_blank'
-                        rel='noopener noreferrer'
-                    >
-                        LER TERMOS COMPLETOS
-                    </a>
-                </div>
+                    <div className='register-steps__terms-card'>
+                        <div className='register-steps__terms-header'>
+                            <span className='terms-title'>TERMOS E PRIVACIDADE</span>
+                            <a
+                                className='terms-link'
+                                href='/termos'
+                                target='_blank'
+                                rel='noopener noreferrer'
+                            >
+                                LER TERMOS COMPLETOS
+                            </a>
+                        </div>
 
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            size='small'
-                            checked={form.lgpd?.terms ?? false}
-                            onChange={onTermsChange}
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    size='small'
+                                    checked={form.lgpd?.terms ?? false}
+                                    onChange={onTermsChange}
+                                />
+                            }
+                            label={
+                                <span className='terms-item-label'>
+                                    Aceito os <strong>Termos de Uso</strong> e as
+                                    políticas da LGPD.
+                                </span>
+                            }
                         />
-                    }
-                    label={
-                        <span className='terms-item-label'>
-                            Aceito os <strong>Termos de Uso</strong> e as
-                            políticas da LGPD.
-                        </span>
-                    }
-                />
 
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            size='small'
-                            checked={form.lgpd?.imageUsage ?? false}
-                            onChange={onImageUsageChange}
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    size='small'
+                                    checked={form.lgpd?.imageUsage ?? false}
+                                    onChange={onImageUsageChange}
+                                />
+                            }
+                            label={
+                                <span className='terms-item-label'>
+                                    Você autoriza o uso da sua imagem para fins
+                                    institucionais do Instituto Amores Fati.
+                                </span>
+                            }
                         />
-                    }
-                    label={
-                        <span className='terms-item-label'>
-                            Você autoriza o uso da sua imagem para fins
-                            institucionais do Instituto Amores Fati.
-                        </span>
-                    }
-                />
-            </div>
+                    </div>
+                </>
+            }
         </div>
     );
 }

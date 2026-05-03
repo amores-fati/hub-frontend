@@ -1,10 +1,15 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
-import React, { ChangeEventHandler, useState } from 'react';
+import React, {
+    ChangeEventHandler,
+    KeyboardEventHandler,
+    useState,
+} from 'react';
 import './index.scss';
 
 export type InputProps = {
     onChange?: ChangeEventHandler<HTMLInputElement> | undefined;
+    onKeyDown?: KeyboardEventHandler<HTMLInputElement> | undefined;
     disabled?: boolean;
     placeholder?: string;
     type?: 'password' | 'text' | 'email' | 'number';
@@ -26,6 +31,7 @@ export function InputComponent({
     placeholder,
     disabled = false,
     onChange,
+    onKeyDown,
     icon,
     value,
     error = false,
@@ -38,10 +44,10 @@ export function InputComponent({
             id='outlined-password-input'
             variant='outlined'
             className='custom-input'
-            label={placeholder}
             error={error}
             slotProps={{
                 input: {
+                    placeholder,
                     startAdornment: icon && <IconStart>{icon}</IconStart>,
                     endAdornment: isPassword && (
                         <InputAdornment position='end'>
@@ -61,6 +67,7 @@ export function InputComponent({
             }}
             disabled={disabled}
             onChange={onChange}
+            onKeyDown={onKeyDown}
             type={isPassword && showPassword ? 'text' : type}
             value={value}
         />
