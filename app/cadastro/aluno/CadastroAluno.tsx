@@ -155,10 +155,10 @@ export default function CadastroAluno() {
             <div className='stepper-custom'>
                 {steps.map((label, index) => {
                     const stepNumber = index + 1;
-                    const isActive =
-                        (stepNumber as StepperSteps) === activeStep;
-                    const isCompleted =
-                        (stepNumber as StepperSteps) < activeStep;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+                    const isActive = stepNumber === activeStep;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+                    const isCompleted = stepNumber < activeStep;
 
                     return (
                         <div

@@ -56,6 +56,14 @@ export const PAGES: Page[] = [
         name: 'Cadastro Empresa',
     },
     {
+        path: '/alunos',
+        navbarEnabled: true,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Gestão de Alunos',
+        icon: <GroupIcon className='sidebar-icon' />,
+    },
+    {
         path: '/aluno/curriculo',
         navbarEnabled: true,
         requireRoles: [UserRole.STUDENT],
