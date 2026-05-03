@@ -90,5 +90,9 @@ export const useUpdateStudentProfile = () =>
                 [QUERY_KEYS.STUDENT_PROFILE, student.id],
                 student,
             );
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.STUDENT_PROFILE],
+            });
+            toast.success('Perfil atualizado com sucesso');
         },
     });

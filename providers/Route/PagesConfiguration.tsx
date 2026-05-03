@@ -1,10 +1,9 @@
 import { UserRole } from '@/dtos/UserDto';
-import { HomeFilled } from '@mui/icons-material';
+import { HomeFilled, Person as PersonIcon } from '@mui/icons-material';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import PersonIcon from '@mui/icons-material/Person';
 import WorkIcon from '@mui/icons-material/Work';
 import React, { JSX } from 'react';
 
@@ -71,6 +70,14 @@ export const PAGES: Page[] = [
         name: 'Currículo',
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
+    {
+        path: '/aluno/perfil',
+        navbarEnabled: true,
+        requireRoles: [UserRole.STUDENT],
+        requireAuth: true,
+        name: 'Perfil',
+        icon: <PersonIcon className='sidebar-icon' />,
+    },
 ];
 
 export type NavItem = {
@@ -97,7 +104,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             icon: <AssignmentIndIcon />,
             expectedPath: '/aluno/curriculo',
         },
-        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
+        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/aluno/perfil' },
     ],
     [UserRole.COMPANY]: [
         { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },

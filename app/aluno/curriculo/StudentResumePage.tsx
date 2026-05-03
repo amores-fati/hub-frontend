@@ -315,7 +315,6 @@ export default function StudentResumePage() {
                 }
             }
 
-            toast.success('Alterações salvas com sucesso.');
             setIsEditingResume(false);
         } catch (error) {
             toast.error(
@@ -426,8 +425,8 @@ export default function StudentResumePage() {
                                 style={
                                     currentPhotoUrl
                                         ? {
-                                              backgroundImage: `url("${currentPhotoUrl}")`,
-                                          }
+                                            backgroundImage: `url("${currentPhotoUrl}")`,
+                                        }
                                         : undefined
                                 }
                                 aria-label='Foto do aluno'
@@ -525,19 +524,6 @@ export default function StudentResumePage() {
                                     maxLength={100}
                                 />
                             </label>
-
-                            <label className='student-resume-field'>
-                                <span>Tipo de deficiência</span>
-                                <input
-                                    value={disabilityType}
-                                    disabled={!isEditingResume}
-                                    onChange={(event) =>
-                                        setDisabilityType(event.target.value)
-                                    }
-                                    placeholder='Ex.: Física/Motora'
-                                    maxLength={50}
-                                />
-                            </label>
                         </div>
 
                         <div className='student-resume-form__links'>
@@ -608,8 +594,8 @@ export default function StudentResumePage() {
                                             style={{
                                                 backgroundColor:
                                                     SKILL_DOT_COLORS[
-                                                        index %
-                                                            SKILL_DOT_COLORS.length
+                                                    index %
+                                                    SKILL_DOT_COLORS.length
                                                     ],
                                             }}
                                         />

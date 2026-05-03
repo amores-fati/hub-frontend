@@ -3,7 +3,6 @@ import QUERY_KEYS from '@/utils/contants/queries';
 import { useQuery } from '@tanstack/react-query';
 import { studentsApi } from '.';
 import { ResponseDto } from '@/dtos/ResponseDto';
-import { StudentRegisterPayload } from '@/dtos/StudentDto';
 
 export const useGetStudent = (studentId?: string) =>
     useQuery({
@@ -12,5 +11,14 @@ export const useGetStudent = (studentId?: string) =>
         queryFn: () =>
             studentsApi
                 .get(`/${studentId}`)
+                .then((res: ResponseDto<StudentProfile>) => res.data),
+    });
+
+export const useGetStudentProfile = () =>
+    useQuery({
+        queryKey: [QUERY_KEYS.STUDENT_PROFILE],
+        queryFn: () =>
+            studentsApi
+                .get(`/me`)
                 .then((res: ResponseDto<StudentProfile>) => res.data),
     });

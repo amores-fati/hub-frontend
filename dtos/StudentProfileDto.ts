@@ -1,3 +1,12 @@
+import {
+    Gender,
+    Race,
+    Scholarship,
+    SocialBenefit,
+    StudentRegisterPayload,
+    WhoInformed,
+} from './StudentDto';
+
 export type StudentDisability = {
     studentId: string;
     hasDisability: boolean;
@@ -17,17 +26,26 @@ export type StudentContact = {
 
 export type StudentProfile = {
     id: string;
+    fullName: string;
+    committedToParticipate: boolean;
+    hasProgrammingExperience: boolean;
+    hasInternet: boolean;
+    hasComputer: boolean;
+    howHeard: WhoInformed;
+    benefit: SocialBenefit;
+    householdSize: string;
     email: string;
     cpf: string;
     contact: StudentContact;
     birthDate: string;
-    gender: string;
-    race: string;
-    education?: string;
+    gender: Gender;
+    race: Race;
+    education: Scholarship;
     institution?: string;
     activityArea?: string;
     disability?: StudentDisability;
     socialName?: string;
+    motivation: string;
 };
 
 export type UpdateStudentProfilePayload = {
