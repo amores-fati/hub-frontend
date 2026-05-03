@@ -8,6 +8,7 @@ import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useRegisterInterest } from '@/services/api/courses/mutations';
 import { useGetCourses, useGetMyEnrollments } from '@/services/api/courses/queries';
 import { useGetPublicSetting } from '@/services/api/settings/queries';
+import { useGetStudentProfile } from '@/services/api/students/queries';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PersonIcon from '@mui/icons-material/Person';
@@ -26,6 +27,7 @@ export default function CursosAluno() {
     const { data: enrollments, isLoading: enrollmentsLoading } =
         useGetMyEnrollments(isStudent);
     const { data: whatsappSetting } = useGetPublicSetting('whatsapp_phone');
+    const { data: studentProfile } = useGetStudentProfile();
 
     const interest = useRegisterInterest();
     const isMutating = interest.isPending;
@@ -51,7 +53,11 @@ export default function CursosAluno() {
     const whatsappDigits = whatsappSetting?.value?.replace(/\D/g, '');
     const whatsappUrl = whatsappDigits ? `https://wa.me/${whatsappDigits}` : null;
 
-    const displayName = user?.email?.split('@')[0]?.toUpperCase() ?? 'ALUNO';
+    const displayName =
+        studentProfile?.fullName?.trim() ||
+        studentProfile?.socialName?.trim() ||
+        user?.email?.split('@')[0] ||
+        'aluno';
 
     function openModal(course: CourseDto, action: CourseAction) {
         setModal({ course, action });
