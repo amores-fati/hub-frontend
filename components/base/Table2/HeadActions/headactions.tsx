@@ -1,6 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import IconButton from '@mui/material/IconButton';
+import { TableActionColumnConfig, resolveVisibility } from '../../Table/table';
 
-export default function HeadActions<T>() {
+type HeadActionsProps<T> = {
+    row: T;
+    actionColumnConfig: TableActionColumnConfig<T>;
+};
+
+export default function HeadActions<T>({
+    row,
+    actionColumnConfig,
+}: HeadActionsProps<T>) {
     return (
         <td>
             <div className='custom-table__actions'>

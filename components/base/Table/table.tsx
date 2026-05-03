@@ -22,7 +22,7 @@ export type TableColumn<T> = {
 
 type ActionVisibility<T> = boolean | ((row: T) => boolean);
 
-const resolveVisibility = <T,>(
+export const resolveVisibility = <T,>(
     value: ActionVisibility<T> | undefined,
     row: T,
 ) => (typeof value === 'function' ? value(row) : Boolean(value));
