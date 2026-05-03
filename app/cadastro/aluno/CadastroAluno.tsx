@@ -57,7 +57,7 @@ export const DEFAULT_FORM = {
     },
     peopleInHouse: '',
     socialBenefit: undefined,
-}
+};
 
 export enum StepperSteps {
     STEP1 = 1,
@@ -81,7 +81,9 @@ export default function CadastroAluno() {
     const [activeStep, setActiveStep] = useState<StepperSteps>(
         StepperSteps.STEP1,
     );
-    const [form, setForm] = useState<StudentRegisterPayload>({ ...DEFAULT_FORM });
+    const [form, setForm] = useState<StudentRegisterPayload>({
+        ...DEFAULT_FORM,
+    });
 
     const { mutate, error, data } = useStudentRegister(form);
 

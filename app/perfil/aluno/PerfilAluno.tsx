@@ -6,10 +6,22 @@ import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
 import CheckIcon from '@mui/icons-material/Check';
 import { CardActions, CardContent } from '@mui/material';
 import { useState } from 'react';
-import { RegisterStep1, validateFormStep1 } from '@/app/cadastro/aluno/RegisterStep1';
-import { RegisterStep2, validateFormStep2 } from '@/app/cadastro/aluno/RegisterStep2';
-import { RegisterStep3, validateFormStep3 } from '@/app/cadastro/aluno/RegisterStep3';
-import { RegisterStep4, validateFormStep4 } from '@/app/cadastro/aluno/RegisterStep4';
+import {
+    RegisterStep1,
+    validateFormStep1,
+} from '@/app/cadastro/aluno/RegisterStep1';
+import {
+    RegisterStep2,
+    validateFormStep2,
+} from '@/app/cadastro/aluno/RegisterStep2';
+import {
+    RegisterStep3,
+    validateFormStep3,
+} from '@/app/cadastro/aluno/RegisterStep3';
+import {
+    RegisterStep4,
+    validateFormStep4,
+} from '@/app/cadastro/aluno/RegisterStep4';
 import './index.scss';
 import { useStudentRegister } from '@/services/api/students/mutations';
 import { useGetStudent } from '@/services/api/students/queries';
@@ -37,9 +49,7 @@ export default function PerfilAluno() {
     //     return <Loading />
     // }
 
-    return (
-        <CadastroAluno data={data! ?? { ...DEFAULT_FORM }} />
-    )
+    return <CadastroAluno data={data! ?? { ...DEFAULT_FORM }} />;
 }
 
 function CadastroAluno({ data }: { data: StudentRegisterPayload }) {
