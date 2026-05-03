@@ -1,17 +1,18 @@
 {
-    "permissions": {
-        "allow": [
-            "mcp__plugin_playwright_playwright__browser_type",
-            "mcp__plugin_playwright_playwright__browser_click",
-            "mcp__plugin_playwright_playwright__browser_handle_dialog",
-            "Bash(npx next:*)",
-            "Bash(sed -n '390,410p' /home/ana/hub-frontend/app/alunos/AdminStudents.tsx)",
-            "Bash(sed -n '44,46p' /home/ana/hub-frontend/app/alunos/AdminStudents.tsx)",
-            "Bash(sed -n '779,793p' /home/ana/hub-frontend/app/alunos/AdminStudents.tsx)",
-            "Bash(sed -n '155,163p' /home/ana/hub-frontend/app/cadastro/aluno/CadastroAluno.tsx)",
-            "Bash(sed -n '450,455p' /home/ana/hub-frontend/components/AdminStudents/AdminStudents.tsx)",
-            "Bash(sed -n '1,5p' /home/ana/hub-frontend/components/base/Table2/HeadActions/headactions.tsx)",
-            "Bash(sed -n '224,232p' /home/ana/hub-frontend/components/base/Table2/table.tsx)"
-        ]
-    }
+  "permissions": {
+    "allow": [
+      "mcp__plugin_playwright_playwright__browser_type",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_handle_dialog",
+      "Bash(npx next:*)",
+      "Bash(sed -n '390,410p' /home/ana/hub-frontend/app/alunos/AdminStudents.tsx)",
+      "Bash(sed -n '44,46p' /home/ana/hub-frontend/app/alunos/AdminStudents.tsx)",
+      "Bash(sed -n '779,793p' /home/ana/hub-frontend/app/alunos/AdminStudents.tsx)",
+      "Bash(sed -n '155,163p' /home/ana/hub-frontend/app/cadastro/aluno/CadastroAluno.tsx)",
+      "Bash(sed -n '450,455p' /home/ana/hub-frontend/components/AdminStudents/AdminStudents.tsx)",
+      "Bash(sed -n '1,5p' /home/ana/hub-frontend/components/base/Table2/HeadActions/headactions.tsx)",
+      "Bash(sed -n '224,232p' /home/ana/hub-frontend/components/base/Table2/table.tsx)",
+      "Bash(npm run *)"
+    ]
+  }
 }

@@ -13,7 +13,6 @@ import {
     AdminStudentDto,
     AdminStudentsQueryParams,
     AdminStudentsResponseDto,
-    AdminStudentsSortField,
 } from '@/dtos/AdminStudentDto';
 
 type MockStudentSeed = {
@@ -90,7 +89,7 @@ const studentSeeds: MockStudentSeed[] = [
         address: 'Rua das Gaivotas, 120',
         neighbourhood: 'Centro',
         disabilityType: AdminStudentDisabilityType.NONE,
-        scholarship: Scholarship.COMPLETE_MEDIUM,
+        scholarship: Scholarship.SECONDARY,
         institution: 'E.E.B. Santa Catarina',
         whyJoinFatiLab:
             'Quero iniciar minha carreira em tecnologia e ampliar minhas oportunidades.',
@@ -122,7 +121,7 @@ const studentSeeds: MockStudentSeed[] = [
         address: 'Av. Borges de Medeiros, 450',
         neighbourhood: 'Centro Historico',
         disabilityType: AdminStudentDisabilityType.PHYSICAL,
-        scholarship: Scholarship.INCOMPLETE_SUPERIOR,
+        scholarship: Scholarship.HIGHER,
         institution: 'UFRGS',
         whyJoinFatiLab:
             'Busco recolocacao e atualizacao profissional para atuar com dados.',
@@ -155,7 +154,7 @@ const studentSeeds: MockStudentSeed[] = [
         address: 'Rua Bocaiuva, 890',
         neighbourhood: 'Centro',
         disabilityType: AdminStudentDisabilityType.NONE,
-        scholarship: Scholarship.COMPLETE_MEDIUM,
+        scholarship: Scholarship.SECONDARY,
         institution: 'IFSC',
         whyJoinFatiLab:
             'Tenho interesse em frontend e quero construir portfolio.',
@@ -187,7 +186,7 @@ const studentSeeds: MockStudentSeed[] = [
         address: 'Rua Riachuelo, 78',
         neighbourhood: 'Cidade Baixa',
         disabilityType: AdminStudentDisabilityType.VISUAL,
-        scholarship: Scholarship.COMPLETE_MEDIUM,
+        scholarship: Scholarship.SECONDARY,
         institution: 'EEEM Julio de Castilhos',
         whyJoinFatiLab: 'Quero voltar a estudar e migrar para a area digital.',
         whomInformed: WhoInformed.OTHERS,
@@ -218,7 +217,7 @@ const studentSeeds: MockStudentSeed[] = [
         address: 'Rua Marechal Deodoro, 600',
         neighbourhood: 'Centro',
         disabilityType: AdminStudentDisabilityType.NONE,
-        scholarship: Scholarship.COMPLETE_SUPERIOR,
+        scholarship: Scholarship.HIGHER,
         institution: 'PUC-PR',
         whyJoinFatiLab:
             'Procuro qualificacao complementar para ingressar em QA.',
@@ -251,7 +250,7 @@ const studentSeeds: MockStudentSeed[] = [
         address: 'Rua XV de Novembro, 150',
         neighbourhood: 'Centro',
         disabilityType: AdminStudentDisabilityType.HEARING,
-        scholarship: Scholarship.INCOMPLETE_SUPERIOR,
+        scholarship: Scholarship.HIGHER,
         institution: 'UTFPR',
         whyJoinFatiLab:
             'Quero desenvolver novas habilidades para trabalhar remotamente.',
@@ -514,6 +513,7 @@ const buildStudents = (): AdminStudentDto[] =>
         .map((student) => ({
             id: student.id,
             fullName: student.fullName,
+            course: student.course?.name ?? 'Não inscrito',
             socialName: student.socialName ?? '',
             cpf: student.cpf,
             birthDate: student.birthDate ?? '1998-01-01',
@@ -531,7 +531,7 @@ const buildStudents = (): AdminStudentDto[] =>
             isPcd: student.disabilityType !== AdminStudentDisabilityType.NONE,
             disabilityType: student.disabilityType,
             enrolledCourse: student.course,
-            scholarship: student.scholarship ?? Scholarship.COMPLETE_MEDIUM,
+            scholarship: student.scholarship ?? Scholarship.SECONDARY,
             institution: student.institution ?? 'Instituicao nao informada',
             whyJoinFatiLab:
                 student.whyJoinFatiLab ??
@@ -599,7 +599,7 @@ const filterStudents = (
 
 const getSortableValue = (
     student: AdminStudentDto,
-    sortBy: AdminStudentsSortField,
+    sortBy: string,
 ) => {
     if (sortBy === 'fullName') {
         return normalize(student.fullName);

@@ -1,4 +1,4 @@
-import { Sort } from '@/stores/TableStoreProvider';
+import { SortDirection } from '@/stores/TableStoreProvider';
 import {
     FamilyIncome,
     Gender,
@@ -80,7 +80,7 @@ export type AdminStudentsQueryParams = {
     locations?: string[];
     courseTypes?: string[];
     sortBy?: string;
-    sortOrder?: Sort;
+    sortOrder?: SortDirection;
 };
 
 export type AdminStudentsResponseDto = {
@@ -89,3 +89,7 @@ export type AdminStudentsResponseDto = {
     page: number;
     limit: number;
 };
+
+export type AdminStudentsSortField = 'fullName' | 'course' | 'contact' | 'location' | 'pcd';
+
+export type AdminStudentsSortOrder = SortDirection;

@@ -87,10 +87,11 @@ const raceLabels: Record<Race, string> = {
 };
 
 const scholarshipLabels: Record<Scholarship, string> = {
-    [Scholarship.INCOMPLETE_FUNDAMENTAL]: 'Fundamental incompleto',
-    [Scholarship.COMPLETE_MEDIUM]: 'Médio completo',
-    [Scholarship.INCOMPLETE_SUPERIOR]: 'Superior incompleto',
-    [Scholarship.COMPLETE_SUPERIOR]: 'Superior completo',
+    [Scholarship.NO_EDUCATION]: 'Sem escolaridade',
+    [Scholarship.PRIMARY]: 'Ensino fundamental',
+    [Scholarship.SECONDARY]: 'Ensino médio',
+    [Scholarship.HIGHER]: 'Ensino superior',
+    [Scholarship.POSTGRADUATE]: 'Pós-graduação',
 };
 
 const whoInformedLabels: Record<WhoInformed, string> = {
