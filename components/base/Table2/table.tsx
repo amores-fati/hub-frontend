@@ -79,6 +79,20 @@ function HeaderCell<T>({ cell }: { cell: Cells<T>; }) {
             <CheckBoxHeader key={`table-head-cell-${String(cell.key)}`} cell={cell} />
         )
     }
+
+    if (!cell.sortable) {
+        return (
+            <TableCell
+                key={`table-head-cell-${String(cell.key)}`}
+                component="th"
+                scope="row"
+                align='center'
+            >
+                {cell.header}
+            </TableCell>
+        )
+    }
+
     return (
         <TableCell
             key={`table-head-cell-${String(cell.key)}`}
@@ -139,7 +153,7 @@ function Cell<T>({ cell, row }: { cell: Cells<T>; row: (T & { id: number | strin
         return (
             <TableCell
                 key={`table-body-row-${row.id}-cell-${String(cell.key)}`}
-                align="right"
+                align="center"
             >
                 {cell.render(row)}
             </TableCell>

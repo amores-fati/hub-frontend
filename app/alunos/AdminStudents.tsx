@@ -342,7 +342,7 @@ const exportStudentsToPdf = (
             </head>
             <body>
                 <h1>${title}</h1>
-                <p>Data de geracao: ${generatedAt}</p>
+                <p>Data de geração: ${generatedAt}</p>
                 <p>Total de alunos: ${students.length}</p>
                 <table>
                     <thead>
@@ -351,7 +351,7 @@ const exportStudentsToPdf = (
                             <th>CPF</th>
                             <th>Curso</th>
                             <th>Contato</th>
-                            <th>Localizacao</th>
+                            <th>Localização</th>
                             <th>PCD</th>
                         </tr>
                     </thead>
@@ -401,7 +401,7 @@ const handleExportSelected = async (selectedStudents: AdminStudentDto[]) => {
     const printWindow = window.open('', '_blank', 'width=1120,height=840');
 
     try {
-        exportStudentsToPdf(printWindow, selectedStudents, 'Alunos selecionados');
+        exportStudentsToPdf(printWindow, selectedStudents, 'Gestão de Alunos');
     } catch {
         printWindow?.close();
         toast.error('Não foi possível exportar os alunos selecionados.');
@@ -438,6 +438,7 @@ function AdminStudents() {
     const [selectedStudent, setSelectedStudent] =
         useState<AdminStudentDto | null>(null);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
 
     const isAdmin = !user || user.role === UserRole.ADMIN;
 
@@ -467,7 +468,27 @@ function AdminStudents() {
     const selectedCountLabel = `${Object.keys(selectedStudents).length} aluno${Object.keys(selectedStudents).length === 1 ? '' : 's'
         } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
 
+    const handleExportAll = async () => {
+        const printWindow = window.open('', '_blank', 'width=1120,height=840');
+        setIsExporting(true);
+        try {
+            const students = await getStudentsForExport(filters);
+            if (students.length === 0) {
+                printWindow?.close();
+                toast.info('Nenhum aluno encontrado para exportar.');
+                return;
+            }
+            exportStudentsToPdf(printWindow, students, 'Gestão de Alunos');
+        } catch {
+            printWindow?.close();
+            toast.error('Não foi possível exportar a lista de alunos.');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     const handleApplyAllFilters = () => {
+        setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
             courseTypes: draftCourseTypes.map((option) => String(option.value)),
@@ -483,6 +504,7 @@ function AdminStudents() {
         setDraftCourseTypes([]);
         setDraftLocations([]);
         setDraftDisabilityTypes([]);
+        setPaginator({ page: 1 });
         setFilters(initialFiltersState);
     };
 
@@ -604,15 +626,13 @@ function AdminStudents() {
     }, [])
 
     useEffect(() => {
-        if (!data || !data?.data) return
-        setContent(data?.data!)
+        if (!data?.data) return
+        setContent(data.data)
         setPaginator({
-            ...paginator,
             itemsCount: data.total,
-            page: data.page,
-            isLoading: false
+            isLoading: false,
         })
-    }, [isLoading])
+    }, [data])
 
     return (
         <section className='admin-students'>
@@ -630,15 +650,15 @@ function AdminStudents() {
                         onClick={() => {
                             void handleExportAll();
                         }}
-                        disabled={true || isLoading}
+                        disabled={isExporting || isLoading}
                     >
                         <span className='admin-students__button-content'>
-                            {true ? (
+                            {isExporting ? (
                                 <CircularProgress size={16} />
                             ) : (
                                 <FileDownloadOutlinedIcon fontSize='small' />
                             )}
-                            Exportar Lista
+                            Exportar todos alunos
                         </span>
                     </ButtonComponent>
                 </div>
@@ -658,9 +678,6 @@ function AdminStudents() {
                             placeholder='Buscar por nome, CPF, email...'
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
-                        <small className='admin-students__search-helper'>
-                            A busca funciona com qualquer quantidade de caracteres.
-                        </small>
                     </div>
 
                     <ButtonComponent
@@ -683,6 +700,10 @@ function AdminStudents() {
                         </span>
                     </ButtonComponent>
                 </div>
+
+                <small className='admin-students__search-helper'>
+                    A busca funciona com qualquer quantidade de caracteres.
+                </small>
 
                 <button
                     className='admin-students__advanced-toggle'

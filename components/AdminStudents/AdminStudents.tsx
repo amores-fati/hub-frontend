@@ -356,7 +356,7 @@ const exportStudentsToPdf = (
             </head>
             <body>
                 <h1>${title}</h1>
-                <p>Data de geracao: ${generatedAt}</p>
+                <p>Data de geração: ${generatedAt}</p>
                 <p>Filtros aplicados: ${summary}</p>
                 <p>Total de alunos: ${students.length}</p>
                 <table>
@@ -366,7 +366,7 @@ const exportStudentsToPdf = (
                             <th>CPF</th>
                             <th>Curso</th>
                             <th>Contato</th>
-                            <th>Localizacao</th>
+                            <th>Localização</th>
                             <th>PCD</th>
                         </tr>
                     </thead>
@@ -590,7 +590,7 @@ export function AdminStudents() {
                 printWindow,
                 studentsForExport,
                 filters,
-                'Lista de alunos',
+                'Gestão de Alunos',
             );
         } catch {
             printWindow?.close();
@@ -620,7 +620,7 @@ export function AdminStudents() {
                 printWindow,
                 selectedStudents,
                 filters,
-                'Alunos selecionados',
+                'Gestão de Alunos',
             );
         } catch {
             printWindow?.close();
@@ -747,7 +747,7 @@ export function AdminStudents() {
                             ) : (
                                 <FileDownloadOutlinedIcon fontSize='small' />
                             )}
-                            Exportar Lista
+                            Exportar todos alunos
                         </span>
                     </ButtonComponent>
                 </div>
