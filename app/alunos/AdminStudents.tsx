@@ -24,7 +24,17 @@ import {
     useGetAdminStudents,
 } from '@/services/api/admin/students/queries';
 import { Option } from '@/components/base/Select/select';
-import { Avatar, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import {
+    Avatar,
+    Chip,
+    CircularProgress,
+    Collapse,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+} from '@mui/material';
 import Checkbox from '@/components/base/Checkbox/checkbox';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
@@ -39,10 +49,15 @@ import { ButtonComponent } from '@/components/base/Button/button';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import './index.scss';
-import { Action, State, TableStoreProvider, useTableStore } from '@/stores/TableStoreProvider';
+import {
+    Action,
+    State,
+    TableStoreProvider,
+    useTableStore,
+} from '@/stores/TableStoreProvider';
 import { Cells, CellType } from '../../components/base/Table2/types';
 import BasicTable from '../../components/base/Table2/table';
-import { deleteConfirmation } from './swal';
+import { deleteConfirmation } from './Swal';
 
 const PAGE_SIZE = 20;
 
@@ -170,12 +185,11 @@ const initialFiltersState: AppliedFiltersState = {
     locations: [],
 };
 
-const locationOptions: Option[] = getAdminStudentsFilterOptionsMock().locations.map(
-    (location) => ({
+const locationOptions: Option[] =
+    getAdminStudentsFilterOptionsMock().locations.map((location) => ({
         value: location,
         label: location,
-    }),
-);
+    }));
 
 const normalizeText = (value: string) =>
     value
@@ -391,7 +405,7 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
     return [firstPage, ...pages].flatMap((page) => page.data);
 }
 
-const handleExportSelected = async (selectedStudents: AdminStudentDto[]) => {
+const handleExportSelected = (selectedStudents: AdminStudentDto[]) => {
     if (selectedStudents.length === 0) {
         toast.info('Selecione pelo menos um aluno para exportar.');
         return;
@@ -409,12 +423,11 @@ const handleExportSelected = async (selectedStudents: AdminStudentDto[]) => {
 };
 
 export default function Index() {
-
     return (
         <TableStoreProvider>
             <AdminStudents />
         </TableStoreProvider>
-    )
+    );
 }
 
 function AdminStudents() {
@@ -422,8 +435,12 @@ function AdminStudents() {
         ...state.paginator,
     }));
     const setPaginator = useTableStore((state) => state.setPaginator);
-    const setCells = useTableStore((s: State<AdminStudentDto> & Action<AdminStudentDto>) => s.setCells);
-    const setContent = useTableStore((s: State<AdminStudentDto> & Action<AdminStudentDto>) => s.setContent);
+    const setCells = useTableStore(
+        (s: State<AdminStudentDto> & Action<AdminStudentDto>) => s.setCells,
+    );
+    const setContent = useTableStore(
+        (s: State<AdminStudentDto> & Action<AdminStudentDto>) => s.setContent,
+    );
     const selectedStudents = useTableStore((state) => state.selectedRows);
 
     const { user } = useAuth();
@@ -452,21 +469,22 @@ function AdminStudents() {
             locations: filters.locations,
             sortBy: paginator.orderColumn,
             sortOrder: paginator.orderDirection,
-        }
-    }
+        };
+    };
 
-    const {
-        data,
-        isLoading,
-        isFetching,
-        isError,
-    } = useGetAdminStudents(getParameters(), isAdmin);
+    const { data, isLoading, isFetching, isError } = useGetAdminStudents(
+        getParameters(),
+        isAdmin,
+    );
 
-    const { mutate: deleteStudentsMutation } = useDeleteAdminStudents(Object.keys(selectedStudents));
+    const { mutate: deleteStudentsMutation } = useDeleteAdminStudents(
+        Object.keys(selectedStudents),
+    );
 
     const students = data?.data ?? [];
-    const selectedCountLabel = `${Object.keys(selectedStudents).length} aluno${Object.keys(selectedStudents).length === 1 ? '' : 's'
-        } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
+    const selectedCountLabel = `${Object.keys(selectedStudents).length} aluno${
+        Object.keys(selectedStudents).length === 1 ? '' : 's'
+    } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
 
     const handleExportAll = async () => {
         const printWindow = window.open('', '_blank', 'width=1120,height=840');
@@ -520,7 +538,7 @@ function AdminStudents() {
             key: 'id',
             header: '',
             type: CellType.CHECKBOX,
-            sortable: false
+            sortable: false,
         },
         {
             key: 'fullName',
@@ -589,7 +607,9 @@ function AdminStudents() {
             header: 'Localização',
             sortable: true,
             render: (student: AdminStudentDto) => (
-                <>{normalizeText(student.city)}/{student.state}</>
+                <>
+                    {normalizeText(student.city)}/{student.state}
+                </>
             ),
         },
         {
@@ -622,17 +642,17 @@ function AdminStudents() {
     ];
 
     useEffect(() => {
-        setCells(cells)
-    }, [])
+        setCells(cells);
+    }, []);
 
     useEffect(() => {
-        if (!data?.data) return
-        setContent(data.data)
+        if (!data?.data) return;
+        setContent(data.data);
         setPaginator({
             itemsCount: data.total,
             isLoading: false,
-        })
-    }, [data])
+        });
+    }, [data]);
 
     return (
         <section className='admin-students'>
@@ -669,7 +689,9 @@ function AdminStudents() {
                     <div className='admin-students__search-input'>
                         <Input
                             value={searchInput}
-                            onChange={(event) => setSearchInput(event.target.value)}
+                            onChange={(event) =>
+                                setSearchInput(event.target.value)
+                            }
                             onKeyDown={(event) => {
                                 if (event.key === 'Enter') {
                                     handleApplyAllFilters();
@@ -762,7 +784,9 @@ function AdminStudents() {
                                 options={disabilityOptions}
                                 value={draftDisabilityTypes}
                                 onChange={(options) =>
-                                    setDraftDisabilityTypes([...(options ?? [])])
+                                    setDraftDisabilityTypes([
+                                        ...(options ?? []),
+                                    ])
                                 }
                                 isSearchable
                             />
@@ -771,14 +795,20 @@ function AdminStudents() {
                 </Collapse>
             </div>
 
-            {(Object.keys(selectedStudents).length) > 0 && (
+            {Object.keys(selectedStudents).length > 0 && (
                 <div className='admin-students__bulk-bar'>
                     <strong>{selectedCountLabel}</strong>
 
                     <div className='admin-students__bulk-actions'>
                         <button
                             type='button'
-                            onClick={() => handleExportSelected(Object.values(selectedStudents) as AdminStudentDto[])}
+                            onClick={() => {
+                                handleExportSelected(
+                                    Object.values(
+                                        selectedStudents,
+                                    ) as AdminStudentDto[],
+                                );
+                            }}
                         >
                             <PictureAsPdfRoundedIcon fontSize='small' />
                             Exportar selecionados
@@ -787,7 +817,10 @@ function AdminStudents() {
                         <button
                             type='button'
                             onClick={() => {
-                                deleteConfirmation(deleteStudentsMutation, Object.keys(selectedStudents))
+                                void deleteConfirmation(
+                                    deleteStudentsMutation,
+                                    Object.keys(selectedStudents),
+                                );
                             }}
                         >
                             <DeleteOutlineRoundedIcon fontSize='small' />
@@ -811,7 +844,9 @@ function AdminStudents() {
                     </div>
                 ) : students.length === 0 ? (
                     <div className='admin-students__empty-state'>
-                        <h2>Nenhum aluno encontrado com os filtros aplicados.</h2>
+                        <h2>
+                            Nenhum aluno encontrado com os filtros aplicados.
+                        </h2>
                         <p>Tente ajustar a busca ou limpar os filtros.</p>
                     </div>
                 ) : (
@@ -830,7 +865,10 @@ function AdminStudents() {
                 <DialogTitle className='admin-students__dialog-title'>
                     Perfil do aluno
                 </DialogTitle>
-                <DialogContent dividers className='admin-students__dialog-content'>
+                <DialogContent
+                    dividers
+                    className='admin-students__dialog-content'
+                >
                     {selectedStudent && (
                         <div className='admin-students__details'>
                             <div className='admin-students__details-header'>
@@ -852,9 +890,9 @@ function AdminStudents() {
                                         <Chip
                                             label={
                                                 courseTypeLabels[
-                                                getCourseType(
-                                                    selectedStudent,
-                                                )
+                                                    getCourseType(
+                                                        selectedStudent,
+                                                    )
                                                 ]
                                             }
                                             className={getCourseBadgeClassName(
@@ -864,8 +902,8 @@ function AdminStudents() {
                                         <Chip
                                             label={
                                                 disabilityLabels[
-                                                selectedStudent
-                                                    .disabilityType
+                                                    selectedStudent
+                                                        .disabilityType
                                                 ]
                                             }
                                             className={getDisabilityBadgeClassName(
@@ -879,7 +917,9 @@ function AdminStudents() {
                             <section className='admin-students__details-section'>
                                 <div className='admin-students__details-section-header'>
                                     <h4>Dados pessoais</h4>
-                                    <span>Informações principais do cadastro</span>
+                                    <span>
+                                        Informações principais do cadastro
+                                    </span>
                                 </div>
                                 <div className='admin-students__details-grid'>
                                     <div>
@@ -895,7 +935,9 @@ function AdminStudents() {
                                     </div>
                                     <div>
                                         <strong>CPF</strong>
-                                        <span>{formatCpf(selectedStudent.cpf)}</span>
+                                        <span>
+                                            {formatCpf(selectedStudent.cpf)}
+                                        </span>
                                     </div>
                                     <div>
                                         <strong>Data de nascimento</strong>
@@ -916,8 +958,8 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.gender
                                                 ? genderLabels[
-                                                selectedStudent.gender
-                                                ]
+                                                      selectedStudent.gender
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -926,8 +968,8 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.race
                                                 ? raceLabels[
-                                                selectedStudent.race
-                                                ]
+                                                      selectedStudent.race
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -980,9 +1022,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.scholarship
                                                 ? scholarshipLabels[
-                                                selectedStudent
-                                                    .scholarship
-                                                ]
+                                                      selectedStudent
+                                                          .scholarship
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1016,9 +1058,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.whomInformed
                                                 ? whoInformedLabels[
-                                                selectedStudent
-                                                    .whomInformed
-                                                ]
+                                                      selectedStudent
+                                                          .whomInformed
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1027,9 +1069,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.familyIncome
                                                 ? familyIncomeLabels[
-                                                selectedStudent
-                                                    .familyIncome
-                                                ]
+                                                      selectedStudent
+                                                          .familyIncome
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1045,9 +1087,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.socialBenefit
                                                 ? socialBenefitLabels[
-                                                selectedStudent
-                                                    .socialBenefit
-                                                ]
+                                                      selectedStudent
+                                                          .socialBenefit
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1068,7 +1110,9 @@ function AdminStudents() {
                                         </span>
                                     </div>
                                     <div>
-                                        <strong>Compromisso com as aulas</strong>
+                                        <strong>
+                                            Compromisso com as aulas
+                                        </strong>
                                         <span>
                                             {getBooleanLabel(
                                                 selectedStudent.compromisedToClasses,
@@ -1076,7 +1120,9 @@ function AdminStudents() {
                                         </span>
                                     </div>
                                     <div className='admin-students__details-grid-item--full'>
-                                        <strong>Motivação para o FatiLab</strong>
+                                        <strong>
+                                            Motivação para o FatiLab
+                                        </strong>
                                         <span>
                                             {selectedStudent.whyJoinFatiLab ||
                                                 'Não informado'}
@@ -1094,7 +1140,9 @@ function AdminStudents() {
                                 </div>
                                 <div className='admin-students__details-grid'>
                                     <div>
-                                        <strong>Experiência em programação</strong>
+                                        <strong>
+                                            Experiência em programação
+                                        </strong>
                                         <span>
                                             {getBooleanLabel(
                                                 selectedStudent.hasWorkExperience,
@@ -1129,8 +1177,8 @@ function AdminStudents() {
                                         <span>
                                             {
                                                 disabilityLabels[
-                                                selectedStudent
-                                                    .disabilityType
+                                                    selectedStudent
+                                                        .disabilityType
                                                 ]
                                             }
                                         </span>
@@ -1140,9 +1188,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.lgpd
                                                 ? getBooleanLabel(
-                                                    selectedStudent.lgpd
-                                                        .terms,
-                                                )
+                                                      selectedStudent.lgpd
+                                                          .terms,
+                                                  )
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1151,9 +1199,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.lgpd
                                                 ? getBooleanLabel(
-                                                    selectedStudent.lgpd
-                                                        .imageUsage,
-                                                )
+                                                      selectedStudent.lgpd
+                                                          .imageUsage,
+                                                  )
                                                 : 'Não informado'}
                                         </span>
                                     </div>

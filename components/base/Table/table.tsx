@@ -22,8 +22,10 @@ export type TableColumn<T> = {
 
 type ActionVisibility<T> = boolean | ((row: T) => boolean);
 
-const resolveVisibility = <T,>(value: ActionVisibility<T> | undefined, row: T) =>
-    typeof value === 'function' ? value(row) : Boolean(value);
+const resolveVisibility = <T,>(
+    value: ActionVisibility<T> | undefined,
+    row: T,
+) => (typeof value === 'function' ? value(row) : Boolean(value));
 
 export type TableActionColumnConfig<T> = {
     showWhatsapp?: ActionVisibility<T>;

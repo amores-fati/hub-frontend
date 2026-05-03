@@ -291,17 +291,11 @@ export function Form({
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Cidade</p>
-                    <Input
-                        onChange={onCityChange}
-                        value={form.city ?? ''}
-                    />
+                    <Input onChange={onCityChange} value={form.city ?? ''} />
                 </div>
                 <div className='register-steps__field'>
                     <p className='field-label'>Estado</p>
-                    <Input
-                        onChange={onStateChange}
-                        value={form.state ?? ''}
-                    />
+                    <Input onChange={onStateChange} value={form.state ?? ''} />
                 </div>
             </div>
 

@@ -18,7 +18,8 @@ export const ROWS_PER_PAGE_OPTIONS = [
 
 const getFrom = (paginator: Paginator, page: number) => {
     let value = 0;
-    if (paginator.itemsCount) value = paginator.rowsPerPage * page - (paginator.rowsPerPage - 1);
+    if (paginator.itemsCount)
+        value = paginator.rowsPerPage * page - (paginator.rowsPerPage - 1);
     return value;
 };
 
@@ -139,7 +140,10 @@ export default function TablePaginator() {
                     isSearchable={false}
                     options={ROWS_PER_PAGE_OPTIONS}
                     onChange={handleChange}
-                    value={{ value: paginator.rowsPerPage, label: paginator.rowsPerPage + '' }}
+                    value={{
+                        value: paginator.rowsPerPage,
+                        label: paginator.rowsPerPage + '',
+                    }}
                 />
             </div>
 
@@ -147,22 +151,38 @@ export default function TablePaginator() {
             <p className='sass-showing'>
                 {paginator.from}-{paginator.to} de {paginator.itemsCount} itens
             </p>
-            <div className='sass-arrow' aria-disabled={paginator.page === 1 || paginator.page === undefined}>
+            <div
+                className='sass-arrow'
+                aria-disabled={
+                    paginator.page === 1 || paginator.page === undefined
+                }
+            >
                 <button onClick={setFirstPage}>
                     <KeyboardDoubleArrowLeft />
                 </button>
             </div>
-            <div className='sass-arrow' aria-disabled={paginator.page === 1 || paginator.page === undefined}>
+            <div
+                className='sass-arrow'
+                aria-disabled={
+                    paginator.page === 1 || paginator.page === undefined
+                }
+            >
                 <button onClick={setPagePrevious}>
                     <KeyboardArrowLeft />
                 </button>
             </div>
-            <div className='sass-arrow' aria-disabled={paginator.to === paginator.itemsCount}>
+            <div
+                className='sass-arrow'
+                aria-disabled={paginator.to === paginator.itemsCount}
+            >
                 <button onClick={setPageNext}>
                     <KeyboardArrowRight />
                 </button>
             </div>
-            <div className='sass-arrow' aria-disabled={paginator.to === paginator.itemsCount}>
+            <div
+                className='sass-arrow'
+                aria-disabled={paginator.to === paginator.itemsCount}
+            >
                 <button onClick={setLastPage}>
                     <KeyboardDoubleArrowRight />
                 </button>

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 export enum CellType {
     TEXT = 'text',
@@ -15,4 +15,4 @@ export type Cells<T> = {
     // type: CellType;
     render?: (row: T & { id: number | string; actions: any }) => ReactNode;
     sortable: boolean;
-}
+};

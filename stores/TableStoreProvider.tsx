@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useMemo, PropsWithChildren } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useMemo,
+    PropsWithChildren,
+} from 'react';
 import { useStore } from 'zustand';
 import { createStore, StoreApi } from 'zustand/vanilla';
 import { Cells } from '@/components/base/Table2/types';
@@ -17,13 +22,12 @@ export type Paginator = {
     from: number;
     to: number;
     isLoading: boolean;
-}
+};
 
 export type RowsPerPage = {
     value: number;
     label: string;
-}
-
+};
 
 // Define your state and actions
 export type State<T> = {
@@ -31,7 +35,7 @@ export type State<T> = {
     cells: Cells<T>[];
     content: (T & { id: number | string })[];
     paginator: Paginator;
-    selectedRows: { [key: ID]: T }
+    selectedRows: { [key: ID]: T };
     allPagesSelected: boolean;
 };
 
@@ -43,7 +47,9 @@ export type Action<T> = {
     setCells: (cells: Cells<T>[]) => void;
     setContent: (content: (T & { id: number | string })[]) => void;
     setPaginator: (
-        paginator: Partial<State<T>['paginator']> | ((prev: State<T>['paginator']) => Partial<State<T>['paginator']>)
+        paginator:
+            | Partial<State<T>['paginator']>
+            | ((prev: State<T>['paginator']) => Partial<State<T>['paginator']>),
     ) => void;
     setSort: (orderColumn: string, orderDirection: SortDirection) => void;
     reset: () => void;
@@ -70,23 +76,38 @@ export function createTableStoreProvider<T>() {
         selectedRows: {},
         allPagesSelected: false,
         setIsLoading: (isLoading) =>
-            set((state) => ({ ...state, paginator: { ...state.paginator, isLoading: isLoading } })),
+            set((state) => ({
+                ...state,
+                paginator: { ...state.paginator, isLoading: isLoading },
+            })),
         setSelectedRows: (selectedRows) =>
             set((state) => ({ ...state, selectedRows: { ...selectedRows } })),
         selectAllPages: (allPagesSelected) =>
             set({ allPagesSelected: allPagesSelected }),
-        setSort: (orderColumn, orderDirection) => set((state) => ({ paginator: { ...state.paginator, orderColumn, orderDirection } })),
+        setSort: (orderColumn, orderDirection) =>
+            set((state) => ({
+                paginator: { ...state.paginator, orderColumn, orderDirection },
+            })),
         setError: () =>
             set((state) => ({
                 ...state,
                 error: true,
-                paginator: { ...state.paginator, isLoading: false, itemsCount: 0, content: [], page: 1 },
+                paginator: {
+                    ...state.paginator,
+                    isLoading: false,
+                    itemsCount: 0,
+                    content: [],
+                    page: 1,
+                },
             })),
         setCells: (cells) => set({ cells }),
         setContent: (content) => set({ content, error: false }),
         setPaginator: (paginatorOrFn) =>
             set((state) => {
-                const update = typeof paginatorOrFn === 'function' ? paginatorOrFn(state.paginator) : paginatorOrFn;
+                const update =
+                    typeof paginatorOrFn === 'function'
+                        ? paginatorOrFn(state.paginator)
+                        : paginatorOrFn;
 
                 return {
                     error: false,
@@ -127,20 +148,26 @@ export function TableStoreProvider({ children }: PropsWithChildren) {
             {children}
         </TableStoreContext.Provider>
     );
-};
+}
 
 // Hook to use the store with selector
 export const useTableStore = <T, S>(
-    selector: (state: State<T> & Action<T>) => S
+    selector: (state: State<T> & Action<T>) => S,
 ): S => {
     const store = useContext(TableStoreContext);
-    if (!store) throw new Error('useTableStore must be used within a TableStoreProvider');
+    if (!store)
+        throw new Error(
+            'useTableStore must be used within a TableStoreProvider',
+        );
     return useStore(store, selector as (state: State<any> & Action<any>) => S);
 };
 
 // TableStoreProvider.tsx
 export const useTableStoreApi = () => {
     const store = useContext(TableStoreContext);
-    if (!store) throw new Error('useTableStore must be used within a TableStoreProvider');
+    if (!store)
+        throw new Error(
+            'useTableStore must be used within a TableStoreProvider',
+        );
     return store; // expõe getState, setState, subscribe
 };

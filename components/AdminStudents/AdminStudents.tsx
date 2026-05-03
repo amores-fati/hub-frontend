@@ -26,7 +26,16 @@ import {
     useGetAdminStudents,
 } from '@/services/api/admin/students/queries';
 import { Option } from '@/components/base/Select/select';
-import { Avatar, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import {
+    Avatar,
+    Chip,
+    CircularProgress,
+    Collapse,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from '@mui/material';
 import Checkbox from '@/components/base/Checkbox/checkbox';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
@@ -178,12 +187,11 @@ const initialSortState: SortState = {
     order: 'asc',
 };
 
-const locationOptions: Option[] = getAdminStudentsFilterOptionsMock().locations.map(
-    (location) => ({
+const locationOptions: Option[] =
+    getAdminStudentsFilterOptionsMock().locations.map((location) => ({
         value: location,
         label: location,
-    }),
-);
+    }));
 
 const normalizeText = (value: string) =>
     value
@@ -443,14 +451,12 @@ export function AdminStudents() {
         [filters, page, sort],
     );
 
-    const {
-        data,
-        isLoading,
-        isFetching,
-        isError,
-    } = useGetAdminStudents(queryParams, isAdmin);
+    const { data, isLoading, isFetching, isError } = useGetAdminStudents(
+        queryParams,
+        isAdmin,
+    );
 
-    const deleteStudentsMutation = useDeleteAdminStudents(Object.keys(selectedStudents));
+    const deleteStudentsMutation = useDeleteAdminStudents(selectedIds);
 
     const students = data?.data ?? [];
     const totalStudents = data?.total ?? 0;
@@ -463,10 +469,12 @@ export function AdminStudents() {
         visibleStudentIds.length > 0 &&
         selectedVisibleCount === visibleStudentIds.length;
     const someVisibleSelected =
-        selectedVisibleCount > 0 && selectedVisibleCount < visibleStudentIds.length;
+        selectedVisibleCount > 0 &&
+        selectedVisibleCount < visibleStudentIds.length;
 
-    const selectedCountLabel = `${selectedIds.length} aluno${selectedIds.length === 1 ? '' : 's'
-        } selecionado${selectedIds.length === 1 ? '' : 's'}`;
+    const selectedCountLabel = `${selectedIds.length} aluno${
+        selectedIds.length === 1 ? '' : 's'
+    } selecionado${selectedIds.length === 1 ? '' : 's'}`;
 
     if (!isAdmin) {
         return (
@@ -526,7 +534,9 @@ export function AdminStudents() {
     const toggleVisibleSelection = () => {
         if (allVisibleSelected) {
             setSelectedIds((currentSelection) =>
-                currentSelection.filter((id) => !visibleStudentIds.includes(id)),
+                currentSelection.filter(
+                    (id) => !visibleStudentIds.includes(id),
+                ),
             );
             return;
         }
@@ -582,7 +592,9 @@ export function AdminStudents() {
 
             if (studentsForExport.length === 0) {
                 printWindow?.close();
-                toast.info('Não há alunos para exportar com os filtros atuais.');
+                toast.info(
+                    'Não há alunos para exportar com os filtros atuais.',
+                );
                 return;
             }
 
@@ -704,7 +716,9 @@ export function AdminStudents() {
                 sortable: true,
                 sortField: 'location',
                 render: (student: AdminStudentDto) => (
-                    <>{normalizeText(student.city)}/{student.state}</>
+                    <>
+                        {normalizeText(student.city)}/{student.state}
+                    </>
                 ),
             },
             {
@@ -758,7 +772,9 @@ export function AdminStudents() {
                     <div className='admin-students__search-input'>
                         <Input
                             value={searchInput}
-                            onChange={(event) => setSearchInput(event.target.value)}
+                            onChange={(event) =>
+                                setSearchInput(event.target.value)
+                            }
                             onKeyDown={(event) => {
                                 if (event.key === 'Enter') {
                                     handleApplyAllFilters();
@@ -768,7 +784,8 @@ export function AdminStudents() {
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
                         <small className='admin-students__search-helper'>
-                            A busca funciona com qualquer quantidade de caracteres.
+                            A busca funciona com qualquer quantidade de
+                            caracteres.
                         </small>
                     </div>
 
@@ -850,7 +867,9 @@ export function AdminStudents() {
                                 options={disabilityOptions}
                                 value={draftDisabilityTypes}
                                 onChange={(options) =>
-                                    setDraftDisabilityTypes([...(options ?? [])])
+                                    setDraftDisabilityTypes([
+                                        ...(options ?? []),
+                                    ])
                                 }
                                 isSearchable
                             />
@@ -913,7 +932,9 @@ export function AdminStudents() {
                     </div>
                 ) : students.length === 0 ? (
                     <div className='admin-students__empty-state'>
-                        <h2>Nenhum aluno encontrado com os filtros aplicados.</h2>
+                        <h2>
+                            Nenhum aluno encontrado com os filtros aplicados.
+                        </h2>
                         <p>Tente ajustar a busca ou limpar os filtros.</p>
                     </div>
                 ) : (
@@ -961,7 +982,10 @@ export function AdminStudents() {
                 <DialogTitle className='admin-students__dialog-title'>
                     Perfil do aluno
                 </DialogTitle>
-                <DialogContent dividers className='admin-students__dialog-content'>
+                <DialogContent
+                    dividers
+                    className='admin-students__dialog-content'
+                >
                     {selectedStudent && (
                         <div className='admin-students__details'>
                             <div className='admin-students__details-header'>
@@ -983,9 +1007,9 @@ export function AdminStudents() {
                                         <Chip
                                             label={
                                                 courseTypeLabels[
-                                                getCourseType(
-                                                    selectedStudent,
-                                                )
+                                                    getCourseType(
+                                                        selectedStudent,
+                                                    )
                                                 ]
                                             }
                                             className={getCourseBadgeClassName(
@@ -995,8 +1019,8 @@ export function AdminStudents() {
                                         <Chip
                                             label={
                                                 disabilityLabels[
-                                                selectedStudent
-                                                    .disabilityType
+                                                    selectedStudent
+                                                        .disabilityType
                                                 ]
                                             }
                                             className={getDisabilityBadgeClassName(
@@ -1010,7 +1034,9 @@ export function AdminStudents() {
                             <section className='admin-students__details-section'>
                                 <div className='admin-students__details-section-header'>
                                     <h4>Dados pessoais</h4>
-                                    <span>Informações principais do cadastro</span>
+                                    <span>
+                                        Informações principais do cadastro
+                                    </span>
                                 </div>
                                 <div className='admin-students__details-grid'>
                                     <div>
@@ -1026,7 +1052,9 @@ export function AdminStudents() {
                                     </div>
                                     <div>
                                         <strong>CPF</strong>
-                                        <span>{formatCpf(selectedStudent.cpf)}</span>
+                                        <span>
+                                            {formatCpf(selectedStudent.cpf)}
+                                        </span>
                                     </div>
                                     <div>
                                         <strong>Data de nascimento</strong>
@@ -1047,8 +1075,8 @@ export function AdminStudents() {
                                         <span>
                                             {selectedStudent.gender
                                                 ? genderLabels[
-                                                selectedStudent.gender
-                                                ]
+                                                      selectedStudent.gender
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1057,8 +1085,8 @@ export function AdminStudents() {
                                         <span>
                                             {selectedStudent.race
                                                 ? raceLabels[
-                                                selectedStudent.race
-                                                ]
+                                                      selectedStudent.race
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1111,9 +1139,9 @@ export function AdminStudents() {
                                         <span>
                                             {selectedStudent.scholarship
                                                 ? scholarshipLabels[
-                                                selectedStudent
-                                                    .scholarship
-                                                ]
+                                                      selectedStudent
+                                                          .scholarship
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1147,9 +1175,9 @@ export function AdminStudents() {
                                         <span>
                                             {selectedStudent.whomInformed
                                                 ? whoInformedLabels[
-                                                selectedStudent
-                                                    .whomInformed
-                                                ]
+                                                      selectedStudent
+                                                          .whomInformed
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1158,9 +1186,9 @@ export function AdminStudents() {
                                         <span>
                                             {selectedStudent.familyIncome
                                                 ? familyIncomeLabels[
-                                                selectedStudent
-                                                    .familyIncome
-                                                ]
+                                                      selectedStudent
+                                                          .familyIncome
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1176,9 +1204,9 @@ export function AdminStudents() {
                                         <span>
                                             {selectedStudent.socialBenefit
                                                 ? socialBenefitLabels[
-                                                selectedStudent
-                                                    .socialBenefit
-                                                ]
+                                                      selectedStudent
+                                                          .socialBenefit
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1199,7 +1227,9 @@ export function AdminStudents() {
                                         </span>
                                     </div>
                                     <div>
-                                        <strong>Compromisso com as aulas</strong>
+                                        <strong>
+                                            Compromisso com as aulas
+                                        </strong>
                                         <span>
                                             {getBooleanLabel(
                                                 selectedStudent.compromisedToClasses,
@@ -1207,7 +1237,9 @@ export function AdminStudents() {
                                         </span>
                                     </div>
                                     <div className='admin-students__details-grid-item--full'>
-                                        <strong>Motivação para o FatiLab</strong>
+                                        <strong>
+                                            Motivação para o FatiLab
+                                        </strong>
                                         <span>
                                             {selectedStudent.whyJoinFatiLab ||
                                                 'Não informado'}
@@ -1225,7 +1257,9 @@ export function AdminStudents() {
                                 </div>
                                 <div className='admin-students__details-grid'>
                                     <div>
-                                        <strong>Experiência em programação</strong>
+                                        <strong>
+                                            Experiência em programação
+                                        </strong>
                                         <span>
                                             {getBooleanLabel(
                                                 selectedStudent.hasWorkExperience,
@@ -1260,8 +1294,8 @@ export function AdminStudents() {
                                         <span>
                                             {
                                                 disabilityLabels[
-                                                selectedStudent
-                                                    .disabilityType
+                                                    selectedStudent
+                                                        .disabilityType
                                                 ]
                                             }
                                         </span>
@@ -1271,9 +1305,9 @@ export function AdminStudents() {
                                         <span>
                                             {selectedStudent.lgpd
                                                 ? getBooleanLabel(
-                                                    selectedStudent.lgpd
-                                                        .terms,
-                                                )
+                                                      selectedStudent.lgpd
+                                                          .terms,
+                                                  )
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1282,9 +1316,9 @@ export function AdminStudents() {
                                         <span>
                                             {selectedStudent.lgpd
                                                 ? getBooleanLabel(
-                                                    selectedStudent.lgpd
-                                                        .imageUsage,
-                                                )
+                                                      selectedStudent.lgpd
+                                                          .imageUsage,
+                                                  )
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1321,8 +1355,8 @@ export function AdminStudents() {
                                 Deseja realmente excluir{' '}
                                 <strong>
                                     {studentsPendingDelete.length} alunos
-                                </strong>
-                                {' '}selecionados?
+                                </strong>{' '}
+                                selecionados?
                             </>
                         ) : (
                             <>

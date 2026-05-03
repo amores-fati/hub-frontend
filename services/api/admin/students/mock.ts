@@ -92,7 +92,8 @@ const studentSeeds: MockStudentSeed[] = [
         disabilityType: AdminStudentDisabilityType.NONE,
         scholarship: Scholarship.COMPLETE_MEDIUM,
         institution: 'E.E.B. Santa Catarina',
-        whyJoinFatiLab: 'Quero iniciar minha carreira em tecnologia e ampliar minhas oportunidades.',
+        whyJoinFatiLab:
+            'Quero iniciar minha carreira em tecnologia e ampliar minhas oportunidades.',
         whomInformed: WhoInformed.INSTAGRAM,
         hasOwnComputer: true,
         hasInternetAccess: true,
@@ -123,7 +124,8 @@ const studentSeeds: MockStudentSeed[] = [
         disabilityType: AdminStudentDisabilityType.PHYSICAL,
         scholarship: Scholarship.INCOMPLETE_SUPERIOR,
         institution: 'UFRGS',
-        whyJoinFatiLab: 'Busco recolocacao e atualizacao profissional para atuar com dados.',
+        whyJoinFatiLab:
+            'Busco recolocacao e atualizacao profissional para atuar com dados.',
         whomInformed: WhoInformed.LINKEDIN,
         hasOwnComputer: true,
         hasInternetAccess: true,
@@ -155,7 +157,8 @@ const studentSeeds: MockStudentSeed[] = [
         disabilityType: AdminStudentDisabilityType.NONE,
         scholarship: Scholarship.COMPLETE_MEDIUM,
         institution: 'IFSC',
-        whyJoinFatiLab: 'Tenho interesse em frontend e quero construir portfolio.',
+        whyJoinFatiLab:
+            'Tenho interesse em frontend e quero construir portfolio.',
         whomInformed: WhoInformed.REFEREE,
         hasOwnComputer: true,
         hasInternetAccess: true,
@@ -217,7 +220,8 @@ const studentSeeds: MockStudentSeed[] = [
         disabilityType: AdminStudentDisabilityType.NONE,
         scholarship: Scholarship.COMPLETE_SUPERIOR,
         institution: 'PUC-PR',
-        whyJoinFatiLab: 'Procuro qualificacao complementar para ingressar em QA.',
+        whyJoinFatiLab:
+            'Procuro qualificacao complementar para ingressar em QA.',
         whomInformed: WhoInformed.INSTAGRAM,
         hasOwnComputer: true,
         hasInternetAccess: true,
@@ -249,7 +253,8 @@ const studentSeeds: MockStudentSeed[] = [
         disabilityType: AdminStudentDisabilityType.HEARING,
         scholarship: Scholarship.INCOMPLETE_SUPERIOR,
         institution: 'UTFPR',
-        whyJoinFatiLab: 'Quero desenvolver novas habilidades para trabalhar remotamente.',
+        whyJoinFatiLab:
+            'Quero desenvolver novas habilidades para trabalhar remotamente.',
         whomInformed: WhoInformed.LINKEDIN,
         hasOwnComputer: true,
         hasInternetAccess: true,
@@ -519,7 +524,8 @@ const buildStudents = (): AdminStudentDto[] =>
             city: student.city,
             state: student.state,
             cep: student.cep ?? '00000-000',
-            address: student.address ?? `Rua Principal, ${student.id.slice(-3)}`,
+            address:
+                student.address ?? `Rua Principal, ${student.id.slice(-3)}`,
             complement: student.complement ?? '',
             neighbourhood: student.neighbourhood ?? 'Centro',
             isPcd: student.disabilityType !== AdminStudentDisabilityType.NONE,
@@ -538,8 +544,7 @@ const buildStudents = (): AdminStudentDto[] =>
             peopleInHouse: student.peopleInHouse ?? '3',
             socialBenefit: student.socialBenefit ?? SocialBenefit.NONE,
             hasWorkExperience: student.hasWorkExperience ?? false,
-            hasParticipatedOnCourses:
-                student.hasParticipatedOnCourses ?? false,
+            hasParticipatedOnCourses: student.hasParticipatedOnCourses ?? false,
             currentlyWorking: student.currentlyWorking ?? false,
             workField: student.workField ?? '',
             lgpd: {
@@ -562,11 +567,7 @@ const filterStudents = (
 
     return students.filter((student) => {
         const searchText = normalize(
-            [
-                student.fullName,
-                student.email,
-                student.cpf,
-            ].join(' '),
+            [student.fullName, student.email, student.cpf].join(' '),
         );
 
         const studentDigits = normalizeDigits(student.cpf);
@@ -606,7 +607,8 @@ const getSortableValue = (
 
     if (sortBy === 'course') {
         return normalize(
-            student.enrolledCourse?.modality ?? AdminStudentCourseType.NOT_ENROLLED,
+            student.enrolledCourse?.modality ??
+                AdminStudentCourseType.NOT_ENROLLED,
         );
     }
 
@@ -643,7 +645,9 @@ const sortStudents = (
             return 1 * direction;
         }
 
-        return normalize(first.fullName).localeCompare(normalize(second.fullName));
+        return normalize(first.fullName).localeCompare(
+            normalize(second.fullName),
+        );
     });
 };
 
@@ -654,7 +658,10 @@ export const getAdminStudentsMock = async (
 
     const page = params.page ?? 1;
     const limit = params.limit ?? 20;
-    const students = sortStudents(filterStudents(buildStudents(), params), params);
+    const students = sortStudents(
+        filterStudents(buildStudents(), params),
+        params,
+    );
     const start = (page - 1) * limit;
     const end = start + limit;
 
@@ -706,7 +713,9 @@ export const getAdminStudentsFilterOptionsMock = () => {
 
     return {
         locations: Array.from(
-            new Set(students.map((student) => `${student.city}/${student.state}`)),
+            new Set(
+                students.map((student) => `${student.city}/${student.state}`),
+            ),
         ).sort((first, second) => first.localeCompare(second)),
     };
 };
