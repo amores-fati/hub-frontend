@@ -4,6 +4,7 @@ import { CourseDto } from '@/dtos/CourseDto';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CheckIcon from '@mui/icons-material/Check';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import './index.scss';
 
 const MODALITY_LABELS: Record<CourseDto['modality'], string> = {
@@ -52,9 +53,10 @@ type CourseModalProps = {
     action: CourseAction;
     onClose: () => void;
     onAction?: () => void;
+    disabled?: boolean;
 };
 
-export function CourseModal({ course, action, onClose, onAction }: CourseModalProps) {
+export function CourseModal({ course, action, onClose, onAction, disabled }: CourseModalProps) {
     const hasImage = !!course.imageUrl;
     const headerStyle = hasImage
         ? { backgroundImage: `url(${course.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
@@ -62,7 +64,6 @@ export function CourseModal({ course, action, onClose, onAction }: CourseModalPr
 
     function handleAction() {
         onAction?.();
-        onClose();
     }
 
     return (
@@ -86,6 +87,17 @@ export function CourseModal({ course, action, onClose, onAction }: CourseModalPr
                     </div>
 
                     <p className='course-modal__description'>{course.description}</p>
+
+                    {action === 'inscrever' && (
+                        <div className='course-modal__partner-notice'>
+                            <OpenInNewIcon sx={{ fontSize: 18 }} />
+                            <p>
+                                A inscrição neste curso é feita no site do nosso
+                                parceiro. Ao continuar, você será redirecionado para o
+                                formulário de inscrição em uma nova aba.
+                            </p>
+                        </div>
+                    )}
 
                     <div className='course-modal__info-grid'>
                         <div className='course-modal__info-item'>
@@ -131,12 +143,13 @@ export function CourseModal({ course, action, onClose, onAction }: CourseModalPr
                             </button>
                         )}
                         {action === 'inscrever' && (
-                            <button className='course-modal__btn course-modal__btn--primary' onClick={handleAction}>
-                                Inscrever-se
+                            <button className='course-modal__btn course-modal__btn--primary' onClick={handleAction} disabled={disabled}>
+                                Ir para inscrição
+                                <OpenInNewIcon sx={{ fontSize: 16 }} />
                             </button>
                         )}
                         {action === 'interesse' && (
-                            <button className='course-modal__btn course-modal__btn--primary' onClick={handleAction}>
+                            <button className='course-modal__btn course-modal__btn--primary' onClick={handleAction} disabled={disabled}>
                                 <FavoriteIcon sx={{ fontSize: 16 }} />
                                 Mostrar Interesse
                             </button>

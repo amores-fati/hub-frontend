@@ -77,6 +77,31 @@
     margin: 0;
 }
 
+// Aviso de inscrição via parceiro
+.course-modal__partner-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fff8e1;
+    border: 1px solid #ffd54f;
+    border-radius: 12px;
+
+    svg {
+        color: #b28704;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+    p {
+        margin: 0;
+        font-family: var(--font-sf-pro);
+        font-size: 13px;
+        line-height: 1.5;
+        color: #6d5300;
+    }
+}
+
 // Grid 2 colunas de info
 .course-modal__info-grid {
     display: grid;

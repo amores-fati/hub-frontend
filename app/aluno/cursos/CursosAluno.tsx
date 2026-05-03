@@ -5,12 +5,15 @@ import { Loading } from '@/components/base';
 import { CourseDto } from '@/dtos/CourseDto';
 import { UserRole } from '@/dtos/UserDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
+import { useRegisterInterest } from '@/services/api/courses/mutations';
 import { useGetCourses, useGetMyEnrollments } from '@/services/api/courses/queries';
 import { useGetPublicSetting } from '@/services/api/settings/queries';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PersonIcon from '@mui/icons-material/Person';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import './index.scss';
 
 type ModalState = { course: CourseDto; action: CourseAction } | null;
@@ -22,9 +25,13 @@ export default function CursosAluno() {
     const { data: courses, isLoading: coursesLoading } = useGetCourses();
     const { data: enrollments, isLoading: enrollmentsLoading } =
         useGetMyEnrollments(isStudent);
-    const { data: whatsappSetting } = useGetPublicSetting('support_whatsapp_number');
+    const { data: whatsappSetting } = useGetPublicSetting('whatsapp_phone');
+
+    const interest = useRegisterInterest();
+    const isMutating = interest.isPending;
 
     const [modal, setModal] = useState<ModalState>(null);
+    const [enrollConfirm, setEnrollConfirm] = useState<CourseDto | null>(null);
 
     const isLoading = coursesLoading || (isStudent && enrollmentsLoading);
 
@@ -41,13 +48,35 @@ export default function CursosAluno() {
     const availableCourses = notEnrolled.filter((c) => new Date(c.enrollmentStart) <= today);
     const upcomingCourses = notEnrolled.filter((c) => new Date(c.enrollmentStart) > today);
 
-    const whatsappNumber = whatsappSetting?.value;
-    const whatsappUrl = whatsappNumber ? `https://wa.me/${whatsappNumber}` : null;
+    const whatsappDigits = whatsappSetting?.value?.replace(/\D/g, '');
+    const whatsappUrl = whatsappDigits ? `https://wa.me/${whatsappDigits}` : null;
 
     const displayName = user?.email?.split('@')[0]?.toUpperCase() ?? 'ALUNO';
 
     function openModal(course: CourseDto, action: CourseAction) {
         setModal({ course, action });
+    }
+
+    function handleAskEnroll(course: CourseDto) {
+        if (!course.externalLink) {
+            toast.error('Link de inscrição do parceiro indisponível para este curso.');
+            return;
+        }
+        setModal(null);
+        setEnrollConfirm(course);
+    }
+
+    function handleConfirmEnroll() {
+        if (enrollConfirm?.externalLink) {
+            window.open(enrollConfirm.externalLink, '_blank', 'noopener,noreferrer');
+        }
+        setEnrollConfirm(null);
+    }
+
+    function handleInterest(course: CourseDto) {
+        interest.mutate(course.id, {
+            onSuccess: () => setModal(null),
+        });
     }
 
     if (isLoading) {
@@ -141,6 +170,7 @@ export default function CursosAluno() {
                                     course={course}
                                     action='inscrever'
                                     onSaibaMais={() => openModal(course, 'inscrever')}
+                                    onAction={() => handleAskEnroll(course)}
                                 />
                             ))}
                         </div>
@@ -157,7 +187,9 @@ export default function CursosAluno() {
                                     key={course.id}
                                     course={course}
                                     action='interesse'
+                                    disabled={isMutating}
                                     onSaibaMais={() => openModal(course, 'interesse')}
+                                    onAction={() => handleInterest(course)}
                                 />
                             ))}
                         </div>
@@ -193,8 +225,58 @@ export default function CursosAluno() {
                 <CourseModal
                     course={modal.course}
                     action={modal.action}
+                    disabled={isMutating}
                     onClose={() => setModal(null)}
+                    onAction={
+                        modal.action === 'inscrever'
+                            ? () => handleAskEnroll(modal.course)
+                            : modal.action === 'interesse'
+                              ? () => handleInterest(modal.course)
+                              : undefined
+                    }
                 />
+            )}
+
+            {enrollConfirm && (
+                <div
+                    className='enroll-confirm__overlay'
+                    onClick={() => setEnrollConfirm(null)}
+                >
+                    <div
+                        className='enroll-confirm'
+                        onClick={(e) => e.stopPropagation()}
+                        role='dialog'
+                        aria-modal='true'
+                        aria-labelledby='enroll-confirm-title'
+                    >
+                        <h3 id='enroll-confirm-title' className='enroll-confirm__title'>
+                            Inscrição no site do parceiro
+                        </h3>
+                        <p className='enroll-confirm__body'>
+                            A inscrição em <strong>{enrollConfirm.title}</strong> é feita
+                            por meio de um formulário no site do nosso parceiro. Você
+                            será redirecionado para a plataforma de inscrição em uma nova
+                            aba.
+                        </p>
+                        <div className='enroll-confirm__actions'>
+                            <button
+                                type='button'
+                                className='enroll-confirm__btn enroll-confirm__btn--outline'
+                                onClick={() => setEnrollConfirm(null)}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type='button'
+                                className='enroll-confirm__btn enroll-confirm__btn--primary'
+                                onClick={handleConfirmEnroll}
+                            >
+                                Ir para inscrição
+                                <OpenInNewIcon sx={{ fontSize: 16 }} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </>
     );

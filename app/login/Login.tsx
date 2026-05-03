@@ -7,8 +7,10 @@ import {
     RegisterRoleSelector,
 } from '@/components/Login';
 import { AuthPayload } from '@/dtos/AuthDto';
+import { UserProfileDto, UserRole } from '@/dtos/UserDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
+import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -42,7 +44,10 @@ export default function Login() {
             removeStoreAuthToken();
             setAuthToken(loginData.accessToken, rememberMe);
             toast.success('Login realizado com sucesso!');
-            router.push('/');
+            const decoded = jwtDecode<UserProfileDto>(loginData.accessToken);
+            const destination =
+                decoded.role === UserRole.STUDENT ? '/aluno/cursos' : '/';
+            router.push(destination);
         }
     }, [loginData]);
 

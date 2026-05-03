@@ -3,15 +3,16 @@
 .course-card {
     flex: 1 1 0;
     min-width: 0;
+    height: 440px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-// Header: altura 91px, border-radius só no topo, overflow hidden
+// Header: imagem do curso em destaque, border-radius só no topo, overflow hidden
 .course-card__header {
     align-self: stretch;
-    height: 91px;
+    height: 180px;
     padding: 16px;
     overflow: hidden;
     border-top-left-radius: 16px;
@@ -51,38 +52,46 @@
     flex-direction: column;
     gap: 20px;
     flex: 1;
+    min-height: 0;
 }
 
 .course-card__info {
     align-self: stretch;
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
-// Título — SF Pro 15px/700, lineHeight 25.2
+// Título — SF Pro 17px/700, máximo 2 linhas
 .course-card__title {
     align-self: stretch;
     color: #1d1d1d;
     font-family: var(--font-sf-pro);
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 700;
-    line-height: 25.2px;
-    margin: 0;
-    word-wrap: break-word;
-}
-
-// Descrição — SF Pro 13px/274 (ultra-light ≈ 300), lineHeight 19.6
-.course-card__description {
-    align-self: stretch;
-    color: #828282;
-    font-family: var(--font-sf-pro);
-    font-size: 13px;
-    font-weight: 300;
-    line-height: 19.6px;
-    margin: 0;
+    line-height: 1.4;
+    margin: 0 0 6px;
     word-wrap: break-word;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// Descrição — fonte maior, mais escura e até 3 linhas para dar mais contexto
+.course-card__description {
+    align-self: stretch;
+    color: #4a4a4a;
+    font-family: var(--font-sf-pro);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.55;
+    margin: 0;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -95,6 +104,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 // Meta (esquerda) — gap 32

@@ -31,9 +31,10 @@ type CourseCardProps = {
     action: CourseAction;
     onSaibaMais: () => void;
     onAction?: () => void;
+    disabled?: boolean;
 };
 
-export function CourseCard({ course, action, onSaibaMais, onAction }: CourseCardProps) {
+export function CourseCard({ course, action, onSaibaMais, onAction, disabled }: CourseCardProps) {
     const headerBg = course.imageUrl
         ? { backgroundImage: `url(${course.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         : { background: getGradient(course.id) };
@@ -71,12 +72,12 @@ export function CourseCard({ course, action, onSaibaMais, onAction }: CourseCard
                             </button>
                         )}
                         {action === 'inscrever' && (
-                            <button className='course-card__btn' onClick={onAction}>
+                            <button className='course-card__btn' onClick={onAction} disabled={disabled}>
                                 Inscrever-se
                             </button>
                         )}
                         {action === 'interesse' && (
-                            <button className='course-card__btn' onClick={onAction}>
+                            <button className='course-card__btn' onClick={onAction} disabled={disabled}>
                                 <CalendarTodayIcon sx={{ fontSize: 14 }} />
                                 Tenho interesse
                             </button>
