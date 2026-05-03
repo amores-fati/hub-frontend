@@ -55,6 +55,14 @@ export const PAGES: Page[] = [
         name: 'Cadastro Empresa',
     },
     {
+        path: '/aluno/cursos',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.STUDENT],
+        name: 'Cursos',
+        icon: <MenuBookIcon className='sidebar-icon' />,
+    },
+    {
         path: '/alunos',
         navbarEnabled: true,
         requireRoles: [],
@@ -98,7 +106,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         },
     ],
     [UserRole.STUDENT]: [
-        { title: 'Cursos', icon: <MenuBookIcon />, expectedPath: '/cursos' },
+        {
+            title: 'Cursos',
+            icon: <MenuBookIcon />,
+            expectedPath: '/aluno/cursos',
+        },
         {
             title: 'Currículo',
             icon: <AssignmentIndIcon />,
