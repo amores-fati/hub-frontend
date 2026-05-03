@@ -446,8 +446,8 @@ function AdminStudents() {
         (s: State<AdminStudentDto> & Action<AdminStudentDto>) => s.setContent,
     );
     const selectedStudents = useTableStore((state) => state.selectedRows);
+    const setSelectedStudents = useTableStore((state) => state.setSelectedRows);
 
-    const { user } = useAuth();
     const [searchInput, setSearchInput] = useState('');
     const [draftCourseTypes, setDraftCourseTypes] = useState<Option[]>([]);
     const [draftLocations, setDraftLocations] = useState<Option[]>([]);
@@ -491,9 +491,11 @@ function AdminStudents() {
         setIsLoading(false);
     }, [data, isLoading, isFetching]);
 
-    const { mutate: deleteStudentsMutation } = useDeleteAdminStudents(
-        Object.keys(selectedStudents),
-    );
+    const { mutate: deleteStudentsMutation, isPending } = useDeleteAdminStudents(Object.keys(selectedStudents));
+
+    useEffect(() => {
+        setSelectedStudents({});
+    }, [isPending])
 
     const students = data?.items ?? [];
     const selectedCountLabel = `${Object.keys(selectedStudents).length} aluno${Object.keys(selectedStudents).length === 1 ? '' : 's'
@@ -828,7 +830,8 @@ function AdminStudents() {
                             type='button'
                             onClick={() => {
                                 void deleteConfirmation(
-                                    () => { },
+                                    deleteStudentsMutation,
+                                    Object.keys(selectedStudents)
                                 );
                             }}
                         >

@@ -3,26 +3,23 @@ import { queryClient } from '@/services/query-client';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
+import qs from 'qs';
 
 import { adminStudentsApi } from '.';
-import { deleteAdminStudentsMock } from './mock';
-
-const USE_MOCK_ADMIN_STUDENTS = true;
-
-const deleteAdminStudents = async (studentIds: string[]) => {
-    if (USE_MOCK_ADMIN_STUDENTS) {
-        return deleteAdminStudentsMock(studentIds);
-    }
-
-    return Promise.all(
-        studentIds.map((studentId) => adminStudentsApi.delete(`/${studentId}`)),
-    );
-};
 
 export const useDeleteAdminStudents = (studentIds: string[]) =>
     useMutation({
-        mutationFn: deleteAdminStudents,
-        onSuccess: (_, studentIds) => {
+        mutationFn: () =>
+            adminStudentsApi
+                .delete<unknown>('', {
+                    data: { ids: studentIds },
+                    paramsSerializer: (params) =>
+                        qs.stringify(params, {
+                            arrayFormat: 'repeat',
+                        }),
+                })
+                .then((res) => res.data),
+        onSuccess: async (res: unknown) => {
             toast.success(
                 studentIds.length > 1
                     ? 'Alunos excluidos com sucesso.'
@@ -31,8 +28,10 @@ export const useDeleteAdminStudents = (studentIds: string[]) =>
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.ADMIN_STUDENTS],
             });
+
+            return res;
         },
-        onError: (error: AxiosError<{ message?: string }> | Error) => {
+        onError: async (error: AxiosError<{ message?: string }> | Error) => {
             if (error instanceof Error && error.name === 'NOT_FOUND') {
                 toast.error('Aluno não encontrado ou já excluído.');
                 return;
