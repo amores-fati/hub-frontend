@@ -1,63 +1,31 @@
 'use client';
-import { Button } from '@/components/base';
+import { Button, Loading } from '@/components/base';
 import Card from '@/components/base/Card/card';
 import { StudentRegisterPayload } from '@/dtos/StudentDto';
 import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
 import CheckIcon from '@mui/icons-material/Check';
 import { CardActions, CardContent } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { RegisterStep1, validateFormStep1 } from './RegisterStep1';
-import { RegisterStep2, validateFormStep2 } from './RegisterStep2';
-import { RegisterStep3, validateFormStep3 } from './RegisterStep3';
-import { RegisterStep4, validateFormStep4 } from './RegisterStep4';
+import { useState } from 'react';
+import {
+    RegisterStep1,
+    validateFormStep1,
+} from '@/app/cadastro/aluno/RegisterStep1';
+import {
+    RegisterStep2,
+    validateFormStep2,
+} from '@/app/cadastro/aluno/RegisterStep2';
+import {
+    RegisterStep3,
+    validateFormStep3,
+} from '@/app/cadastro/aluno/RegisterStep3';
+import {
+    RegisterStep4,
+    validateFormStep4,
+} from '@/app/cadastro/aluno/RegisterStep4';
 import './index.scss';
 import { useStudentRegister } from '@/services/api/students/mutations';
-import { useRouter } from 'next/navigation';
-import { useLoginMutation } from '@/services/auth/login/mutations';
-import { toast } from 'react-toastify';
-import { useAuth } from '@/providers/Auth/AuthProvider';
-import { removeStoreAuthToken } from '@/utils/stores/auth';
-
-export const DEFAULT_FORM = {
-    fullName: '',
-    socialName: undefined,
-    cpf: '',
-    birthDate: '',
-    phoneNumber: '',
-    email: '',
-    password: '',
-    passwordConfirmation: '',
-    gender: undefined,
-    race: undefined,
-    cep: '',
-    address: '',
-    complement: undefined,
-    neighbourhood: undefined,
-    city: undefined,
-    state: undefined,
-    scholarship: null,
-    course: '',
-    institution: '',
-    whyJoinFatiLab: '',
-    whomInformed: undefined,
-    hasOwnComputer: false,
-    hasInternetAccess: false,
-    compromisedToClasses: false,
-    // familyIncome: undefined,
-    // Ajustar para receber array
-    hasWorkExperience: false,
-    hasParticipatedOnCourses: false,
-    currentlyWorking: false,
-    workField: undefined,
-    hasAccessability: false,
-    typeAccessability: '',
-    lgpd: {
-        terms: false,
-        imageUsage: false,
-    },
-    peopleInHouse: '',
-    socialBenefit: undefined,
-};
+import { useGetStudent } from '@/services/api/students/queries';
+import { DEFAULT_FORM } from '@/app/cadastro/aluno/CadastroAluno';
 
 export enum StepperSteps {
     STEP1 = 1,
@@ -73,38 +41,24 @@ const steps = [
     'Confirmação',
 ];
 
-export default function CadastroAluno() {
-    const router = useRouter();
+export default function PerfilAluno() {
+    const studentId = 1; // TODO: pegar id do aluno logado
+    const { data, isLoading } = useGetStudent(studentId);
 
-    const { setAuthToken } = useAuth();
+    // if (isLoading || !data) {
+    //     return <Loading />
+    // }
 
+    return <CadastroAluno data={data! ?? { ...DEFAULT_FORM }} />;
+}
+
+function CadastroAluno({ data }: { data: StudentRegisterPayload }) {
     const [activeStep, setActiveStep] = useState<StepperSteps>(
         StepperSteps.STEP1,
     );
-    const [form, setForm] = useState<StudentRegisterPayload>({
-        ...DEFAULT_FORM,
-    });
+    const [form, setForm] = useState<StudentRegisterPayload>({ ...data });
 
-    const { mutate, error, data } = useStudentRegister(form);
-
-    const { mutate: login, data: loginData } = useLoginMutation({
-        email: form.email ?? '',
-        password: form.password ?? '',
-    });
-
-    useEffect(() => {
-        if (error || !data) return;
-        login();
-    }, [data]);
-
-    useEffect(() => {
-        if (loginData && loginData.accessToken) {
-            removeStoreAuthToken();
-            setAuthToken(loginData.accessToken, true);
-            toast.success('Login realizado com sucesso!');
-            router.push('/');
-        }
-    }, [loginData]);
+    const { mutate, error } = useStudentRegister(form);
 
     const handleNext = () => {
         try {
@@ -152,17 +106,13 @@ export default function CadastroAluno() {
 
     return (
         <div className='cadastro-aluno-page w-full'>
-            <div className='page-title'>
-                <h1>Cria a sua conta no</h1>
-                <h1 className='page-title__highlight'>Instituto Amores Fati</h1>
-            </div>
             <div className='stepper-custom'>
                 {steps.map((label, index) => {
                     const stepNumber = index + 1;
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-                    const isActive = stepNumber === activeStep;
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-                    const isCompleted = stepNumber < activeStep;
+                    const isActive =
+                        (stepNumber as StepperSteps) === activeStep;
+                    const isCompleted =
+                        (stepNumber as StepperSteps) < activeStep;
 
                     return (
                         <div
@@ -217,7 +167,7 @@ export default function CadastroAluno() {
                     <Button onClick={onForward}>
                         <span>
                             {activeStep === StepperSteps.STEP4
-                                ? 'Cadastrar'
+                                ? 'Salvar'
                                 : 'Avançar'}
                         </span>
                     </Button>
