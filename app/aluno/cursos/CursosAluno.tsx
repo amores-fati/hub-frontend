@@ -13,6 +13,7 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PersonIcon from '@mui/icons-material/Person';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import './index.scss';
@@ -21,6 +22,7 @@ type ModalState = { course: CourseDto; action: CourseAction } | null;
 
 export default function CursosAluno() {
     const { user } = useAuth();
+    const router = useRouter();
     const isStudent = user?.role === UserRole.STUDENT;
 
     const { data: courses, isLoading: coursesLoading } = useGetCourses();
@@ -120,11 +122,19 @@ export default function CursosAluno() {
                                 Dúvidas
                             </a>
                         )}
-                        <button className='ca-banner__btn ca-banner__btn--yellow'>
+                        <button
+                            type='button'
+                            className='ca-banner__btn ca-banner__btn--yellow'
+                            onClick={() => router.push('/aluno/curriculo')}
+                        >
                             <AssignmentIndIcon sx={{ fontSize: 16 }} />
                             Meu Currículo
                         </button>
-                        <button className='ca-banner__btn ca-banner__btn--outline'>
+                        <button
+                            type='button'
+                            className='ca-banner__btn ca-banner__btn--cyan'
+                            onClick={() => router.push('/aluno/perfil')}
+                        >
                             <PersonIcon sx={{ fontSize: 16 }} />
                             Meu Perfil
                         </button>
