@@ -15,14 +15,13 @@ export enum AdminStudentCourseType {
 }
 
 export enum AdminStudentDisabilityType {
-    NONE = 'NONE',
-    PHYSICAL = 'PHYSICAL',
-    HEARING = 'HEARING',
+    NONE = 'NENHUMA',
+    PHYSICAL = 'FISICA',
+    HEARING = 'AUDITIVA',
     VISUAL = 'VISUAL',
-    INTELLECTUAL = 'INTELLECTUAL',
-    PSYCHOSOCIAL = 'PSYCHOSOCIAL',
-    MULTIPLE = 'MULTIPLE',
-    OTHER = 'OTHER',
+    INTELLECTUAL = 'INTELECTUAL',
+    PSYCHOSOCIAL = 'PSICOSSOCIAL',
+    OTHER = 'OUTRA',
 }
 
 export type AdminStudentCourseDto = {
@@ -39,7 +38,7 @@ export type AdminStudentDto = {
     cpf: string;
     birthDate?: string | null;
     email: string;
-    phone: string;
+    phoneNumber: string;
     gender?: Gender;
     race?: Race;
     city: string;
@@ -76,15 +75,15 @@ export type AdminStudentsQueryParams = {
     page?: number;
     limit?: number;
     search?: string;
-    disabilityTypes?: string[];
-    locations?: string[];
+    disabilityType?: string[];
+    city?: string[];
     courseTypes?: string[];
     sortBy?: string;
     sortOrder?: SortDirection;
 };
 
 export type AdminStudentsResponseDto = {
-    data: AdminStudentDto[];
+    items: AdminStudentDto[];
     total: number;
     page: number;
     limit: number;

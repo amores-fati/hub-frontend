@@ -13,7 +13,6 @@ import { useTableStore, Paginator } from '@/stores/TableStoreProvider';
 export const ROWS_PER_PAGE_OPTIONS = [
     { value: 20, label: '20' },
     { value: 50, label: '50' },
-    { value: 100, label: '100' },
 ];
 
 const getFrom = (paginator: Paginator, page: number) => {
@@ -34,6 +33,7 @@ const getTo = (paginator: Paginator, page: number) => {
 export default function TablePaginator() {
     const paginator = useTableStore((state) => state.paginator);
     const setPaginator = useTableStore((state) => state.setPaginator);
+
     // Validação do campo "de" do paginador
     useEffect(() => {
         setPaginator({

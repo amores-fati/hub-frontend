@@ -561,7 +561,7 @@ const filterStudents = (
     const search = normalize(params.search ?? '');
     const searchDigits = normalizeDigits(params.search ?? '');
     const searchTerms = search.split(/\s+/).filter(Boolean);
-    const disabilityTypes = new Set(params.disabilityTypes ?? []);
+    const disabilityType = new Set(params.disabilityType ?? []);
     const locations = new Set((params.locations ?? []).map(normalize));
     const courseTypes = new Set(params.courseTypes ?? []);
 
@@ -582,8 +582,8 @@ const filterStudents = (
             locations.size === 0 || locations.has(studentLocation);
 
         const matchesDisability =
-            disabilityTypes.size === 0 ||
-            disabilityTypes.has(student.disabilityType);
+            disabilityType.size === 0 ||
+            disabilityType.has(student.disabilityType);
 
         const matchesCourseType =
             courseTypes.size === 0 || courseTypes.has(getCourseType(student));

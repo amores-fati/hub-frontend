@@ -2,8 +2,7 @@ import { UseMutateFunction } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 
 export const deleteConfirmation = async (
-    mutate: UseMutateFunction<unknown, unknown, string[], unknown>,
-    studentIds: string[],
+    mutate: UseMutateFunction<unknown, unknown, unknown, unknown>,
 ) => {
     await Swal.fire({
         text: 'Você tem certeza de que deseja excluir os alunos selecionados?',
@@ -16,7 +15,7 @@ export const deleteConfirmation = async (
         showLoaderOnConfirm: true,
         showCloseButton: true,
         preConfirm: (_) => {
-            return mutate(studentIds);
+            return mutate();
         },
         allowOutsideClick: () => !Swal.isLoading(),
     });

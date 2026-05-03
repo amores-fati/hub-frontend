@@ -1,8 +1,12 @@
 export type ListWrapperDto<T> = {
-    data: T[];
+    items: T[];
 };
 
 export type PaginatedDto<T> = ListWrapperDto<T> & {
-    page: number;
-    total: number;
+    meta: {
+        page: number;
+        total: number;
+        pageSize: number;
+        totalPages: number;
+    };
 };
