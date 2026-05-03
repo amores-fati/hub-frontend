@@ -9,9 +9,10 @@ import { Form, validateForm } from './Form';
 import './index.scss';
 import { useCompanyRegister } from '@/services/api/companies/mutations';
 import { useLoginMutation } from '@/services/auth/login/mutations';
-import { removeAuthToken, setAuthToken } from '../../../utils/stores/auth';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/providers/Auth/AuthProvider';
+import { removeStoreAuthToken } from '@/utils/stores/auth';
 
 export default function CadastroEmpresa() {
     const [form, setForm] = useState<CompanyRegisterPayload>({
@@ -35,6 +36,8 @@ export default function CadastroEmpresa() {
 
     const router = useRouter();
 
+    const { setAuthToken } = useAuth();
+
     const { mutate, error, data } = useCompanyRegister(form);
     const { mutate: login, data: loginData } = useLoginMutation({
         email: form.email ?? '',
@@ -48,7 +51,7 @@ export default function CadastroEmpresa() {
 
     useEffect(() => {
         if (loginData && loginData.accessToken) {
-            removeAuthToken();
+            removeStoreAuthToken();
             setAuthToken(loginData.accessToken, true);
             toast.success('Login realizado com sucesso!');
             router.push('/');

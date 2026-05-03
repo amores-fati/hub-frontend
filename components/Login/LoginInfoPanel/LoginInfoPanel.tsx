@@ -2,6 +2,10 @@ import './index.scss';
 import LogoSvg from '@/assets/logo.svg';
 import { FeatureCard } from '../FeatureCard';
 import Image from 'next/image';
+import ContrastIcon from '@mui/icons-material/Contrast';
+import KeyboardOutlinedIcon from '@mui/icons-material/KeyboardOutlined';
+import HearingOutlinedIcon from '@mui/icons-material/HearingOutlined';
+import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
 
 export function LoginInfoPanel() {
     return (
@@ -41,6 +45,7 @@ export function LoginInfoPanel() {
                     color='var(--primary-color)'
                     badgeText='Visual'
                     badgeDarkText={true}
+                    icon={ContrastIcon}
                 />
                 <FeatureCard
                     title='Navegação Simplificada'
@@ -48,6 +53,7 @@ export function LoginInfoPanel() {
                     color='var(--secondary-color)'
                     badgeText='Navegação'
                     badgeDarkText={true}
+                    icon={NearMeOutlinedIcon}
                 />
                 <FeatureCard
                     title='Navegação por Teclado'
@@ -55,6 +61,7 @@ export function LoginInfoPanel() {
                     color='var(--tertiary-color)'
                     badgeText='Navegação'
                     badgeDarkText={false}
+                    icon={KeyboardOutlinedIcon}
                 />
                 <FeatureCard
                     title='Leitor de Tela'
@@ -62,6 +69,7 @@ export function LoginInfoPanel() {
                     color='var(--complement-3)'
                     badgeText='Auditivo'
                     badgeDarkText={false}
+                    icon={HearingOutlinedIcon}
                 />
             </div>
         </div>

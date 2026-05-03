@@ -1,3 +1,5 @@
 import { createHttpClient } from './http-client';
 
-export const baseApi = createHttpClient(process.env.API_BASE_URL || '');
+export const baseApi = createHttpClient(
+    process.env.API_BASE_URL || 'http://localhost:3001',
+);

@@ -1,5 +1,5 @@
 import { Card } from '@/components/base';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { ElementType } from 'react';
 import './index.scss';
 
 export type FeatureCardProps = {
@@ -8,6 +8,7 @@ export type FeatureCardProps = {
     color: string;
     badgeText?: string;
     badgeDarkText?: boolean;
+    icon?: ElementType;
 };
 
 export default function FeatureCard({
@@ -16,6 +17,7 @@ export default function FeatureCard({
     color,
     badgeText,
     badgeDarkText = false,
+    icon: Icon,
 }: FeatureCardProps) {
     return (
         <div
@@ -28,13 +30,15 @@ export default function FeatureCard({
                     style={{ backgroundColor: color }}
                 />
                 <div className='feature-card__content'>
-                    <InfoOutlinedIcon
-                        style={{
-                            color,
-                            fontSize: '2.5rem',
-                            marginBottom: '1rem',
-                        }}
-                    />
+                    {Icon && (
+                        <Icon
+                            style={{
+                                color,
+                                fontSize: '2.5rem',
+                                marginBottom: '1rem',
+                            }}
+                        />
+                    )}
                     <h2 className='feature-card__title'>{title}</h2>
                     <p className='feature-card__subtitle'>{subtitle}</p>
                     {badgeText && (

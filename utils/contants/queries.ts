@@ -4,6 +4,8 @@ const QUERY_KEYS = {
     CEP: 'cep',
     CNPJ: 'cnpj',
     EXAMPLES: 'examples',
+    STUDENT_PROFILE: 'student-profile',
+    STUDENT_RESUME: 'student-resume',
 };
 
 export default QUERY_KEYS;

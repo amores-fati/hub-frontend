@@ -14,10 +14,14 @@ export const useLoginMutation = (payload: AuthPayload) =>
                 .then((res: ResponseDto<AuthDto>) => res.data),
         onError: (data: AxiosError) => {
             if (
+                data.response?.status === 401 ||
                 data.response?.status === 403 ||
                 data.response?.status === 404
             ) {
                 toast.error('Credenciais inválidas. Tente novamente.');
+                return;
             }
+
+            toast.error('Não foi possível conectar ao servidor de login.');
         },
     });

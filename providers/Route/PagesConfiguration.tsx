@@ -22,10 +22,8 @@ export const PAGES: Page[] = [
     {
         path: '/',
         navbarEnabled: true,
-        // requireRoles: [UserRole.ADMIN, UserRole.STUDENT, UserRole.COMPANY],
-        // requireAuth: true,
+        requireAuth: true,
         requireRoles: [],
-        requireAuth: false,
         name: 'Home',
         icon: <HomeFilled className='sidebar-icon' />,
     },
@@ -65,6 +63,14 @@ export const PAGES: Page[] = [
         name: 'Gestão de Alunos',
         icon: <GroupIcon className='sidebar-icon' />,
     },
+    {
+        path: '/aluno/curriculo',
+        navbarEnabled: true,
+        requireRoles: [UserRole.STUDENT],
+        requireAuth: true,
+        name: 'Currículo',
+        icon: <AssignmentIndIcon className='sidebar-icon' />,
+    },
 ];
 
 export type NavItem = {
@@ -89,11 +95,12 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         {
             title: 'Currículo',
             icon: <AssignmentIndIcon />,
-            expectedPath: '/curriculo',
+            expectedPath: '/aluno/curriculo',
         },
         { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
     ],
     [UserRole.COMPANY]: [
+        { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },
         { title: 'Vagas', icon: <WorkIcon />, expectedPath: '/vagas' },
         { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
     ],
