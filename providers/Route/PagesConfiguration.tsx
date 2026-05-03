@@ -55,6 +55,14 @@ export const PAGES: Page[] = [
         requireAuth: false,
         name: 'Cadastro Empresa',
     },
+    {
+        path: '/aluno/curriculo',
+        navbarEnabled: true,
+        requireRoles: [UserRole.STUDENT],
+        requireAuth: true,
+        name: 'Currículo',
+        icon: <AssignmentIndIcon className='sidebar-icon' />,
+    },
 ];
 
 export type NavItem = {
@@ -79,7 +87,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         {
             title: 'Currículo',
             icon: <AssignmentIndIcon />,
-            expectedPath: '/curriculo',
+            expectedPath: '/aluno/curriculo',
         },
         { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
     ],

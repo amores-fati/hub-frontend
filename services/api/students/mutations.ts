@@ -5,10 +5,16 @@ import { toast } from 'react-toastify';
 import { studentsApi } from '.';
 import { ResponseDto } from '@/dtos/ResponseDto';
 import {
+    StudentProfile,
+    UpdateStudentProfilePayload,
+} from '@/dtos/StudentProfileDto';
+import {
     StudentRegisterPayload,
     StudentRegisterResponse,
 } from '@/dtos/StudentDto';
 import { formatDate } from '@/utils/shared-functions/date';
+import { queryClient } from '@/services/query-client';
+import QUERY_KEYS from '@/utils/contants/queries';
 
 export const useStudentRegister = (payload: StudentRegisterPayload) =>
     useMutation({
@@ -70,5 +76,19 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                 return;
             }
             toast.error('Erro ao registrar usuário');
+        },
+    });
+
+export const useUpdateStudentProfile = () =>
+    useMutation({
+        mutationFn: ({ id, ...payload }: UpdateStudentProfilePayload) =>
+            studentsApi
+                .patch<StudentProfile>(`/${id}`, payload)
+                .then((res) => res.data),
+        onSuccess: (student) => {
+            queryClient.setQueryData(
+                [QUERY_KEYS.STUDENT_PROFILE, student.id],
+                student,
+            );
         },
     });
