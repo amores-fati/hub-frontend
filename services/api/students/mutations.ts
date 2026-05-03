@@ -17,6 +17,7 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                 .post('', {
                     email: payload.email,
                     password: payload.password,
+                    fullName: payload.fullName,
                     cpf: payload.cpf,
                     socialName: payload.socialName,
                     birthDate: formatDate(payload.birthDate),
@@ -27,12 +28,15 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                     institution: payload.institution,
                     activityArea: payload.workField,
                     hasProgrammingExperience: payload.hasWorkExperience,
-                    fatilabMotivation: payload.whyJoinFatiLab,
+                    motivation: payload.whyJoinFatiLab,
                     howHeard: payload.whomInformed,
                     hasComputer: payload.hasOwnComputer,
                     hasInternet: payload.hasInternetAccess,
                     committedToParticipate: payload.compromisedToClasses,
                     familyIncome: payload.familyIncome,
+                    householdSize: payload.peopleInHouse
+                        ? Number(payload.peopleInHouse)
+                        : undefined,
                     contact: {
                         phone: payload.phoneNumber,
                         neighbourhood: payload.neighbourhood,
