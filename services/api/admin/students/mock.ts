@@ -597,10 +597,7 @@ const filterStudents = (
     });
 };
 
-const getSortableValue = (
-    student: AdminStudentDto,
-    sortBy: string,
-) => {
+const getSortableValue = (student: AdminStudentDto, sortBy: string) => {
     if (sortBy === 'fullName') {
         return normalize(student.fullName);
     }

@@ -90,6 +90,11 @@ export type AdminStudentsResponseDto = {
     limit: number;
 };
 
-export type AdminStudentsSortField = 'fullName' | 'course' | 'contact' | 'location' | 'pcd';
+export type AdminStudentsSortField =
+    | 'fullName'
+    | 'course'
+    | 'contact'
+    | 'location'
+    | 'pcd';
 
 export type AdminStudentsSortOrder = SortDirection;

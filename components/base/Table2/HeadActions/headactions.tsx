@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 
 export default function HeadActions<T>() {
