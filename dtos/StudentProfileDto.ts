@@ -3,7 +3,6 @@ import {
     Race,
     Scholarship,
     SocialBenefit,
-    StudentRegisterPayload,
     WhoInformed,
 } from './StudentDto';
 
@@ -24,6 +23,12 @@ export type StudentContact = {
     complement?: string;
 };
 
+export type StudentSocialBenefit = {
+    id?: number;
+    studentId?: string;
+    benefit: SocialBenefit;
+};
+
 export type StudentProfile = {
     id: string;
     fullName: string;
@@ -32,8 +37,8 @@ export type StudentProfile = {
     hasInternet: boolean;
     hasComputer: boolean;
     howHeard: WhoInformed;
-    benefit: SocialBenefit;
-    householdSize: string;
+    socialBenefits?: StudentSocialBenefit[];
+    householdSize?: number;
     email: string;
     cpf: string;
     contact: StudentContact;
@@ -46,13 +51,47 @@ export type StudentProfile = {
     disability?: StudentDisability;
     socialName?: string;
     motivation: string;
+    courseName?: string;
+};
+
+export type UpdateStudentContactPayload = {
+    phone?: string;
+    cep?: string;
+    address?: string;
+    complement?: string;
+    neighbourhood?: string;
+    city?: string;
+    state?: string;
+};
+
+export type UpdateStudentDisabilityPayload = {
+    hasDisability: boolean;
+    type?: string | null;
+};
+
+export type UpdateStudentSocialBenefitPayload = {
+    benefit: SocialBenefit;
 };
 
 export type UpdateStudentProfilePayload = {
     id: string;
+    fullName?: string;
     socialName?: string | null;
-    disability?: {
-        hasDisability: boolean;
-        type?: string | null;
-    };
+    birthDate?: string;
+    gender?: Gender;
+    race?: Race;
+    education?: Scholarship;
+    courseName?: string;
+    institution?: string;
+    activityArea?: string;
+    motivation?: string;
+    howHeard?: WhoInformed;
+    hasComputer?: boolean;
+    hasInternet?: boolean;
+    hasProgrammingExperience?: boolean;
+    committedToParticipate?: boolean;
+    householdSize?: number;
+    contact?: UpdateStudentContactPayload;
+    disability?: UpdateStudentDisabilityPayload;
+    socialBenefits?: UpdateStudentSocialBenefitPayload[];
 };

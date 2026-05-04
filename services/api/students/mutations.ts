@@ -85,14 +85,21 @@ export const useUpdateStudentProfile = () =>
             studentsApi
                 .patch<StudentProfile>(`/${id}`, payload)
                 .then((res) => res.data),
-        onSuccess: (student) => {
-            queryClient.setQueryData(
-                [QUERY_KEYS.STUDENT_PROFILE, student.id],
-                student,
-            );
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.STUDENT_PROFILE],
             });
             toast.success('Perfil atualizado com sucesso');
+        },
+        onError: (error: AxiosError<{ message: string }>) => {
+            if (error.response?.status === 400) {
+                toast.error('Campo inválido. Confira os dados e tente novamente.');
+                return;
+            }
+            if (error.response?.status === 409) {
+                toast.error(error.response.data.message);
+                return;
+            }
+            toast.error('Erro ao atualizar perfil');
         },
     });
