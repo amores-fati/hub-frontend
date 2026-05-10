@@ -1,0 +1,105 @@
+.custom-table {
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.custom-table--borderless {
+    border: none;
+    box-shadow: none;
+}
+
+.custom-table__wrapper {
+    overflow-x: auto;
+}
+
+.custom-table__element {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        text-align: left;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    th {
+        color: var(--cinza-2);
+        font: var(--footnote-bold);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+
+    tbody tr:hover {
+        background: rgba(103, 58, 183, 0.03);
+    }
+}
+
+.custom-table--header-bg .custom-table__element thead tr {
+    background: var(--surface-alt);
+}
+
+.custom-table__checkbox-column {
+    width: 4rem;
+}
+
+.custom-table__sort-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--cinza-2);
+    font: inherit;
+    text-transform: inherit;
+}
+
+.custom-table__sort-button--active {
+    color: var(--tertiary-color);
+}
+
+.custom-table__actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.custom-table__action-button {
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.custom-table__action-button--danger {
+    color: var(--secondary-color) !important;
+}
+
+.custom-table__footer {
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    p {
+        margin: 0;
+    }
+
+    .MuiPaginationItem-root {
+        color: var(--text-primary);
+        border-radius: 0.65rem;
+    }
+
+    .MuiPaginationItem-root.Mui-selected {
+        background: var(--tertiary-color);
+        color: var(--branco);
+    }
+}
+
+@media (max-width: 960px) {
+    .custom-table__footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

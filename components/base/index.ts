@@ -9,5 +9,6 @@ export {
     CustomMultSelect as MultSelect,
     CustomSelect as Select,
 } from './Select/select';
+export { Table } from './Table/table';
 export { Toast } from './Toast/toast';
 export { CustomTooltip as Tooltip } from './Tooltip/tooltip';

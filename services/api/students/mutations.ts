@@ -5,10 +5,16 @@ import { toast } from 'react-toastify';
 import { studentsApi } from '.';
 import { ResponseDto } from '@/dtos/ResponseDto';
 import {
+    StudentProfile,
+    UpdateStudentProfilePayload,
+} from '@/dtos/StudentProfileDto';
+import {
     StudentRegisterPayload,
     StudentRegisterResponse,
 } from '@/dtos/StudentDto';
 import { formatDate } from '@/utils/shared-functions/date';
+import { queryClient } from '@/services/query-client';
+import QUERY_KEYS from '@/utils/contants/queries';
 
 export const useStudentRegister = (payload: StudentRegisterPayload) =>
     useMutation({
@@ -17,6 +23,7 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                 .post('', {
                     email: payload.email,
                     password: payload.password,
+                    fullName: payload.fullName,
                     cpf: payload.cpf,
                     socialName: payload.socialName,
                     birthDate: formatDate(payload.birthDate),
@@ -27,15 +34,15 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                     institution: payload.institution,
                     activityArea: payload.workField,
                     hasProgrammingExperience: payload.hasWorkExperience,
-                    hasTechCourses: null,
-                    techCoursesList: null,
-                    sendCurriculum: null,
-                    fatilabMotivation: payload.whyJoinFatiLab,
+                    motivation: payload.whyJoinFatiLab,
                     howHeard: payload.whomInformed,
                     hasComputer: payload.hasOwnComputer,
                     hasInternet: payload.hasInternetAccess,
                     committedToParticipate: payload.compromisedToClasses,
                     familyIncome: payload.familyIncome,
+                    householdSize: payload.peopleInHouse
+                        ? Number(payload.peopleInHouse)
+                        : undefined,
                     contact: {
                         phone: payload.phoneNumber,
                         neighbourhood: payload.neighbourhood,
@@ -47,20 +54,11 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                     },
                     disability: {
                         hasDisability: payload.hasAccessability,
-                        description: null,
-                        hasReport: null,
                         type: payload.typeAccessability,
                     },
                     socialBenefits: [
                         {
-                            benefit: 'Outro',
-                            benefitOther: null,
-                        },
-                    ],
-                    accessibilityResources: [
-                        {
-                            resource: 'Outro',
-                            resourceOther: null,
+                            benefit: payload.socialBenefit || 'NONE',
                         },
                     ],
                 })
@@ -78,5 +76,30 @@ export const useStudentRegister = (payload: StudentRegisterPayload) =>
                 return;
             }
             toast.error('Erro ao registrar usuário');
+        },
+    });
+
+export const useUpdateStudentProfile = () =>
+    useMutation({
+        mutationFn: ({ id, ...payload }: UpdateStudentProfilePayload) =>
+            studentsApi
+                .patch<StudentProfile>(`/${id}`, payload)
+                .then((res) => res.data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.STUDENT_PROFILE],
+            });
+            toast.success('Perfil atualizado com sucesso');
+        },
+        onError: (error: AxiosError<{ message: string }>) => {
+            if (error.response?.status === 400) {
+                toast.error('Campo inválido. Confira os dados e tente novamente.');
+                return;
+            }
+            if (error.response?.status === 409) {
+                toast.error(error.response.data.message);
+                return;
+            }
+            toast.error('Erro ao atualizar perfil');
         },
     });

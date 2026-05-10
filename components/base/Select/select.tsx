@@ -37,6 +37,10 @@ export const style = {
         ...provided,
         paddingLeft: '1rem',
     }),
+    menuPortal: (provided: any) => ({
+        ...provided,
+        zIndex: 9999,
+    }),
 };
 
 export function CustomSelect({

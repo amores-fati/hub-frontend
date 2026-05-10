@@ -18,6 +18,47 @@ import { toast } from 'react-toastify';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { removeStoreAuthToken } from '@/utils/stores/auth';
 
+export const DEFAULT_FORM = {
+    fullName: '',
+    socialName: undefined,
+    cpf: '',
+    birthDate: '',
+    phoneNumber: '',
+    email: '',
+    password: '',
+    passwordConfirmation: '',
+    gender: undefined,
+    race: undefined,
+    cep: '',
+    address: '',
+    complement: undefined,
+    neighbourhood: undefined,
+    city: undefined,
+    state: undefined,
+    scholarship: null,
+    course: '',
+    institution: '',
+    whyJoinFatiLab: '',
+    whomInformed: undefined,
+    hasOwnComputer: false,
+    hasInternetAccess: false,
+    compromisedToClasses: false,
+    // familyIncome: undefined,
+    // Ajustar para receber array
+    hasWorkExperience: false,
+    hasParticipatedOnCourses: false,
+    currentlyWorking: false,
+    workField: undefined,
+    hasAccessability: false,
+    typeAccessability: '',
+    lgpd: {
+        terms: false,
+        imageUsage: false,
+    },
+    peopleInHouse: '',
+    socialBenefit: undefined,
+};
+
 export enum StepperSteps {
     STEP1 = 1,
     STEP2 = 2,
@@ -41,44 +82,7 @@ export default function CadastroAluno() {
         StepperSteps.STEP1,
     );
     const [form, setForm] = useState<StudentRegisterPayload>({
-        fullName: '',
-        socialName: undefined,
-        cpf: '',
-        birthDate: '',
-        phoneNumber: '',
-        email: '',
-        password: '',
-        passwordConfirmation: '',
-        gender: undefined,
-        race: undefined,
-        cep: '',
-        address: '',
-        complement: undefined,
-        neighbourhood: undefined,
-        city: undefined,
-        state: undefined,
-        scholarship: null,
-        course: '',
-        institution: '',
-        whyJoinFatiLab: '',
-        whomInformed: undefined,
-        hasOwnComputer: false,
-        hasInternetAccess: false,
-        compromisedToClasses: false,
-        // familyIncome: undefined,
-        // Ajustar para receber array
-        hasWorkExperience: false,
-        hasParticipatedOnCourses: false,
-        currentlyWorking: false,
-        workField: undefined,
-        hasAccessability: false,
-        typeAccessability: '',
-        lgpd: {
-            terms: false,
-            imageUsage: false,
-        },
-        peopleInHouse: '',
-        socialBenefit: undefined,
+        ...DEFAULT_FORM,
     });
 
     const { mutate, error, data } = useStudentRegister(form);
@@ -155,10 +159,10 @@ export default function CadastroAluno() {
             <div className='stepper-custom'>
                 {steps.map((label, index) => {
                     const stepNumber = index + 1;
-                    const isActive =
-                        (stepNumber as StepperSteps) === activeStep;
-                    const isCompleted =
-                        (stepNumber as StepperSteps) < activeStep;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+                    const isActive = stepNumber === activeStep;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+                    const isCompleted = stepNumber < activeStep;
 
                     return (
                         <div

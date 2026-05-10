@@ -18,7 +18,7 @@ export const useCompanyRegister = (payload: CompanyRegisterPayload) =>
                     password: payload.password,
                     name: payload.name,
                     cnpj: payload.cnpj,
-                    ownerName: payload.ownerName,
+                    responsibleName: payload.ownerName,
                     contact: {
                         phone: payload.phoneNumber,
                         neighbourhood: payload.neighbourhood,

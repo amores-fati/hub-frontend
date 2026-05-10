@@ -5,6 +5,8 @@ import { Loading } from '@/components/base';
 import { UserRole } from '@/dtos/UserDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useGetAdminDashboard } from '@/services/api/admin/dashboard/queries';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import './home.scss';
 
 type HomeFallbackProps = {
@@ -27,9 +29,11 @@ function HomeFallback({ description, tag, title }: HomeFallbackProps) {
 
 export default function HomePage() {
     const { isHydrated, user } = useAuth();
+    const router = useRouter();
     const role = user?.role;
     const withOutLogin = !user; //Enquanto não existe autenticação, RETIRAR QUANDO TIVER AUTENTICAÇÃO REAL
     const isAdmin = user?.role === UserRole.ADMIN;
+    const isStudent = role === UserRole.STUDENT;
     const shouldRenderAdminHome = isHydrated && (withOutLogin || isAdmin);
     const {
         data: dashboardData,
@@ -38,7 +42,13 @@ export default function HomePage() {
         isError,
     } = useGetAdminDashboard(shouldRenderAdminHome);
 
-    if (!isHydrated) {
+    useEffect(() => {
+        if (isHydrated && isStudent) {
+            router.replace('/aluno/cursos');
+        }
+    }, [isHydrated, isStudent, router]);
+
+    if (!isHydrated || isStudent) {
         return (
             <section className='home-page home-page--centered'>
                 <Loading className='home-page__loading' />
@@ -69,16 +79,6 @@ export default function HomePage() {
             <section className='home-page'>
                 <AdminDashboard data={dashboardData} />
             </section>
-        );
-    }
-
-    if (role === UserRole.STUDENT) {
-        return (
-            <HomeFallback
-                tag='Área do aluno'
-                title='Bem-vindo à plataforma'
-                description='A home do aluno será exibida aqui. Por enquanto, esta área permanece como placeholder até a próxima etapa de implementação.'
-            />
         );
     }
 

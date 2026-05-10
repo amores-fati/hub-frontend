@@ -44,7 +44,7 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
     const router = useRouter();
 
     useEffect(() => {
-        const token = localStorage.getItem(STORE_KEYS.token);
+        const token = getStoreAuthToken();
         if (token) {
             setAuthToken(token);
         } else {
