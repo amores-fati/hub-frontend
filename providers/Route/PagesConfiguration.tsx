@@ -71,6 +71,14 @@ export const PAGES: Page[] = [
         icon: <GroupIcon className='sidebar-icon' />,
     },
     {
+        path: '/admin/curriculos',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Currículo do Aluno',
+        icon: <AssignmentIndIcon className='sidebar-icon' />,
+    },
+    {
         path: '/aluno/curriculo',
         navbarEnabled: true,
         requireRoles: [UserRole.STUDENT],

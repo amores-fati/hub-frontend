@@ -38,6 +38,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
@@ -653,15 +654,24 @@ function AdminStudents() {
             header: 'Ações',
             sortable: false,
             render: (student: AdminStudentDto) => (
-                <IconButton
-                    className='custom-table__action-button'
-                    component='a'
-                    href={buildWhatsAppLink(student.phoneNumber)}
-                    target='_blank'
-                    rel='noreferrer'
-                >
-                    <WhatsAppIcon fontSize='small' />
-                </IconButton>
+                <>
+                    <IconButton
+                        className='custom-table__action-button'
+                        component='a'
+                        href={buildWhatsAppLink(student.phoneNumber)}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <WhatsAppIcon fontSize='small' />
+                    </IconButton>
+                    <IconButton
+                        className='custom-table__action-button'
+                        component='a'
+                        href={`/admin/curriculos?studentId=${student.id}`}
+                    >
+                        <AssignmentIndIcon fontSize='small' />
+                    </IconButton>
+                </>
             ),
         },
     ];
