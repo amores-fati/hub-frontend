@@ -31,6 +31,9 @@ import {
 import { useGetStudentResume } from '@/services/api/students/resume/queries';
 import { useUpdateStudentProfile } from '@/services/api/students/mutations';
 import { useGetStudentProfile } from '@/services/api/students/queries';
+import { useGetAdminStudentResume } from '@/services/api/admin/students/resume/queries';
+import { useGetStudent } from '@/services/api/students/queries';
+import { UserRole } from '@/dtos/UserDto';
 import './index.scss';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
@@ -124,13 +127,20 @@ const getApiErrorMessage = (error: unknown, fallback: string) => {
     return fallback;
 };
 
-export default function StudentResumePage() {
+export default function StudentResumePage({ adminStudentId }: { adminStudentId?: string | null } = {}) {
     const { user } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const studentId = user?.sub || user?.userId;
     const { data: resume, isError, isLoading } = useGetStudentResume();
     const { data: studentProfile, isLoading: isLoadingProfile } =
         useGetStudentProfile(studentId);
+
+    const isAdmin = user?.role === UserRole.ADMIN;
+    const canEdit = !isAdmin;
+    const { data: adminResume, isLoading: isLoadingAdminResume, isError: isAdminResumeError } =
+        useGetAdminStudentResume(adminStudentId ?? null);
+    const { data: adminStudentData, isLoading: isLoadingAdminStudent } =
+        useGetStudent(adminStudentId ?? undefined);
     const updateResume = useUpdateStudentResume();
     const updateStudentProfile = useUpdateStudentProfile();
     const uploadPhoto = useUploadStudentResumePhoto();
@@ -171,7 +181,11 @@ export default function StudentResumePage() {
         () => getPhotoUrl(resume?.photoUrl),
         [resume?.photoUrl],
     );
-    const currentPhotoUrl = selectedPhotoPreview || persistedPhotoUrl;
+    const adminPersistedPhotoUrl = useMemo(
+        () => getPhotoUrl(adminResume?.photoUrl),
+        [adminResume?.photoUrl],
+    );
+    const currentPhotoUrl = selectedPhotoPreview || (isAdmin ? adminPersistedPhotoUrl : persistedPhotoUrl);
     const isSaving =
         updateResume.isPending ||
         updateStudentProfile.isPending ||
@@ -195,6 +209,20 @@ export default function StudentResumePage() {
         );
         setDisabilityType(studentProfile?.disability?.type ?? '');
     }, [isEditingResume, studentProfile, user?.email]);
+
+    useEffect(() => {
+        if (!isAdmin) return;
+        setAbout(adminResume?.about ?? '');
+        setLinkedinUrl(adminResume?.linkedinUrl ?? '');
+        setGithubUrl(adminResume?.githubUrl ?? '');
+        setSkills(adminResume?.skills ?? []);
+    }, [isAdmin, adminResume]);
+
+    useEffect(() => {
+        if (!isAdmin) return;
+        setProfileName(adminStudentData?.socialName || adminStudentData?.fullName || '');
+        setDisabilityType(adminStudentData?.disability?.type ?? '');
+    }, [isAdmin, adminStudentData]);
 
     const resetEditableFields = () => {
         setProfileName(
@@ -388,7 +416,7 @@ export default function StudentResumePage() {
         }
     };
 
-    if (isLoading || isLoadingProfile) {
+    if (isAdmin ? (isLoadingAdminResume || isLoadingAdminStudent) : (isLoading || isLoadingProfile)) {
         return (
             <section className='student-resume-page student-resume-page--centered'>
                 <Loading className='student-resume-page__loading' />
@@ -396,7 +424,7 @@ export default function StudentResumePage() {
         );
     }
 
-    if (isError) {
+    if (isAdmin ? isAdminResumeError : isError) {
         return (
             <section className='student-resume-page student-resume-page--centered'>
                 <div className='student-resume-feedback'>
@@ -476,7 +504,7 @@ export default function StudentResumePage() {
                         </div>
 
                         <div className='student-resume-card__actions'>
-                            {isEditingResume ? (
+                            {canEdit && isEditingResume ? (
                                 <>
                                     <button
                                         className='student-resume-button student-resume-button--ghost'
@@ -497,7 +525,7 @@ export default function StudentResumePage() {
                                             : 'Salvar alterações'}
                                     </button>
                                 </>
-                            ) : (
+                            ) : canEdit ? (
                                 <button
                                     className='student-resume-button student-resume-button--primary'
                                     type='button'
@@ -506,7 +534,7 @@ export default function StudentResumePage() {
                                     <EditIcon fontSize='small' />
                                     Editar
                                 </button>
-                            )}
+                            ) : null}
                         </div>
                     </div>
 
@@ -600,6 +628,7 @@ export default function StudentResumePage() {
                                             }}
                                         />
                                         {skill.skillName}
+                                        {canEdit && (
                                         <button
                                             type='button'
                                             aria-label={`Remover ${skill.skillName}`}
@@ -610,6 +639,7 @@ export default function StudentResumePage() {
                                         >
                                             <CloseIcon fontSize='small' />
                                         </button>
+                                        )}
                                     </span>
                                 ))
                             ) : (
@@ -619,7 +649,7 @@ export default function StudentResumePage() {
                             )}
                         </div>
 
-                        <form
+                        {canEdit && <form
                             className='student-resume-skill-form'
                             onSubmit={(event) => void handleAddSkill(event)}
                         >
@@ -639,7 +669,7 @@ export default function StudentResumePage() {
                                 <AddIcon fontSize='small' />
                                 Adicionar
                             </button>
-                        </form>
+                        </form>}
                     </div>
                 </aside>
             </div>
