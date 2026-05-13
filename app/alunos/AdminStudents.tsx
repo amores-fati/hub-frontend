@@ -21,6 +21,7 @@ import { getAdminStudentsFilterOptionsMock } from '@/services/api/admin/students
 import {
     useGetAdminStudents,
 } from '@/services/api/admin/students/queries';
+import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import { Option } from '@/components/base/Select/select';
 import {
     Avatar,
@@ -184,12 +185,6 @@ const initialFiltersState: AppliedFiltersState = {
     disabilityType: [],
     city: [],
 };
-
-const locationOptions: Option[] =
-    getAdminStudentsFilterOptionsMock().locations.map((location) => ({
-        value: location,
-        label: location,
-    }));
 
 const normalizeText = (value: string) =>
     value
@@ -460,6 +455,15 @@ function AdminStudents() {
         useState<AdminStudentDto | null>(null);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+
+    const { data: locationsData } = useGetAdminLocations({ scope: 'STUDENT' });
+
+    const locationOptions = useMemo(() => {
+        return (locationsData ?? []).map((loc) => ({
+            value: `${loc.city}/${loc.uf}`,
+            label: `${loc.city}/${loc.uf}`,
+        }));
+    }, [locationsData]);
 
     const getParameters = (): AdminStudentsQueryParams => {
         return {
