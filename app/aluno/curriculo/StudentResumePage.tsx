@@ -20,7 +20,7 @@ import {
 import { toast } from 'react-toastify';
 
 import { Loading } from '@/components/base';
-import { ApiErrorDto, ResumeSkill } from '@/dtos/StudentResumeDto';
+import { ApiErrorDto, ResumeSkill, StudentResume } from '@/dtos/StudentResumeDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import {
     useAddStudentResumeSkill,
@@ -31,10 +31,9 @@ import {
 import { useGetStudentResume } from '@/services/api/students/resume/queries';
 import { useUpdateStudentProfile } from '@/services/api/students/mutations';
 import { useGetStudentProfile } from '@/services/api/students/queries';
-import { useGetAdminStudentResume } from '@/services/api/admin/students/resume/queries';
-import { useGetStudent } from '@/services/api/students/queries';
 import { UserRole } from '@/dtos/UserDto';
 import './index.scss';
+import { StudentProfile } from '@/dtos/StudentProfileDto';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
@@ -127,20 +126,35 @@ const getApiErrorMessage = (error: unknown, fallback: string) => {
     return fallback;
 };
 
-export default function StudentResumePage({ adminStudentId }: { adminStudentId?: string | null } = {}) {
+export default function Index() {
     const { user } = useAuth();
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const studentId = user?.sub || user?.userId;
-    const { data: resume, isError, isLoading } = useGetStudentResume();
-    const { data: studentProfile, isLoading: isLoadingProfile } =
-        useGetStudentProfile(studentId);
+    const { data: resume, isError: isErrorResume, isLoading: isLoadingResume } = useGetStudentResume();
+    const { data: profile, isLoading: isLoadingProfile, isError: isErrorProfile } =
+        useGetStudentProfile();
 
+    if (!resume || !profile) return <></>
+
+    return (
+        <StudentResumePage
+            studentId={studentId!}
+            profile={profile}
+            resume={resume}
+            isLoading={isLoadingProfile || isLoadingResume}
+            isError={isErrorProfile || isErrorResume}
+        />
+    )
+}
+
+export function StudentResumePage({ profile, resume, isError, isLoading, studentId }: {
+    profile: StudentProfile; resume: StudentResume; isError: boolean; isLoading: boolean; studentId?: string;
+}) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const { user } = useAuth();
     const isAdmin = user?.role === UserRole.ADMIN;
     const canEdit = !isAdmin;
-    const { data: adminResume, isLoading: isLoadingAdminResume, isError: isAdminResumeError } =
-        useGetAdminStudentResume(adminStudentId ?? null);
-    const { data: adminStudentData, isLoading: isLoadingAdminStudent } =
-        useGetStudent(adminStudentId ?? undefined);
+
     const updateResume = useUpdateStudentResume();
     const updateStudentProfile = useUpdateStudentProfile();
     const uploadPhoto = useUploadStudentResumePhoto();
@@ -165,27 +179,24 @@ export default function StudentResumePage({ adminStudentId }: { adminStudentId?:
     const displayName = useMemo(
         () =>
             profileName.trim() ||
-            studentProfile?.socialName ||
+            profile?.socialName ||
             formatStudentName(user?.email),
-        [profileName, studentProfile?.socialName, user?.email],
+        [profileName, profile?.socialName, user?.email],
     );
     const profileSubtitle = useMemo(
         () =>
-            studentProfile?.activityArea
-                ? formatProfileText(studentProfile.activityArea)
+            profile?.activityArea
+                ? formatProfileText(profile.activityArea)
                 : 'Currículo do aluno',
-        [studentProfile?.activityArea],
+        [profile?.activityArea],
     );
     const initials = useMemo(() => getInitials(displayName), [displayName]);
     const persistedPhotoUrl = useMemo(
         () => getPhotoUrl(resume?.photoUrl),
         [resume?.photoUrl],
     );
-    const adminPersistedPhotoUrl = useMemo(
-        () => getPhotoUrl(adminResume?.photoUrl),
-        [adminResume?.photoUrl],
-    );
-    const currentPhotoUrl = selectedPhotoPreview || (isAdmin ? adminPersistedPhotoUrl : persistedPhotoUrl);
+
+    const currentPhotoUrl = selectedPhotoPreview;
     const isSaving =
         updateResume.isPending ||
         updateStudentProfile.isPending ||
@@ -205,30 +216,16 @@ export default function StudentResumePage({ adminStudentId }: { adminStudentId?:
         if (isEditingResume) return;
 
         setProfileName(
-            studentProfile?.socialName || formatStudentName(user?.email),
+            profile?.socialName || formatStudentName(user?.email),
         );
-        setDisabilityType(studentProfile?.disability?.type ?? '');
-    }, [isEditingResume, studentProfile, user?.email]);
-
-    useEffect(() => {
-        if (!isAdmin) return;
-        setAbout(adminResume?.about ?? '');
-        setLinkedinUrl(adminResume?.linkedinUrl ?? '');
-        setGithubUrl(adminResume?.githubUrl ?? '');
-        setSkills(adminResume?.skills ?? []);
-    }, [isAdmin, adminResume]);
-
-    useEffect(() => {
-        if (!isAdmin) return;
-        setProfileName(adminStudentData?.socialName || adminStudentData?.fullName || '');
-        setDisabilityType(adminStudentData?.disability?.type ?? '');
-    }, [isAdmin, adminStudentData]);
+        setDisabilityType(profile?.disability?.type ?? '');
+    }, [isEditingResume, profile, user?.email]);
 
     const resetEditableFields = () => {
         setProfileName(
-            studentProfile?.socialName || formatStudentName(user?.email),
+            profile?.socialName || formatStudentName(user?.email),
         );
-        setDisabilityType(studentProfile?.disability?.type ?? '');
+        setDisabilityType(profile?.disability?.type ?? '');
         setAbout(resume?.about ?? '');
         setLinkedinUrl(resume?.linkedinUrl ?? '');
         setGithubUrl(resume?.githubUrl ?? '');
@@ -416,7 +413,7 @@ export default function StudentResumePage({ adminStudentId }: { adminStudentId?:
         }
     };
 
-    if (isAdmin ? (isLoadingAdminResume || isLoadingAdminStudent) : (isLoading || isLoadingProfile)) {
+    if (isLoading) {
         return (
             <section className='student-resume-page student-resume-page--centered'>
                 <Loading className='student-resume-page__loading' />
@@ -424,7 +421,7 @@ export default function StudentResumePage({ adminStudentId }: { adminStudentId?:
         );
     }
 
-    if (isAdmin ? isAdminResumeError : isError) {
+    if (isError) {
         return (
             <section className='student-resume-page student-resume-page--centered'>
                 <div className='student-resume-feedback'>
@@ -629,16 +626,16 @@ export default function StudentResumePage({ adminStudentId }: { adminStudentId?:
                                         />
                                         {skill.skillName}
                                         {canEdit && (
-                                        <button
-                                            type='button'
-                                            aria-label={`Remover ${skill.skillName}`}
-                                            disabled={isManagingSkill}
-                                            onClick={() =>
-                                                void handleRemoveSkill(skill.id)
-                                            }
-                                        >
-                                            <CloseIcon fontSize='small' />
-                                        </button>
+                                            <button
+                                                type='button'
+                                                aria-label={`Remover ${skill.skillName}`}
+                                                disabled={isManagingSkill}
+                                                onClick={() =>
+                                                    void handleRemoveSkill(skill.id)
+                                                }
+                                            >
+                                                <CloseIcon fontSize='small' />
+                                            </button>
                                         )}
                                     </span>
                                 ))

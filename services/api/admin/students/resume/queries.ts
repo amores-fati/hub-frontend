@@ -4,9 +4,13 @@ import QUERY_KEYS from '@/utils/contants/queries';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
-const getAdminStudentResume = async (studentId: string): Promise<StudentResume | null> => {
+const getAdminStudentResume = async (
+    studentId: string,
+): Promise<StudentResume | null> => {
     try {
-        const response = await adminStudentsApi.get<StudentResume>(`/${studentId}/resume`);
+        const response = await adminStudentsApi.get<StudentResume>(
+            `/${studentId}/resume`,
+        );
         return response.data;
     } catch (error) {
         const axiosError = error as AxiosError;
