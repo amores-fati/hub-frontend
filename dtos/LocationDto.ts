@@ -1,4 +1,4 @@
 export type AdminLocationDto = {
-  city: string;
-  uf: string;
+    city: string;
+    uf: string;
 };

@@ -18,12 +18,8 @@ import {
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
 import { getAdminStudentsFilterOptionsMock } from '@/services/api/admin/students/mock';
-import {
-    useGetAdminStudents
-} from '@/services/api/admin/students/queries';
-import {
-    useGetAdminLocations
-} from '@/services/api/admin/locations/queries';
+import { useGetAdminStudents } from '@/services/api/admin/students/queries';
+import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import { Option } from '@/components/base/Select/select';
 import {
     Avatar,
