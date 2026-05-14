@@ -1,4 +1,7 @@
-import { StudentProfile, UpdateStudentProfilePayload } from '@/dtos/StudentProfileDto';
+import {
+    StudentProfile,
+    UpdateStudentProfilePayload,
+} from '@/dtos/StudentProfileDto';
 import { phoneNumberRegex } from '@/utils/regex';
 import { formatDate } from '@/utils/shared-functions/date';
 import { EditProfileForm } from './types';
@@ -6,7 +9,10 @@ import { EditProfileForm } from './types';
 export function profileToForm(data: StudentProfile): EditProfileForm {
     const disabilityType = data.disability?.type ?? '';
     const disabilityTypes = disabilityType
-        ? disabilityType.split(',').filter(Boolean).map((t) => t.toUpperCase())
+        ? disabilityType
+              .split(',')
+              .filter(Boolean)
+              .map((t) => t.toUpperCase())
         : [];
 
     return {
@@ -76,7 +82,9 @@ export function formToUpdatePayload(
         hasInternet: form.hasInternet,
         hasProgrammingExperience: form.hasProgrammingExperience,
         committedToParticipate: form.committedToParticipate,
-        householdSize: Number.isFinite(householdSize) ? householdSize : undefined,
+        householdSize: Number.isFinite(householdSize)
+            ? householdSize
+            : undefined,
         contact: {
             phone: form.phoneNumber.replace(/\D/g, '') || undefined,
             cep: form.cep.replace(/\D/g, '') || undefined,
@@ -88,9 +96,10 @@ export function formToUpdatePayload(
         },
         disability: {
             hasDisability: form.hasDisability,
-            type: form.hasDisability && form.disabilityTypes.length
-                ? form.disabilityTypes.join(',')
-                : null,
+            type:
+                form.hasDisability && form.disabilityTypes.length
+                    ? form.disabilityTypes.join(',')
+                    : null,
         },
         socialBenefits: form.socialBenefit
             ? [{ benefit: form.socialBenefit }]

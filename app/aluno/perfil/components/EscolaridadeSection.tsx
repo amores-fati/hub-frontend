@@ -19,7 +19,10 @@ type Props = {
 };
 
 export function EscolaridadeSection({ form, setForm }: Props) {
-    function onEducationChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onEducationChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         setForm((prev) => ({ ...prev, education: value as Scholarship }));
     }
 
@@ -34,7 +37,9 @@ export function EscolaridadeSection({ form, setForm }: Props) {
     return (
         <SectionCard icon={<SchoolIcon />} title='Escolaridade'>
             <div className='perfil-field'>
-                <label className='perfil-field__label'>Nível de escolaridade</label>
+                <label className='perfil-field__label'>
+                    Nível de escolaridade
+                </label>
                 <div className='perfil-scholarship'>
                     <RadioGroup
                         value={form.education}
@@ -55,7 +60,9 @@ export function EscolaridadeSection({ form, setForm }: Props) {
                 </div>
 
                 <div className='perfil-field'>
-                    <label className='perfil-field__label'>Instituição de ensino</label>
+                    <label className='perfil-field__label'>
+                        Instituição de ensino
+                    </label>
                     <Input
                         placeholder='Nome da instituição'
                         value={form.institution}

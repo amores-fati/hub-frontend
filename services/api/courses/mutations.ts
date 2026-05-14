@@ -9,7 +9,8 @@ import { coursesApi } from '.';
 const handleEnrollmentError = (data: AxiosError<{ message?: string }>) => {
     if (data.response?.status === 409) {
         toast.error(
-            data.response.data?.message ?? 'Você já possui um vínculo com este curso',
+            data.response.data?.message ??
+                'Você já possui um vínculo com este curso',
         );
         return;
     }
@@ -29,7 +30,9 @@ export const useEnrollInCourse = () => {
                 .then((res) => res.data as EnrollmentDto),
         onSuccess: () => {
             toast.success('Inscrição realizada com sucesso');
-            void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ENROLLMENTS] });
+            void queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.ENROLLMENTS],
+            });
         },
         onError: handleEnrollmentError,
     });
@@ -44,7 +47,9 @@ export const useRegisterInterest = () => {
                 .then((res) => res.data as EnrollmentDto),
         onSuccess: () => {
             toast.success('Interesse registrado com sucesso');
-            void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ENROLLMENTS] });
+            void queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.ENROLLMENTS],
+            });
         },
         onError: handleEnrollmentError,
     });

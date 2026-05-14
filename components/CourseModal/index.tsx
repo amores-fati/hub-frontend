@@ -13,7 +13,20 @@ const MODALITY_LABELS: Record<CourseDto['modality'], string> = {
     hibrido: 'Híbrido',
 };
 
-const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const MONTHS = [
+    'Jan',
+    'Fev',
+    'Mar',
+    'Abr',
+    'Mai',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Set',
+    'Out',
+    'Nov',
+    'Dez',
+];
 
 const GRADIENTS = [
     'linear-gradient(90deg, #43E97B 0%, #83EEEE 100%)',
@@ -56,10 +69,20 @@ type CourseModalProps = {
     disabled?: boolean;
 };
 
-export function CourseModal({ course, action, onClose, onAction, disabled }: CourseModalProps) {
+export function CourseModal({
+    course,
+    action,
+    onClose,
+    onAction,
+    disabled,
+}: CourseModalProps) {
     const hasImage = !!course.imageUrl;
     const headerStyle = hasImage
-        ? { backgroundImage: `url(${course.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+        ? {
+              backgroundImage: `url(${course.imageUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+          }
         : { background: getGradient(course.id) };
 
     function handleAction() {
@@ -69,10 +92,12 @@ export function CourseModal({ course, action, onClose, onAction, disabled }: Cou
     return (
         <div className='course-modal__overlay' onClick={onClose}>
             <div className='course-modal' onClick={(e) => e.stopPropagation()}>
-
                 <div className='course-modal__header' style={headerStyle}>
                     {!hasImage && (
-                        <span className='course-modal__header-emoji' aria-hidden>
+                        <span
+                            className='course-modal__header-emoji'
+                            aria-hidden
+                        >
                             {COURSE_EMOJIS[course.id] ?? '📚'}
                         </span>
                     )}
@@ -86,76 +111,118 @@ export function CourseModal({ course, action, onClose, onAction, disabled }: Cou
                         </p>
                     </div>
 
-                    <p className='course-modal__description'>{course.description}</p>
+                    <p className='course-modal__description'>
+                        {course.description}
+                    </p>
 
                     {action === 'inscrever' && (
                         <div className='course-modal__partner-notice'>
                             <OpenInNewIcon sx={{ fontSize: 18 }} />
                             <p>
                                 A inscrição neste curso é feita no site do nosso
-                                parceiro. Ao continuar, você será redirecionado para o
-                                formulário de inscrição em uma nova aba.
+                                parceiro. Ao continuar, você será redirecionado
+                                para o formulário de inscrição em uma nova aba.
                             </p>
                         </div>
                     )}
 
                     <div className='course-modal__info-grid'>
                         <div className='course-modal__info-item'>
-                            <span className='course-modal__info-label'>Carga Horária</span>
-                            <span className='course-modal__info-value'>{course.workloadHours} horas</span>
+                            <span className='course-modal__info-label'>
+                                Carga Horária
+                            </span>
+                            <span className='course-modal__info-value'>
+                                {course.workloadHours} horas
+                            </span>
                         </div>
                         <div className='course-modal__info-item'>
-                            <span className='course-modal__info-label'>Modalidade</span>
-                            <span className='course-modal__info-value'>{MODALITY_LABELS[course.modality]}</span>
+                            <span className='course-modal__info-label'>
+                                Modalidade
+                            </span>
+                            <span className='course-modal__info-value'>
+                                {MODALITY_LABELS[course.modality]}
+                            </span>
                         </div>
                         <div className='course-modal__info-item'>
-                            <span className='course-modal__info-label'>Vagas</span>
-                            <span className='course-modal__info-value'>{course.vacancyCount} vagas restantes</span>
+                            <span className='course-modal__info-label'>
+                                Vagas
+                            </span>
+                            <span className='course-modal__info-value'>
+                                {course.vacancyCount} vagas restantes
+                            </span>
                         </div>
                         <div className='course-modal__info-item'>
-                            <span className='course-modal__info-label'>Período</span>
+                            <span className='course-modal__info-label'>
+                                Período
+                            </span>
                             <span className='course-modal__info-value'>
                                 {formatPeriod(course.startDate, course.endDate)}
                             </span>
                         </div>
                         <div className='course-modal__info-item'>
-                            <span className='course-modal__info-label'>Inscrições</span>
+                            <span className='course-modal__info-label'>
+                                Inscrições
+                            </span>
                             <span className='course-modal__info-value'>
-                                {formatPeriod(course.enrollmentStart, course.enrollmentEnd)}
+                                {formatPeriod(
+                                    course.enrollmentStart,
+                                    course.enrollmentEnd,
+                                )}
                             </span>
                         </div>
                         {course.location && (
                             <div className='course-modal__info-item course-modal__info-item--span2'>
-                                <span className='course-modal__info-label'>Local</span>
-                                <span className='course-modal__info-value'>{course.location}</span>
+                                <span className='course-modal__info-label'>
+                                    Local
+                                </span>
+                                <span className='course-modal__info-value'>
+                                    {course.location}
+                                </span>
                             </div>
                         )}
                     </div>
 
                     <div className='course-modal__footer'>
-                        <button className='course-modal__btn course-modal__btn--outline' onClick={onClose}>
+                        <button
+                            className='course-modal__btn course-modal__btn--outline'
+                            onClick={onClose}
+                        >
                             Fechar
                         </button>
                         {action === 'inscrito' && (
-                            <button className='course-modal__btn course-modal__btn--primary' disabled>
+                            <button
+                                className='course-modal__btn course-modal__btn--primary'
+                                disabled
+                            >
                                 <CheckIcon sx={{ fontSize: 16 }} />
                                 Inscrito
                             </button>
                         )}
                         {action === 'inscrever' && (
-                            <button className='course-modal__btn course-modal__btn--primary' onClick={handleAction} disabled={disabled}>
+                            <button
+                                className='course-modal__btn course-modal__btn--primary'
+                                onClick={handleAction}
+                                disabled={disabled}
+                            >
                                 Ir para inscrição
                                 <OpenInNewIcon sx={{ fontSize: 16 }} />
                             </button>
                         )}
                         {action === 'interesse' && (
-                            <button className='course-modal__btn course-modal__btn--primary' onClick={handleAction} disabled={disabled}>
+                            <button
+                                className='course-modal__btn course-modal__btn--primary'
+                                onClick={handleAction}
+                                disabled={disabled}
+                            >
                                 <FavoriteIcon sx={{ fontSize: 16 }} />
                                 Mostrar Interesse
                             </button>
                         )}
                         {action === 'interessado' && (
-                            <button className='course-modal__btn course-modal__btn--yellow' disabled>
+                            <button
+                                className='course-modal__btn course-modal__btn--yellow'
+                                disabled
+                            >
                                 <FavoriteIcon sx={{ fontSize: 16 }} />
                                 Interesse manifestado
                             </button>

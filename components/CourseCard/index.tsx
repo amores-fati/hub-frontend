@@ -24,7 +24,11 @@ function getGradient(id: string): string {
     return GRADIENTS[hash % GRADIENTS.length];
 }
 
-export type CourseAction = 'inscrito' | 'inscrever' | 'interesse' | 'interessado';
+export type CourseAction =
+    | 'inscrito'
+    | 'inscrever'
+    | 'interesse'
+    | 'interessado';
 
 type CourseCardProps = {
     course: CourseDto;
@@ -34,9 +38,19 @@ type CourseCardProps = {
     disabled?: boolean;
 };
 
-export function CourseCard({ course, action, onSaibaMais, onAction, disabled }: CourseCardProps) {
+export function CourseCard({
+    course,
+    action,
+    onSaibaMais,
+    onAction,
+    disabled,
+}: CourseCardProps) {
     const headerBg = course.imageUrl
-        ? { backgroundImage: `url(${course.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+        ? {
+              backgroundImage: `url(${course.imageUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+          }
         : { background: getGradient(course.id) };
 
     return (
@@ -52,17 +66,26 @@ export function CourseCard({ course, action, onSaibaMais, onAction, disabled }: 
             <div className='course-card__body'>
                 <div className='course-card__info'>
                     <p className='course-card__title'>{course.title}</p>
-                    <p className='course-card__description'>{course.description}</p>
+                    <p className='course-card__description'>
+                        {course.description}
+                    </p>
                 </div>
 
                 <div className='course-card__footer'>
                     <div className='course-card__meta'>
-                        <span className='course-card__hours'>⏱ {course.workloadHours}h</span>
-                        <span className='course-card__vacancies'>{course.vacancyCount} Vagas</span>
+                        <span className='course-card__hours'>
+                            ⏱ {course.workloadHours}h
+                        </span>
+                        <span className='course-card__vacancies'>
+                            {course.vacancyCount} Vagas
+                        </span>
                     </div>
 
                     <div className='course-card__actions'>
-                        <button className='course-card__saiba-mais' onClick={onSaibaMais}>
+                        <button
+                            className='course-card__saiba-mais'
+                            onClick={onSaibaMais}
+                        >
                             Saiba mais →
                         </button>
                         {action === 'inscrito' && (
@@ -72,18 +95,29 @@ export function CourseCard({ course, action, onSaibaMais, onAction, disabled }: 
                             </button>
                         )}
                         {action === 'inscrever' && (
-                            <button className='course-card__btn' onClick={onAction} disabled={disabled}>
+                            <button
+                                className='course-card__btn'
+                                onClick={onAction}
+                                disabled={disabled}
+                            >
                                 Inscrever-se
                             </button>
                         )}
                         {action === 'interesse' && (
-                            <button className='course-card__btn' onClick={onAction} disabled={disabled}>
+                            <button
+                                className='course-card__btn'
+                                onClick={onAction}
+                                disabled={disabled}
+                            >
                                 <CalendarTodayIcon sx={{ fontSize: 14 }} />
                                 Tenho interesse
                             </button>
                         )}
                         {action === 'interessado' && (
-                            <button className='course-card__btn course-card__btn--yellow' disabled>
+                            <button
+                                className='course-card__btn course-card__btn--yellow'
+                                disabled
+                            >
                                 <FavoriteIcon sx={{ fontSize: 14 }} />
                                 Interesse manifestado
                             </button>

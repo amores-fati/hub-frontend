@@ -6,7 +6,10 @@ import { CourseDto } from '@/dtos/CourseDto';
 import { UserRole } from '@/dtos/UserDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useRegisterInterest } from '@/services/api/courses/mutations';
-import { useGetCourses, useGetMyEnrollments } from '@/services/api/courses/queries';
+import {
+    useGetCourses,
+    useGetMyEnrollments,
+} from '@/services/api/courses/queries';
 import { useGetPublicSetting } from '@/services/api/settings/queries';
 import { useGetStudentProfile } from '@/services/api/students/queries';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
@@ -46,14 +49,24 @@ export default function CursosAluno() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const enrolledCourses = (courses ?? []).filter((c) => enrollmentMap.get(c.id) === 'enrolled');
-    const interestedCourses = (courses ?? []).filter((c) => enrollmentMap.get(c.id) === 'interested');
+    const enrolledCourses = (courses ?? []).filter(
+        (c) => enrollmentMap.get(c.id) === 'enrolled',
+    );
+    const interestedCourses = (courses ?? []).filter(
+        (c) => enrollmentMap.get(c.id) === 'interested',
+    );
     const notEnrolled = (courses ?? []).filter((c) => !enrollmentMap.has(c.id));
-    const availableCourses = notEnrolled.filter((c) => new Date(c.enrollmentStart) <= today);
-    const upcomingCourses = notEnrolled.filter((c) => new Date(c.enrollmentStart) > today);
+    const availableCourses = notEnrolled.filter(
+        (c) => new Date(c.enrollmentStart) <= today,
+    );
+    const upcomingCourses = notEnrolled.filter(
+        (c) => new Date(c.enrollmentStart) > today,
+    );
 
     const whatsappDigits = whatsappSetting?.value?.replace(/\D/g, '');
-    const whatsappUrl = whatsappDigits ? `https://wa.me/${whatsappDigits}` : null;
+    const whatsappUrl = whatsappDigits
+        ? `https://wa.me/${whatsappDigits}`
+        : null;
 
     const displayName =
         studentProfile?.fullName?.trim() ||
@@ -67,7 +80,9 @@ export default function CursosAluno() {
 
     function handleAskEnroll(course: CourseDto) {
         if (!course.externalLink) {
-            toast.error('Link de inscrição do parceiro indisponível para este curso.');
+            toast.error(
+                'Link de inscrição do parceiro indisponível para este curso.',
+            );
             return;
         }
         setModal(null);
@@ -76,7 +91,11 @@ export default function CursosAluno() {
 
     function handleConfirmEnroll() {
         if (enrollConfirm?.externalLink) {
-            window.open(enrollConfirm.externalLink, '_blank', 'noopener,noreferrer');
+            window.open(
+                enrollConfirm.externalLink,
+                '_blank',
+                'noopener,noreferrer',
+            );
         }
         setEnrollConfirm(null);
     }
@@ -98,16 +117,20 @@ export default function CursosAluno() {
     return (
         <>
             <section className='cursos-aluno'>
-
                 {/* Banner */}
                 <div className='ca-banner'>
                     <div className='ca-banner__text'>
                         <h1>
-                            Olá, <span className='ca-banner__name'>{displayName}!</span> 👋
+                            Olá,{' '}
+                            <span className='ca-banner__name'>
+                                {displayName}!
+                            </span>{' '}
+                            👋
                         </h1>
                         <p>
-                            Bem-vindo à sua plataforma de aprendizado. Continue sua jornada
-                            de formação e construa seu futuro profissional.
+                            Bem-vindo à sua plataforma de aprendizado. Continue
+                            sua jornada de formação e construa seu futuro
+                            profissional.
                         </p>
                     </div>
                     <div className='ca-banner__actions'>
@@ -144,14 +167,18 @@ export default function CursosAluno() {
                 {/* Cursos Inscritos */}
                 {enrolledCourses.length > 0 && (
                     <div className='ca-section'>
-                        <h2 className='ca-section__title'>🌟 Cursos Inscritos</h2>
+                        <h2 className='ca-section__title'>
+                            🌟 Cursos Inscritos
+                        </h2>
                         <div className='ca-grid'>
                             {enrolledCourses.map((course) => (
                                 <CourseCard
                                     key={course.id}
                                     course={course}
                                     action='inscrito'
-                                    onSaibaMais={() => openModal(course, 'inscrito')}
+                                    onSaibaMais={() =>
+                                        openModal(course, 'inscrito')
+                                    }
                                 />
                             ))}
                         </div>
@@ -161,14 +188,18 @@ export default function CursosAluno() {
                 {/* Interesse Manifestado */}
                 {interestedCourses.length > 0 && (
                     <div className='ca-section'>
-                        <h2 className='ca-section__title'>💛 Interesse Manifestado</h2>
+                        <h2 className='ca-section__title'>
+                            💛 Interesse Manifestado
+                        </h2>
                         <div className='ca-grid'>
                             {interestedCourses.map((course) => (
                                 <CourseCard
                                     key={course.id}
                                     course={course}
                                     action='interessado'
-                                    onSaibaMais={() => openModal(course, 'interessado')}
+                                    onSaibaMais={() =>
+                                        openModal(course, 'interessado')
+                                    }
                                 />
                             ))}
                         </div>
@@ -178,14 +209,18 @@ export default function CursosAluno() {
                 {/* Cursos Disponíveis */}
                 {availableCourses.length > 0 && (
                     <div className='ca-section'>
-                        <h2 className='ca-section__title'>Cursos Disponíveis</h2>
+                        <h2 className='ca-section__title'>
+                            Cursos Disponíveis
+                        </h2>
                         <div className='ca-grid'>
                             {availableCourses.map((course) => (
                                 <CourseCard
                                     key={course.id}
                                     course={course}
                                     action='inscrever'
-                                    onSaibaMais={() => openModal(course, 'inscrever')}
+                                    onSaibaMais={() =>
+                                        openModal(course, 'inscrever')
+                                    }
                                     onAction={() => handleAskEnroll(course)}
                                 />
                             ))}
@@ -196,7 +231,9 @@ export default function CursosAluno() {
                 {/* Em breve */}
                 {upcomingCourses.length > 0 && (
                     <div className='ca-section'>
-                        <h2 className='ca-section__title'>Em breve — não perca a chance!</h2>
+                        <h2 className='ca-section__title'>
+                            Em breve — não perca a chance!
+                        </h2>
                         <div className='ca-grid'>
                             {upcomingCourses.map((course) => (
                                 <CourseCard
@@ -204,7 +241,9 @@ export default function CursosAluno() {
                                     course={course}
                                     action='interesse'
                                     disabled={isMutating}
-                                    onSaibaMais={() => openModal(course, 'interesse')}
+                                    onSaibaMais={() =>
+                                        openModal(course, 'interesse')
+                                    }
                                     onAction={() => handleInterest(course)}
                                 />
                             ))}
@@ -213,14 +252,20 @@ export default function CursosAluno() {
                 )}
 
                 {/* Sem nenhum curso */}
-                {enrolledCourses.length === 0 && interestedCourses.length === 0 && availableCourses.length === 0 && upcomingCourses.length === 0 && (
-                    <div className='ca-section'>
-                        <div className='ca-empty'>
-                            <p>Nenhum curso disponível no momento.</p>
-                            <small>Novos cursos serão divulgados em breve. Volte mais tarde.</small>
+                {enrolledCourses.length === 0 &&
+                    interestedCourses.length === 0 &&
+                    availableCourses.length === 0 &&
+                    upcomingCourses.length === 0 && (
+                        <div className='ca-section'>
+                            <div className='ca-empty'>
+                                <p>Nenhum curso disponível no momento.</p>
+                                <small>
+                                    Novos cursos serão divulgados em breve.
+                                    Volte mais tarde.
+                                </small>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
                 {/* WhatsApp FAB */}
                 {whatsappUrl && (
@@ -265,14 +310,18 @@ export default function CursosAluno() {
                         aria-modal='true'
                         aria-labelledby='enroll-confirm-title'
                     >
-                        <h3 id='enroll-confirm-title' className='enroll-confirm__title'>
+                        <h3
+                            id='enroll-confirm-title'
+                            className='enroll-confirm__title'
+                        >
                             Inscrição no site do parceiro
                         </h3>
                         <p className='enroll-confirm__body'>
-                            A inscrição em <strong>{enrollConfirm.title}</strong> é feita
-                            por meio de um formulário no site do nosso parceiro. Você
-                            será redirecionado para a plataforma de inscrição em uma nova
-                            aba.
+                            A inscrição em{' '}
+                            <strong>{enrollConfirm.title}</strong> é feita por
+                            meio de um formulário no site do nosso parceiro.
+                            Você será redirecionado para a plataforma de
+                            inscrição em uma nova aba.
                         </p>
                         <div className='enroll-confirm__actions'>
                             <button

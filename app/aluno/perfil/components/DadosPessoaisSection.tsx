@@ -43,7 +43,10 @@ export function DadosPessoaisSection({ form, setForm }: Props) {
         setForm((prev) => ({ ...prev, socialName: e.target.value }));
     }
 
-    function onHasDisabilityChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onHasDisabilityChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         const hasDisability = value === 'true';
         setForm((prev) => ({
             ...prev,
@@ -62,10 +65,7 @@ export function DadosPessoaisSection({ form, setForm }: Props) {
     }
 
     return (
-        <SectionCard
-            icon={<DescriptionIcon />}
-            title='Dados Pessoais'
-        >
+        <SectionCard icon={<DescriptionIcon />} title='Dados Pessoais'>
             <div className='perfil-grid perfil-grid--2'>
                 <div className='perfil-field'>
                     <label className='perfil-field__label'>Nome Completo</label>
@@ -78,9 +78,7 @@ export function DadosPessoaisSection({ form, setForm }: Props) {
 
                 <div className='perfil-field'>
                     <label className='perfil-field__label'>CPF</label>
-                    <p className='perfil-field__readonly'>
-                        {form.cpf || '—'}
-                    </p>
+                    <p className='perfil-field__readonly'>{form.cpf || '—'}</p>
                 </div>
 
                 <div className='perfil-field'>
@@ -117,9 +115,14 @@ export function DadosPessoaisSection({ form, setForm }: Props) {
                                 control={
                                     <Checkbox
                                         size='small'
-                                        checked={form.disabilityTypes.includes(value)}
+                                        checked={form.disabilityTypes.includes(
+                                            value,
+                                        )}
                                         onChange={(_, checked) =>
-                                            onDisabilityTypeChange(value, checked)
+                                            onDisabilityTypeChange(
+                                                value,
+                                                checked,
+                                            )
                                         }
                                     />
                                 }

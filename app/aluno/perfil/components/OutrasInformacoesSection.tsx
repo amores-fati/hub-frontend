@@ -1,11 +1,6 @@
 import { Input, RadioGroup, Select } from '@/components/base';
 import { Option } from '@/components/base/Select/select';
-import {
-    Gender,
-    Race,
-    SocialBenefit,
-    WhoInformed,
-} from '@/dtos/StudentDto';
+import { Gender, Race, SocialBenefit, WhoInformed } from '@/dtos/StudentDto';
 import { dateRegex, integerRegex } from '@/utils/regex';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { ChangeEvent } from 'react';
@@ -90,15 +85,24 @@ export function OutrasInformacoesSection({ form, setForm }: Props) {
         }));
     }
 
-    function onHasComputerChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onHasComputerChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         setForm((prev) => ({ ...prev, hasComputer: value === 'true' }));
     }
 
-    function onHasInternetChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onHasInternetChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         setForm((prev) => ({ ...prev, hasInternet: value === 'true' }));
     }
 
-    function onCommittedChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onCommittedChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         setForm((prev) => ({
             ...prev,
             committedToParticipate: value === 'true',
@@ -113,7 +117,9 @@ export function OutrasInformacoesSection({ form, setForm }: Props) {
         <SectionCard icon={<InfoOutlinedIcon />} title='Outras informações'>
             <div className='perfil-grid perfil-grid--2'>
                 <div className='perfil-field'>
-                    <label className='perfil-field__label'>Data de nascimento</label>
+                    <label className='perfil-field__label'>
+                        Data de nascimento
+                    </label>
                     <Input
                         placeholder='dd/mm/aaaa'
                         value={form.birthDate}
@@ -155,7 +161,9 @@ export function OutrasInformacoesSection({ form, setForm }: Props) {
                 </div>
 
                 <div className='perfil-field'>
-                    <label className='perfil-field__label'>Benefício social</label>
+                    <label className='perfil-field__label'>
+                        Benefício social
+                    </label>
                     <Select
                         placeholder='Selecione'
                         value={SocialBenefitOptions.find(
@@ -178,7 +186,9 @@ export function OutrasInformacoesSection({ form, setForm }: Props) {
                 </div>
 
                 <div className='perfil-field'>
-                    <label className='perfil-field__label'>Tem computador?</label>
+                    <label className='perfil-field__label'>
+                        Tem computador?
+                    </label>
                     <RadioGroup
                         value={String(form.hasComputer)}
                         options={YesNoOptions}
@@ -187,7 +197,9 @@ export function OutrasInformacoesSection({ form, setForm }: Props) {
                 </div>
 
                 <div className='perfil-field'>
-                    <label className='perfil-field__label'>Tem acesso à internet?</label>
+                    <label className='perfil-field__label'>
+                        Tem acesso à internet?
+                    </label>
                     <RadioGroup
                         value={String(form.hasInternet)}
                         options={YesNoOptions}

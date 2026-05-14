@@ -295,7 +295,7 @@ export function RegisterStep4({
             </div>
 
             {/* ── Autorizações ─────────────────────────────────────────────── */}
-            {!editing &&
+            {!editing && (
                 <>
                     <div className='register-steps__section-title'>
                         <InputAdornment position='start'>
@@ -306,7 +306,9 @@ export function RegisterStep4({
 
                     <div className='register-steps__terms-card'>
                         <div className='register-steps__terms-header'>
-                            <span className='terms-title'>TERMOS E PRIVACIDADE</span>
+                            <span className='terms-title'>
+                                TERMOS E PRIVACIDADE
+                            </span>
                             <a
                                 className='terms-link'
                                 href='/termos'
@@ -327,8 +329,8 @@ export function RegisterStep4({
                             }
                             label={
                                 <span className='terms-item-label'>
-                                    Aceito os <strong>Termos de Uso</strong> e as
-                                    políticas da LGPD.
+                                    Aceito os <strong>Termos de Uso</strong> e
+                                    as políticas da LGPD.
                                 </span>
                             }
                         />
@@ -350,7 +352,7 @@ export function RegisterStep4({
                         />
                     </div>
                 </>
-            }
+            )}
         </div>
     );
 }

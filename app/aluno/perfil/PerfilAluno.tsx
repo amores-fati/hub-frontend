@@ -49,9 +49,8 @@ function PerfilAlunoForm({
             <header className='perfil-aluno-page__header'>
                 <h1 className='perfil-aluno-page__title'>Meu Perfil</h1>
                 <p className='perfil-aluno-page__subtitle'>
-                    Gerencie suas{' '}
-                    <strong>informações pessoais</strong> e dados de{' '}
-                    <strong>contato</strong>.
+                    Gerencie suas <strong>informações pessoais</strong> e dados
+                    de <strong>contato</strong>.
                 </p>
             </header>
 

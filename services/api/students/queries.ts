@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { studentsApi } from '.';
 import { ResponseDto } from '@/dtos/ResponseDto';
 
-export const useGetStudent = (studentId?: string) =>
+export const useGetStudent = (studentId: string | null) =>
     useQuery({
         enabled: !!studentId,
         queryKey: [QUERY_KEYS.STUDENT_PROFILE, studentId],

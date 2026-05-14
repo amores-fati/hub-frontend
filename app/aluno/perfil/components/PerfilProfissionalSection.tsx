@@ -15,7 +15,10 @@ type Props = {
 };
 
 export function PerfilProfissionalSection({ form, setForm }: Props) {
-    function onCurrentlyWorkingChange(_: ChangeEvent<HTMLInputElement>, value: string) {
+    function onCurrentlyWorkingChange(
+        _: ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) {
         const isWorking = value === 'true';
         setForm((prev) => ({
             ...prev,
@@ -63,7 +66,9 @@ export function PerfilProfissionalSection({ form, setForm }: Props) {
 
             {form.currentlyWorking && (
                 <div className='perfil-field'>
-                    <label className='perfil-field__label'>Área de atuação</label>
+                    <label className='perfil-field__label'>
+                        Área de atuação
+                    </label>
                     <Input
                         placeholder='Ex: Vendas, Administrativo...'
                         value={form.activityArea}

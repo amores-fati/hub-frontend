@@ -4,14 +4,14 @@ import { adminLocationsApi } from '.';
 import { AdminLocationDto } from '@/dtos/LocationDto';
 
 export type AdminLocationsQueryParams = {
-  scope: 'STUDENT' | 'COMPANY';
+    scope: 'STUDENT' | 'COMPANY';
 };
 
 export const useGetAdminLocations = (params: AdminLocationsQueryParams) =>
-  useQuery({
-    queryKey: [QUERY_KEYS.ADMIN_LOCATIONS, params.scope],
-    queryFn: () =>
-      adminLocationsApi
-        .get('', { params })
-        .then((res) => res.data as AdminLocationDto[]),
-  });
+    useQuery({
+        queryKey: [QUERY_KEYS.ADMIN_LOCATIONS, params.scope],
+        queryFn: () =>
+            adminLocationsApi
+                .get('', { params })
+                .then((res) => res.data as AdminLocationDto[]),
+    });

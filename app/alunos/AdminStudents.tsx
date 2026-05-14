@@ -18,9 +18,7 @@ import {
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
 import { getAdminStudentsFilterOptionsMock } from '@/services/api/admin/students/mock';
-import {
-    useGetAdminStudents,
-} from '@/services/api/admin/students/queries';
+import { useGetAdminStudents } from '@/services/api/admin/students/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import { Option } from '@/components/base/Select/select';
 import {
@@ -38,6 +36,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
@@ -75,12 +74,14 @@ const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
     [AdminStudentDisabilityType.OTHER]: 'Outra',
 };
 
-const formatDisability = (disabilityType?: string): AdminStudentDisabilityType => {
+const formatDisability = (
+    disabilityType?: string,
+): AdminStudentDisabilityType => {
     if (!disabilityType) return 'Não' as AdminStudentDisabilityType;
     return (
-        (disabilityType ? disabilityType : 'NENHUMA').toUpperCase()
-    ) as AdminStudentDisabilityType
-}
+        disabilityType ? disabilityType : 'NENHUMA'
+    ).toUpperCase() as AdminStudentDisabilityType;
+};
 
 const genderLabels: Record<Gender, string> = {
     [Gender.FEMALE]: 'Feminino',
@@ -226,7 +227,7 @@ const formatDate = (value?: string | null) => {
 const buildWhatsAppLink = (phone: string) => {
     if (!phone) return '#';
     return `https://wa.me/55${phone.replace(/\D/g, '')}`;
-}
+};
 
 const getBooleanLabel = (value?: boolean) =>
     value === undefined ? 'Não informado' : value ? 'Sim' : 'Não';
@@ -478,13 +479,12 @@ function AdminStudents() {
         };
     };
 
-    const { data, isLoading, isFetching, isError } = useGetAdminStudents(
-        getParameters(),
-    );
+    const { data, isLoading, isFetching, isError } =
+        useGetAdminStudents(getParameters());
 
     useEffect(() => {
         if (isLoading || isFetching) setIsLoading(true);
-    }, [isLoading, isFetching])
+    }, [isLoading, isFetching]);
 
     useEffect(() => {
         if (!data || !data?.items) return;
@@ -495,15 +495,17 @@ function AdminStudents() {
         setIsLoading(false);
     }, [data, isLoading, isFetching]);
 
-    const { mutate: deleteStudentsMutation, isPending } = useDeleteAdminStudents(Object.keys(selectedStudents));
+    const { mutate: deleteStudentsMutation, isPending } =
+        useDeleteAdminStudents(Object.keys(selectedStudents));
 
     useEffect(() => {
         setSelectedStudents({});
-    }, [isPending])
+    }, [isPending]);
 
     const students = data?.items ?? [];
-    const selectedCountLabel = `${Object.keys(selectedStudents).length} aluno${Object.keys(selectedStudents).length === 1 ? '' : 's'
-        } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
+    const selectedCountLabel = `${Object.keys(selectedStudents).length} aluno${
+        Object.keys(selectedStudents).length === 1 ? '' : 's'
+    } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
 
     const handleExportAll = async () => {
         const printWindow = window.open('', '_blank', 'width=1120,height=840');
@@ -636,16 +638,19 @@ function AdminStudents() {
             header: 'PCD',
             sortable: true,
             render: (student: AdminStudentDto) => {
-                const disabilities = student.disabilityType ? student.disabilityType.split(',').map((d) => d.trim()) : [];
-                return (
-                    disabilities.map((disability) => (
-                        <Chip
-                            key={disability}
-                            label={disabilityLabels[formatDisability(disability)] ?? disabilityLabels[AdminStudentDisabilityType.OTHER]}
-                            className={getDisabilityBadgeClassName(student)}
-                        />
-                    ))
-                )
+                const disabilities = student.disabilityType
+                    ? student.disabilityType.split(',').map((d) => d.trim())
+                    : [];
+                return disabilities.map((disability) => (
+                    <Chip
+                        key={disability}
+                        label={
+                            disabilityLabels[formatDisability(disability)] ??
+                            disabilityLabels[AdminStudentDisabilityType.OTHER]
+                        }
+                        className={getDisabilityBadgeClassName(student)}
+                    />
+                ));
             },
         },
         {
@@ -653,15 +658,24 @@ function AdminStudents() {
             header: 'Ações',
             sortable: false,
             render: (student: AdminStudentDto) => (
-                <IconButton
-                    className='custom-table__action-button'
-                    component='a'
-                    href={buildWhatsAppLink(student.phoneNumber)}
-                    target='_blank'
-                    rel='noreferrer'
-                >
-                    <WhatsAppIcon fontSize='small' />
-                </IconButton>
+                <>
+                    <IconButton
+                        className='custom-table__action-button'
+                        component='a'
+                        href={buildWhatsAppLink(student.phoneNumber)}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <WhatsAppIcon fontSize='small' />
+                    </IconButton>
+                    <IconButton
+                        className='custom-table__action-button'
+                        component='a'
+                        href={`/admin/curriculos?studentId=${student.id}`}
+                    >
+                        <AssignmentIndIcon fontSize='small' />
+                    </IconButton>
+                </>
             ),
         },
     ];
@@ -835,7 +849,7 @@ function AdminStudents() {
                             onClick={() => {
                                 void deleteConfirmation(
                                     deleteStudentsMutation,
-                                    Object.keys(selectedStudents)
+                                    Object.keys(selectedStudents),
                                 );
                             }}
                         >
@@ -906,9 +920,9 @@ function AdminStudents() {
                                         <Chip
                                             label={
                                                 courseTypeLabels[
-                                                getCourseType(
-                                                    selectedStudent,
-                                                )
+                                                    getCourseType(
+                                                        selectedStudent,
+                                                    )
                                                 ]
                                             }
                                             className={getCourseBadgeClassName(
@@ -918,8 +932,8 @@ function AdminStudents() {
                                         <Chip
                                             label={
                                                 disabilityLabels[
-                                                selectedStudent
-                                                    .disabilityType
+                                                    selectedStudent
+                                                        .disabilityType
                                                 ]
                                             }
                                             className={getDisabilityBadgeClassName(
@@ -966,7 +980,9 @@ function AdminStudents() {
                                     <div>
                                         <strong>Telefone</strong>
                                         <span>
-                                            {formatPhone(selectedStudent.phoneNumber)}
+                                            {formatPhone(
+                                                selectedStudent.phoneNumber,
+                                            )}
                                         </span>
                                     </div>
                                     <div>
@@ -974,8 +990,8 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.gender
                                                 ? genderLabels[
-                                                selectedStudent.gender
-                                                ]
+                                                      selectedStudent.gender
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -984,8 +1000,8 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.race
                                                 ? raceLabels[
-                                                selectedStudent.race
-                                                ]
+                                                      selectedStudent.race
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1038,9 +1054,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.scholarship
                                                 ? scholarshipLabels[
-                                                selectedStudent
-                                                    .scholarship
-                                                ]
+                                                      selectedStudent
+                                                          .scholarship
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1074,9 +1090,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.whomInformed
                                                 ? whoInformedLabels[
-                                                selectedStudent
-                                                    .whomInformed
-                                                ]
+                                                      selectedStudent
+                                                          .whomInformed
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1085,9 +1101,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.familyIncome
                                                 ? familyIncomeLabels[
-                                                selectedStudent
-                                                    .familyIncome
-                                                ]
+                                                      selectedStudent
+                                                          .familyIncome
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1103,9 +1119,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.socialBenefit
                                                 ? socialBenefitLabels[
-                                                selectedStudent
-                                                    .socialBenefit
-                                                ]
+                                                      selectedStudent
+                                                          .socialBenefit
+                                                  ]
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1193,8 +1209,8 @@ function AdminStudents() {
                                         <span>
                                             {
                                                 disabilityLabels[
-                                                selectedStudent
-                                                    .disabilityType
+                                                    selectedStudent
+                                                        .disabilityType
                                                 ]
                                             }
                                         </span>
@@ -1204,9 +1220,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.lgpd
                                                 ? getBooleanLabel(
-                                                    selectedStudent.lgpd
-                                                        .terms,
-                                                )
+                                                      selectedStudent.lgpd
+                                                          .terms,
+                                                  )
                                                 : 'Não informado'}
                                         </span>
                                     </div>
@@ -1215,9 +1231,9 @@ function AdminStudents() {
                                         <span>
                                             {selectedStudent.lgpd
                                                 ? getBooleanLabel(
-                                                    selectedStudent.lgpd
-                                                        .imageUsage,
-                                                )
+                                                      selectedStudent.lgpd
+                                                          .imageUsage,
+                                                  )
                                                 : 'Não informado'}
                                         </span>
                                     </div>
