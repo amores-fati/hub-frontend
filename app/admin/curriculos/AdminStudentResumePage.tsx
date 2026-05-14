@@ -9,12 +9,18 @@ export default function AdminStudentResumePage() {
     const searchParams = useSearchParams();
     const studentId = searchParams.get('studentId');
 
-    const { data: resume, isLoading: isLoadingResume, isError: isErrorResume } =
-        useGetAdminStudentResume(studentId);
-    const { data: profile, isLoading: isLoadingProfile, isError: isErrorProfile } =
-        useGetStudent(studentId);
+    const {
+        data: resume,
+        isLoading: isLoadingResume,
+        isError: isErrorResume,
+    } = useGetAdminStudentResume(studentId);
+    const {
+        data: profile,
+        isLoading: isLoadingProfile,
+        isError: isErrorProfile,
+    } = useGetStudent(studentId);
 
-    if (!resume || !profile) return <></>
+    if (!resume || !profile) return <></>;
 
     return (
         <StudentResumePage

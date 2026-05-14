@@ -20,7 +20,11 @@ import {
 import { toast } from 'react-toastify';
 
 import { Loading } from '@/components/base';
-import { ApiErrorDto, ResumeSkill, StudentResume } from '@/dtos/StudentResumeDto';
+import {
+    ApiErrorDto,
+    ResumeSkill,
+    StudentResume,
+} from '@/dtos/StudentResumeDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import {
     useAddStudentResumeSkill,
@@ -129,11 +133,18 @@ const getApiErrorMessage = (error: unknown, fallback: string) => {
 export default function Index() {
     const { user } = useAuth();
     const studentId = user?.sub || user?.userId;
-    const { data: resume, isError: isErrorResume, isLoading: isLoadingResume } = useGetStudentResume();
-    const { data: profile, isLoading: isLoadingProfile, isError: isErrorProfile } =
-        useGetStudentProfile();
+    const {
+        data: resume,
+        isError: isErrorResume,
+        isLoading: isLoadingResume,
+    } = useGetStudentResume();
+    const {
+        data: profile,
+        isLoading: isLoadingProfile,
+        isError: isErrorProfile,
+    } = useGetStudentProfile();
 
-    if (!resume || !profile) return <></>
+    if (!resume || !profile) return <></>;
 
     return (
         <StudentResumePage
@@ -143,11 +154,21 @@ export default function Index() {
             isLoading={isLoadingProfile || isLoadingResume}
             isError={isErrorProfile || isErrorResume}
         />
-    )
+    );
 }
 
-export function StudentResumePage({ profile, resume, isError, isLoading, studentId }: {
-    profile: StudentProfile; resume: StudentResume; isError: boolean; isLoading: boolean; studentId?: string;
+export function StudentResumePage({
+    profile,
+    resume,
+    isError,
+    isLoading,
+    studentId,
+}: {
+    profile: StudentProfile;
+    resume: StudentResume;
+    isError: boolean;
+    isLoading: boolean;
+    studentId?: string;
 }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -215,16 +236,12 @@ export function StudentResumePage({ profile, resume, isError, isLoading, student
     useEffect(() => {
         if (isEditingResume) return;
 
-        setProfileName(
-            profile?.socialName || formatStudentName(user?.email),
-        );
+        setProfileName(profile?.socialName || formatStudentName(user?.email));
         setDisabilityType(profile?.disability?.type ?? '');
     }, [isEditingResume, profile, user?.email]);
 
     const resetEditableFields = () => {
-        setProfileName(
-            profile?.socialName || formatStudentName(user?.email),
-        );
+        setProfileName(profile?.socialName || formatStudentName(user?.email));
         setDisabilityType(profile?.disability?.type ?? '');
         setAbout(resume?.about ?? '');
         setLinkedinUrl(resume?.linkedinUrl ?? '');
@@ -450,8 +467,8 @@ export function StudentResumePage({ profile, resume, isError, isLoading, student
                                 style={
                                     currentPhotoUrl
                                         ? {
-                                            backgroundImage: `url("${currentPhotoUrl}")`,
-                                        }
+                                              backgroundImage: `url("${currentPhotoUrl}")`,
+                                          }
                                         : undefined
                                 }
                                 aria-label='Foto do aluno'
@@ -619,8 +636,8 @@ export function StudentResumePage({ profile, resume, isError, isLoading, student
                                             style={{
                                                 backgroundColor:
                                                     SKILL_DOT_COLORS[
-                                                    index %
-                                                    SKILL_DOT_COLORS.length
+                                                        index %
+                                                            SKILL_DOT_COLORS.length
                                                     ],
                                             }}
                                         />
@@ -631,7 +648,9 @@ export function StudentResumePage({ profile, resume, isError, isLoading, student
                                                 aria-label={`Remover ${skill.skillName}`}
                                                 disabled={isManagingSkill}
                                                 onClick={() =>
-                                                    void handleRemoveSkill(skill.id)
+                                                    void handleRemoveSkill(
+                                                        skill.id,
+                                                    )
                                                 }
                                             >
                                                 <CloseIcon fontSize='small' />
@@ -646,27 +665,29 @@ export function StudentResumePage({ profile, resume, isError, isLoading, student
                             )}
                         </div>
 
-                        {canEdit && <form
-                            className='student-resume-skill-form'
-                            onSubmit={(event) => void handleAddSkill(event)}
-                        >
-                            <input
-                                value={skillInput}
-                                onChange={(event) =>
-                                    setSkillInput(event.target.value)
-                                }
-                                placeholder='Adicionar habilidade'
-                                maxLength={100}
-                            />
-                            <button
-                                className='student-resume-button student-resume-button--primary'
-                                type='submit'
-                                disabled={isManagingSkill}
+                        {canEdit && (
+                            <form
+                                className='student-resume-skill-form'
+                                onSubmit={(event) => void handleAddSkill(event)}
                             >
-                                <AddIcon fontSize='small' />
-                                Adicionar
-                            </button>
-                        </form>}
+                                <input
+                                    value={skillInput}
+                                    onChange={(event) =>
+                                        setSkillInput(event.target.value)
+                                    }
+                                    placeholder='Adicionar habilidade'
+                                    maxLength={100}
+                                />
+                                <button
+                                    className='student-resume-button student-resume-button--primary'
+                                    type='submit'
+                                    disabled={isManagingSkill}
+                                >
+                                    <AddIcon fontSize='small' />
+                                    Adicionar
+                                </button>
+                            </form>
+                        )}
                     </div>
                 </aside>
             </div>

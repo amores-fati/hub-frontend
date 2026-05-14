@@ -93,7 +93,9 @@ export const useUpdateStudentProfile = () =>
         },
         onError: (error: AxiosError<{ message: string }>) => {
             if (error.response?.status === 400) {
-                toast.error('Campo inválido. Confira os dados e tente novamente.');
+                toast.error(
+                    'Campo inválido. Confira os dados e tente novamente.',
+                );
                 return;
             }
             if (error.response?.status === 409) {

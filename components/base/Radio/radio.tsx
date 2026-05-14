@@ -20,11 +20,10 @@ export default function RadioGroup({
     onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
     value?: string;
 }) {
-
     useEffect(() => {
-        console.log(value)
-        console.log(options)
-    }, [value])
+        console.log(value);
+        console.log(options);
+    }, [value]);
 
     return (
         <FormControl>

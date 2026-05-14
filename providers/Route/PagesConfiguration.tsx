@@ -124,7 +124,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             icon: <AssignmentIndIcon />,
             expectedPath: '/aluno/curriculo',
         },
-        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/aluno/perfil' },
+        {
+            title: 'Perfil',
+            icon: <PersonIcon />,
+            expectedPath: '/aluno/perfil',
+        },
     ],
     [UserRole.COMPANY]: [
         { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },
