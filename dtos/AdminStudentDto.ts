@@ -84,9 +84,12 @@ export type AdminStudentsQueryParams = {
 
 export type AdminStudentsResponseDto = {
     items: AdminStudentDto[];
-    total: number;
-    page: number;
-    limit: number;
+    meta: {
+        page: number;
+        total: number;
+        pageSize: number;
+        totalPages: number;
+    };
 };
 
 export type AdminStudentsSortField =

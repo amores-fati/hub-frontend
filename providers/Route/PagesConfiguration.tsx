@@ -4,6 +4,7 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import ScienceIcon from '@mui/icons-material/Science';
 import WorkIcon from '@mui/icons-material/Work';
 import React, { JSX } from 'react';
 
@@ -39,6 +40,14 @@ export const PAGES: Page[] = [
         requireRoles: [],
         requireAuth: false,
         name: 'Login',
+    },
+    {
+        path: '/admin/testes-relatorios',
+        navbarEnabled: true,
+        requireRoles: [UserRole.ADMIN],
+        requireAuth: true,
+        name: 'Testes de Relatorios',
+        icon: <ScienceIcon className='sidebar-icon' />,
     },
     {
         path: '/cadastro/aluno',
@@ -111,6 +120,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,
             expectedPath: '/curriculos',
+        },
+        {
+            title: 'Testes',
+            icon: <ScienceIcon />,
+            expectedPath: '/admin/testes-relatorios',
         },
     ],
     [UserRole.STUDENT]: [
