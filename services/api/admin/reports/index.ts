@@ -6,10 +6,7 @@ import { coreApi } from '../..';
 
 export type AdminReportMode = 'selected' | 'all';
 
-export type StudentReportStatus =
-    | 'ENROLLMENT'
-    | 'INTEREST'
-    | 'NAO_INSCRITO';
+export type StudentReportStatus = 'ENROLLMENT' | 'INTEREST' | 'NAO_INSCRITO';
 
 export type CourseReportStatus = 'ATIVO' | 'INATIVO';
 export type ResumeReportStatus = 'ATIVO' | 'INATIVO';
@@ -170,10 +167,9 @@ const getReportErrorMessage = async (error: unknown) => {
     return undefined;
 };
 
-export async function downloadAdminReport<TEndpoint extends AdminReportEndpoint>(
-    endpoint: TEndpoint,
-    payload: AdminReportPayloadByEndpoint[TEndpoint],
-) {
+export async function downloadAdminReport<
+    TEndpoint extends AdminReportEndpoint,
+>(endpoint: TEndpoint, payload: AdminReportPayloadByEndpoint[TEndpoint]) {
     try {
         const response = await adminReportsApi.post<Blob>(
             `/${endpoint}`,

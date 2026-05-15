@@ -260,9 +260,7 @@ const getDisabilityBadgeClassName = (student: AdminStudentDto) =>
         ? 'admin-students__badge admin-students__badge--info'
         : 'admin-students__badge admin-students__badge--danger';
 
-type StudentReportFilters = NonNullable<
-    ExportStudentsReportPayload['filters']
->;
+type StudentReportFilters = NonNullable<ExportStudentsReportPayload['filters']>;
 
 const getFirstFilterValue = (values: string[]) =>
     values.find((value) => value.trim().length > 0);

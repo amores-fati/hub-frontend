@@ -90,7 +90,10 @@ export default function AdminReportTestsPage() {
                     const isPending = pendingReport === item.key;
 
                     return (
-                        <article className='admin-report-tests__card' key={item.key}>
+                        <article
+                            className='admin-report-tests__card'
+                            key={item.key}
+                        >
                             <Button
                                 disabled={Boolean(pendingReport)}
                                 onClick={() => {
