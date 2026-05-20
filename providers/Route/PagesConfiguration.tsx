@@ -71,15 +71,7 @@ export const PAGES: Page[] = [
         icon: <GroupIcon className='sidebar-icon' />,
     },
     {
-        path: '/admin/cursos',
-        navbarEnabled: true,
-        requireRoles: [UserRole.ADMIN],
-        requireAuth: false,
-        name: 'Gestão de Cursos',
-        icon: <MenuBookIcon className='sidebar-icon' />,
-    },
-    {
-        path: '/admin/curriculos',
+        path: '/aluno/curriculo',
         navbarEnabled: true,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
@@ -87,7 +79,23 @@ export const PAGES: Page[] = [
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
     {
-        path: '/admin/curriculo',
+        path: '/cursos',
+        navbarEnabled: true,
+        requireRoles: [UserRole.ADMIN],
+        requireAuth: false,
+        name: 'Gestão de Cursos',
+        icon: <MenuBookIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/curriculos',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Gestão de Currículos',
+        icon: <AssignmentIndIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/curriculo',
         navbarEnabled: true,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
@@ -114,15 +122,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
     [UserRole.ADMIN]: [
         { title: 'Dashboard', icon: <DashboardIcon />, expectedPath: '/' },
         { title: 'Alunos', icon: <GroupIcon />, expectedPath: '/alunos' },
-        {
-            title: 'Cursos',
-            icon: <MenuBookIcon />,
-            expectedPath: '/admin/cursos',
-        },
+        { title: 'Cursos', icon: <MenuBookIcon />, expectedPath: '/cursos' },
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,
-            expectedPath: '/admin/curriculos',
+            expectedPath: '/curriculos',
         },
     ],
     [UserRole.STUDENT]: [
@@ -136,11 +140,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             icon: <AssignmentIndIcon />,
             expectedPath: '/aluno/curriculo',
         },
-        {
-            title: 'Perfil',
-            icon: <PersonIcon />,
-            expectedPath: '/aluno/perfil',
-        },
+        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/aluno/perfil' },
     ],
     [UserRole.COMPANY]: [
         { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },
