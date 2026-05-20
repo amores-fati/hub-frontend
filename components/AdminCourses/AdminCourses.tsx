@@ -1,18 +1,9 @@
 'use client';
 
-import { Input, Select, Table } from '@/components/base';
-import { Option } from '@/components/base/Select/select';
-import { AdminCourseFormModal } from '@/components/AdminCourseFormModal';
+import { Input, Table } from '@/components/base';
 import { AdminCourseDto, AdminCourseModality } from '@/dtos/AdminCourseDto';
 import { getAdminCoursesMock } from '@/services/api/admin/courses/mock';
-import {
-    Chip,
-    Collapse,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from '@mui/material';
+import { Chip, Collapse, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -30,16 +21,6 @@ import './index.scss';
 const PAGE_SIZE = 5;
 
 const MOCK_RESPONSE = getAdminCoursesMock();
-
-const MODALITY_OPTIONS: Option[] = [
-    { value: AdminCourseModality.PRESENTIAL, label: 'Presencial' },
-    { value: AdminCourseModality.ONLINE, label: 'Online' },
-];
-
-const STATUS_OPTIONS: Option[] = [
-    { value: 'ATIVO', label: 'Ativo' },
-    { value: 'INATIVO', label: 'Inativo' },
-];
 
 const formatDate = (value: string) => {
     const date = new Date(`${value}T00:00:00`);
@@ -129,34 +110,21 @@ export function AdminCourses() {
     const [page, setPage] = useState(1);
     const [searchInput, setSearchInput] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
-    const [draftModality, setDraftModality] = useState<Option | null>(null);
-    const [draftStatus, setDraftStatus] = useState<Option | null>(null);
-    const [appliedModality, setAppliedModality] = useState<string | null>(null);
-    const [appliedStatus, setAppliedStatus] = useState<string | null>(null);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [coursePendingDelete, setCoursePendingDelete] =
         useState<AdminCourseDto | null>(null);
-    const [showCreateModal, setShowCreateModal] = useState(false);
 
     const filteredCourses = useMemo(() => {
-        let courses = MOCK_RESPONSE.data;
         const q = appliedSearch.trim().toLowerCase();
-        if (q) {
-            courses = courses.filter((c) => c.name.toLowerCase().includes(q));
-        }
-        if (appliedModality) {
-            courses = courses.filter(
-                (c) => c.modality === (appliedModality as AdminCourseModality),
-            );
-        }
-        if (appliedStatus) {
-            courses = courses.filter(
-                (c) => getCourseStatus(c) === appliedStatus,
-            );
-        }
-        return courses;
-    }, [appliedSearch, appliedModality, appliedStatus]);
+        if (!q) return MOCK_RESPONSE.data;
+        return MOCK_RESPONSE.data.filter(
+            (c) =>
+                c.name.toLowerCase().includes(q) ||
+                c.modality.toLowerCase().includes(q) ||
+                (c.address ?? '').toLowerCase().includes(q),
+        );
+    }, [appliedSearch]);
 
     const total = appliedSearch.trim()
         ? filteredCourses.length
@@ -172,24 +140,19 @@ export function AdminCourses() {
     const allVisibleSelected =
         visibleIds.length > 0 && selectedVisibleCount === visibleIds.length;
     const someVisibleSelected =
-        selectedVisibleCount > 0 && selectedVisibleCount < visibleIds.length;
+        selectedVisibleCount > 0 &&
+        selectedVisibleCount < visibleIds.length;
 
     const selectedCountLabel = `${selectedIds.length} curso${selectedIds.length === 1 ? '' : 's'} selecionado${selectedIds.length === 1 ? '' : 's'}`;
 
     const handleSearch = () => {
         setPage(1);
         setAppliedSearch(searchInput);
-        setAppliedModality(draftModality ? String(draftModality.value) : null);
-        setAppliedStatus(draftStatus ? String(draftStatus.value) : null);
     };
 
     const handleClear = () => {
         setSearchInput('');
         setAppliedSearch('');
-        setDraftModality(null);
-        setDraftStatus(null);
-        setAppliedModality(null);
-        setAppliedStatus(null);
         setPage(1);
         setSelectedIds([]);
     };
@@ -202,9 +165,7 @@ export function AdminCourses() {
 
     const toggleSelectAll = () => {
         if (allVisibleSelected) {
-            setSelectedIds((prev) =>
-                prev.filter((id) => !visibleIds.includes(id)),
-            );
+            setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
         } else {
             setSelectedIds((prev) => [...new Set([...prev, ...visibleIds])]);
         }
@@ -325,17 +286,14 @@ export function AdminCourses() {
                 </div>
 
                 <div className='admin-courses__header-actions'>
-                    <ButtonComponent onClick={() => setShowCreateModal(true)}>
+                    <ButtonComponent onClick={() => {}}>
                         <span className='admin-courses__button-content'>
                             <AddRoundedIcon fontSize='small' />
                             Novo Curso
                         </span>
                     </ButtonComponent>
 
-                    <ButtonComponent
-                        variant='secondary'
-                        onClick={handleExportAll}
-                    >
+                    <ButtonComponent variant='secondary' onClick={handleExportAll}>
                         <span className='admin-courses__button-content'>
                             <FileDownloadOutlinedIcon fontSize='small' />
                             Exportar Lista
@@ -388,30 +346,9 @@ export function AdminCourses() {
 
                 <Collapse in={showAdvancedFilters}>
                     <div className='admin-courses__advanced-grid'>
-                        <div>
-                            <label className='admin-courses__field-label'>
-                                Modalidade
-                            </label>
-                            <Select
-                                placeholder='Selecione a modalidade'
-                                options={MODALITY_OPTIONS}
-                                value={draftModality ?? undefined}
-                                onChange={(option) => setDraftModality(option)}
-                                isClearable
-                            />
-                        </div>
-                        <div>
-                            <label className='admin-courses__field-label'>
-                                Status
-                            </label>
-                            <Select
-                                placeholder='Selecione o status'
-                                options={STATUS_OPTIONS}
-                                value={draftStatus ?? undefined}
-                                onChange={(option) => setDraftStatus(option)}
-                                isClearable
-                            />
-                        </div>
+                        <p className='admin-courses__advanced-placeholder'>
+                            Filtros avançados em breve.
+                        </p>
                     </div>
                 </Collapse>
             </div>
@@ -483,15 +420,6 @@ export function AdminCourses() {
                     />
                 )}
             </div>
-
-            <AdminCourseFormModal
-                open={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-                onSuccess={() => {
-                    setShowCreateModal(false);
-                    toast.success('Curso cadastrado com sucesso.');
-                }}
-            />
 
             <Dialog
                 open={!!coursePendingDelete}
