@@ -154,21 +154,17 @@ const disabilityOptions: Option[] = [
         label: disabilityLabels[AdminStudentDisabilityType.PSYCHOSOCIAL],
     },
     {
-        value: AdminStudentDisabilityType.MULTIPLE,
-        label: disabilityLabels[AdminStudentDisabilityType.MULTIPLE],
-    },
-    {
         value: AdminStudentDisabilityType.OTHER,
         label: disabilityLabels[AdminStudentDisabilityType.OTHER],
     },
 ];
 
-type AppliedFiltersState = Required<
-    Pick<
-        AdminStudentsQueryParams,
-        'search' | 'courseTypes' | 'disabilityType' | 'locations'
-    >
->;
+type AppliedFiltersState = {
+    search: string;
+    courseTypes: string[];
+    disabilityType: string[];
+    locations: string[];
+};
 
 type SortState = {
     field: AdminStudentsSortField;
@@ -318,7 +314,7 @@ const exportStudentsToPdf = (
                     <td>${student.fullName}</td>
                     <td>${formatCpf(student.cpf)}</td>
                     <td>${student.enrolledCourse?.name ?? 'Não inscrito'}</td>
-                    <td>${student.email}<br />${formatPhone(student.phone)}</td>
+                    <td>${student.email}<br />${formatPhone(student.phoneNumber)}</td>
                     <td>${student.city}/${student.state}</td>
                     <td>${disabilityLabels[student.disabilityType]}</td>
                 </tr>
@@ -395,10 +391,10 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
         limit: 100,
     });
 
-    const totalPages = Math.ceil(firstPage.total / firstPage.limit);
+    const totalPages = firstPage.meta.totalPages;
 
     if (totalPages <= 1) {
-        return firstPage.data;
+        return firstPage.items;
     }
 
     const pages = await Promise.all(
@@ -406,12 +402,12 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
             getAdminStudents({
                 ...filters,
                 page: index + 2,
-                limit: firstPage.limit,
+                limit: 100,
             }),
         ),
     );
 
-    return [firstPage, ...pages].flatMap((page) => page.data);
+    return [firstPage, ...pages].flatMap((page) => page.items);
 }
 
 export function AdminStudents() {
@@ -444,22 +440,19 @@ export function AdminStudents() {
             search: filters.search || undefined,
             courseTypes: filters.courseTypes,
             disabilityType: filters.disabilityType,
-            locations: filters.locations,
+            city: filters.locations,
             sortBy: sort.field,
             sortOrder: sort.order,
         }),
         [filters, page, sort],
     );
 
-    const { data, isLoading, isFetching, isError } = useGetAdminStudents(
-        queryParams,
-        isAdmin,
-    );
+    const { data, isLoading, isFetching, isError } = useGetAdminStudents(queryParams);
 
-    const deleteStudentsMutation = useDeleteAdminStudents(selectedIds);
+    const deleteStudentsMutation = useDeleteAdminStudents();
 
-    const students = data?.data ?? [];
-    const totalStudents = data?.total ?? 0;
+    const students = data?.items ?? [];
+    const totalStudents = data?.meta.total ?? 0;
     const totalPages = Math.max(1, Math.ceil(totalStudents / PAGE_SIZE));
     const visibleStudentIds = students.map((student) => student.id);
     const selectedVisibleCount = visibleStudentIds.filter((id) =>
@@ -698,12 +691,12 @@ export function AdminStudents() {
                         <span>{student.email}</span>
                         <small>
                             <a
-                                href={buildWhatsAppLink(student.phone)}
+                                href={buildWhatsAppLink(student.phoneNumber)}
                                 target='_blank'
                                 rel='noreferrer'
                                 className='admin-students__contact-link'
                             >
-                                {formatPhone(student.phone)}
+                                {formatPhone(student.phoneNumber)}
                             </a>
                         </small>
                     </div>
@@ -956,7 +949,7 @@ export function AdminStudents() {
                             actionColumnConfig={{
                                 showWhatsapp: true,
                                 getWhatsappHref: (student) =>
-                                    buildWhatsAppLink(student.phone),
+                                    buildWhatsAppLink(student.phoneNumber),
                                 showDelete: true,
                                 onDelete: openSingleDeleteConfirmation,
                             }}
@@ -1066,7 +1059,7 @@ export function AdminStudents() {
                                     <div>
                                         <strong>Telefone</strong>
                                         <span>
-                                            {formatPhone(selectedStudent.phone)}
+                                            {formatPhone(selectedStudent.phoneNumber)}
                                         </span>
                                     </div>
                                     <div>

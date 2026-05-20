@@ -130,7 +130,7 @@ export default function StudentResumePage() {
     const studentId = user?.sub || user?.userId;
     const { data: resume, isError, isLoading } = useGetStudentResume();
     const { data: studentProfile, isLoading: isLoadingProfile } =
-        useGetStudentProfile(studentId);
+        useGetStudentProfile();
     const updateResume = useUpdateStudentResume();
     const updateStudentProfile = useUpdateStudentProfile();
     const uploadPhoto = useUploadStudentResumePhoto();

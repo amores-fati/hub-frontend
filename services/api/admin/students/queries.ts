@@ -9,6 +9,18 @@ import { adminStudentsApi } from '.';
 import { PaginatedDto } from '@/dtos/PaginatedDto';
 import qs from 'qs';
 
+export const getAdminStudents = (payload: AdminStudentsQueryParams) =>
+    adminStudentsApi
+        .get('/filter', {
+            params: payload,
+            paramsSerializer: (params) =>
+                qs.stringify(params, {
+                    arrayFormat: 'repeat',
+                    encoder: (value) => encodeURIComponent(value),
+                }),
+        })
+        .then((res) => res.data as PaginatedDto<AdminStudentDto>);
+
 export const useGetAdminStudents = (payload: AdminStudentsQueryParams) =>
     useQuery({
         queryKey: [

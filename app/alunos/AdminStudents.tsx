@@ -19,6 +19,7 @@ import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
 import { getAdminStudentsFilterOptionsMock } from '@/services/api/admin/students/mock';
 import {
+    getAdminStudents,
     useGetAdminStudents,
 } from '@/services/api/admin/students/queries';
 import { Option } from '@/components/base/Select/select';
@@ -389,10 +390,10 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
         limit: 100,
     });
 
-    const totalPages = Math.ceil(firstPage.total / firstPage.limit);
+    const totalPages = firstPage.meta.totalPages;
 
     if (totalPages <= 1) {
-        return firstPage.data;
+        return firstPage.items;
     }
 
     const pages = await Promise.all(
@@ -400,12 +401,12 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
             getAdminStudents({
                 ...filters,
                 page: index + 2,
-                limit: firstPage.limit,
+                limit: 100,
             }),
         ),
     );
 
-    return [firstPage, ...pages].flatMap((page) => page.data);
+    return [firstPage, ...pages].flatMap((page) => page.items);
 }
 
 const handleExportSelected = (selectedStudents: AdminStudentDto[]) => {
@@ -491,7 +492,7 @@ function AdminStudents() {
         setIsLoading(false);
     }, [data, isLoading, isFetching]);
 
-    const { mutate: deleteStudentsMutation, isPending } = useDeleteAdminStudents(Object.keys(selectedStudents));
+    const { mutate: deleteStudentsMutation, isPending } = useDeleteAdminStudents();
 
     useEffect(() => {
         setSelectedStudents({});

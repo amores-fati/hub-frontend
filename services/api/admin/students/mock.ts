@@ -307,7 +307,7 @@ const studentSeeds: MockStudentSeed[] = [
         phone: '11999994444',
         city: 'Sao Paulo',
         state: 'SP',
-        disabilityType: AdminStudentDisabilityType.MULTIPLE,
+        disabilityType: AdminStudentDisabilityType.OTHER,
         course: courses.qa,
     },
     {
@@ -518,7 +518,7 @@ const buildStudents = (): AdminStudentDto[] =>
             cpf: student.cpf,
             birthDate: student.birthDate ?? '1998-01-01',
             email: student.email,
-            phone: student.phone,
+            phoneNumber: student.phone,
             gender: student.gender,
             race: student.race,
             city: student.city,
@@ -562,7 +562,7 @@ const filterStudents = (
     const searchDigits = normalizeDigits(params.search ?? '');
     const searchTerms = search.split(/\s+/).filter(Boolean);
     const disabilityType = new Set(params.disabilityType ?? []);
-    const locations = new Set((params.locations ?? []).map(normalize));
+    const locations = new Set((params.city ?? []).map(normalize));
     const courseTypes = new Set(params.courseTypes ?? []);
 
     return students.filter((student) => {
@@ -610,7 +610,7 @@ const getSortableValue = (student: AdminStudentDto, sortBy: string) => {
     }
 
     if (sortBy === 'contact') {
-        return normalize(`${student.email} ${student.phone}`);
+        return normalize(`${student.email} ${student.phoneNumber}`);
     }
 
     if (sortBy === 'location') {
@@ -663,7 +663,7 @@ export const getAdminStudentsMock = async (
     const end = start + limit;
 
     return {
-        data: students.slice(start, end),
+        items: students.slice(start, end),
         total: students.length,
         page,
         limit,

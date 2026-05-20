@@ -42,14 +42,14 @@ const steps = [
 ];
 
 export default function PerfilAluno() {
-    const studentId = 1; // TODO: pegar id do aluno logado
+    const studentId = '1'; // TODO: pegar id do aluno logado
     const { data, isLoading } = useGetStudent(studentId);
 
     // if (isLoading || !data) {
     //     return <Loading />
     // }
 
-    return <CadastroAluno data={data! ?? { ...DEFAULT_FORM }} />;
+    return <CadastroAluno data={(data as unknown as StudentRegisterPayload) ?? { ...DEFAULT_FORM }} />;
 }
 
 function CadastroAluno({ data }: { data: StudentRegisterPayload }) {
