@@ -1,6 +1,7 @@
 'use client';
 
-import { Input, Table } from '@/components/base';
+import { Input, Select, Table } from '@/components/base';
+import { Option } from '@/components/base/Select/select';
 import { AdminCourseDto, AdminCourseModality } from '@/dtos/AdminCourseDto';
 import { getAdminCoursesMock } from '@/services/api/admin/courses/mock';
 import { Chip, Collapse, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
@@ -21,6 +22,16 @@ import './index.scss';
 const PAGE_SIZE = 5;
 
 const MOCK_RESPONSE = getAdminCoursesMock();
+
+const MODALITY_OPTIONS: Option[] = [
+    { value: AdminCourseModality.PRESENTIAL, label: 'Presencial' },
+    { value: AdminCourseModality.ONLINE, label: 'Online' },
+];
+
+const STATUS_OPTIONS: Option[] = [
+    { value: 'ATIVO', label: 'Ativo' },
+    { value: 'INATIVO', label: 'Inativo' },
+];
 
 const formatDate = (value: string) => {
     const date = new Date(`${value}T00:00:00`);
@@ -110,21 +121,29 @@ export function AdminCourses() {
     const [page, setPage] = useState(1);
     const [searchInput, setSearchInput] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
+    const [draftModality, setDraftModality] = useState<Option | null>(null);
+    const [draftStatus, setDraftStatus] = useState<Option | null>(null);
+    const [appliedModality, setAppliedModality] = useState<string | null>(null);
+    const [appliedStatus, setAppliedStatus] = useState<string | null>(null);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [coursePendingDelete, setCoursePendingDelete] =
         useState<AdminCourseDto | null>(null);
 
     const filteredCourses = useMemo(() => {
+        let courses = MOCK_RESPONSE.data;
         const q = appliedSearch.trim().toLowerCase();
-        if (!q) return MOCK_RESPONSE.data;
-        return MOCK_RESPONSE.data.filter(
-            (c) =>
-                c.name.toLowerCase().includes(q) ||
-                c.modality.toLowerCase().includes(q) ||
-                (c.address ?? '').toLowerCase().includes(q),
-        );
-    }, [appliedSearch]);
+        if (q) {
+            courses = courses.filter((c) => c.name.toLowerCase().includes(q));
+        }
+        if (appliedModality) {
+            courses = courses.filter((c) => c.modality === appliedModality);
+        }
+        if (appliedStatus) {
+            courses = courses.filter((c) => getCourseStatus(c) === appliedStatus);
+        }
+        return courses;
+    }, [appliedSearch, appliedModality, appliedStatus]);
 
     const total = appliedSearch.trim()
         ? filteredCourses.length
@@ -148,11 +167,17 @@ export function AdminCourses() {
     const handleSearch = () => {
         setPage(1);
         setAppliedSearch(searchInput);
+        setAppliedModality(draftModality ? String(draftModality.value) : null);
+        setAppliedStatus(draftStatus ? String(draftStatus.value) : null);
     };
 
     const handleClear = () => {
         setSearchInput('');
         setAppliedSearch('');
+        setDraftModality(null);
+        setDraftStatus(null);
+        setAppliedModality(null);
+        setAppliedStatus(null);
         setPage(1);
         setSelectedIds([]);
     };
@@ -346,9 +371,30 @@ export function AdminCourses() {
 
                 <Collapse in={showAdvancedFilters}>
                     <div className='admin-courses__advanced-grid'>
-                        <p className='admin-courses__advanced-placeholder'>
-                            Filtros avançados em breve.
-                        </p>
+                        <div>
+                            <label className='admin-courses__field-label'>
+                                Modalidade
+                            </label>
+                            <Select
+                                placeholder='Selecione a modalidade'
+                                options={MODALITY_OPTIONS}
+                                value={draftModality}
+                                onChange={(option) => setDraftModality(option)}
+                                isClearable
+                            />
+                        </div>
+                        <div>
+                            <label className='admin-courses__field-label'>
+                                Status
+                            </label>
+                            <Select
+                                placeholder='Selecione o status'
+                                options={STATUS_OPTIONS}
+                                value={draftStatus}
+                                onChange={(option) => setDraftStatus(option)}
+                                isClearable
+                            />
+                        </div>
                     </div>
                 </Collapse>
             </div>
