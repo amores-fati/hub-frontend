@@ -2,7 +2,7 @@ import { UseMutateFunction } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 
 export const deleteConfirmation = async (
-    mutate: UseMutateFunction<unknown, unknown, string[], unknown>,
+    mutate: UseMutateFunction<unknown, unknown, void, unknown>,
     studentIds: string[],
 ) => {
     await Swal.fire({
@@ -15,8 +15,8 @@ export const deleteConfirmation = async (
         cancelButtonText: 'Cancelar',
         showLoaderOnConfirm: true,
         showCloseButton: true,
-        preConfirm: (_) => {
-            return mutate(studentIds);
+        preConfirm: () => {
+            return mutate();
         },
         allowOutsideClick: () => !Swal.isLoading(),
     });

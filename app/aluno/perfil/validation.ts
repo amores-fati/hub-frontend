@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/filename-case */
 import { toast } from 'react-toastify';
 import { EditProfileForm } from './types';
 

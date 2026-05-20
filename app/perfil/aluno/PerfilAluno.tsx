@@ -26,6 +26,7 @@ import './index.scss';
 import { useStudentRegister } from '@/services/api/students/mutations';
 import { useGetStudent } from '@/services/api/students/queries';
 import { DEFAULT_FORM } from '@/app/cadastro/aluno/CadastroAluno';
+import { StudentProfile } from '@/dtos/StudentProfileDto';
 
 export enum StepperSteps {
     STEP1 = 1,
@@ -41,15 +42,51 @@ const steps = [
     'Confirmação',
 ];
 
+const mapStudentProfileToRegisterPayload = (
+    profile: StudentProfile,
+): StudentRegisterPayload => ({
+    ...DEFAULT_FORM,
+    fullName: profile.fullName,
+    socialName: profile.socialName,
+    cpf: profile.cpf,
+    birthDate: profile.birthDate,
+    phoneNumber: profile.contact.phone,
+    email: profile.email,
+    gender: profile.gender,
+    race: profile.race,
+    cep: profile.contact.cep ?? '',
+    address: profile.contact.address ?? '',
+    complement: profile.contact.complement,
+    neighbourhood: profile.contact.neighbourhood,
+    city: profile.contact.city,
+    state: profile.contact.state,
+    scholarship: profile.education,
+    course: profile.courseName ?? '',
+    institution: profile.institution ?? '',
+    whyJoinFatiLab: profile.motivation,
+    whomInformed: profile.howHeard,
+    hasOwnComputer: profile.hasComputer,
+    hasInternetAccess: profile.hasInternet,
+    compromisedToClasses: profile.committedToParticipate,
+    peopleInHouse: profile.householdSize?.toString() ?? '',
+    socialBenefit: profile.socialBenefits?.[0]?.benefit,
+    hasAccessability: profile.disability?.hasDisability ?? false,
+    typeAccessability: profile.disability?.type ?? '',
+});
+
 export default function PerfilAluno() {
-    const studentId = 1; // TODO: pegar id do aluno logado
+    const studentId = '1'; // TODO: pegar id do aluno logado
     const { data, isLoading } = useGetStudent(studentId);
 
     // if (isLoading || !data) {
     //     return <Loading />
     // }
 
-    return <CadastroAluno data={data! ?? { ...DEFAULT_FORM }} />;
+    const formData = data
+        ? mapStudentProfileToRegisterPayload(data)
+        : { ...DEFAULT_FORM };
+
+    return <CadastroAluno data={formData} />;
 }
 
 function CadastroAluno({ data }: { data: StudentRegisterPayload }) {
@@ -109,10 +146,10 @@ function CadastroAluno({ data }: { data: StudentRegisterPayload }) {
             <div className='stepper-custom'>
                 {steps.map((label, index) => {
                     const stepNumber = index + 1;
-                    const isActive =
-                        (stepNumber as StepperSteps) === activeStep;
-                    const isCompleted =
-                        (stepNumber as StepperSteps) < activeStep;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+                    const isActive = stepNumber === activeStep;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+                    const isCompleted = stepNumber < activeStep;
 
                     return (
                         <div

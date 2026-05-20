@@ -17,9 +17,13 @@ import {
 } from '@/dtos/AdminStudentDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
-import { getAdminStudentsFilterOptionsMock } from '@/services/api/admin/students/mock';
 import { useGetAdminStudents } from '@/services/api/admin/students/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
+import {
+    downloadStudentsReport,
+    ExportStudentsReportPayload,
+    StudentReportStatus,
+} from '@/services/api/admin/reports';
 import { Option } from '@/components/base/Select/select';
 import {
     Avatar,
@@ -187,6 +191,8 @@ const initialFiltersState: AppliedFiltersState = {
     city: [],
 };
 
+const STUDENT_REPORT_LIMIT = 1000;
+
 const normalizeText = (value: string) =>
     value
         .normalize('NFD')
@@ -254,171 +260,66 @@ const getDisabilityBadgeClassName = (student: AdminStudentDto) =>
         ? 'admin-students__badge admin-students__badge--info'
         : 'admin-students__badge admin-students__badge--danger';
 
-const buildFiltersSummary = (filters: AppliedFiltersState) => {
-    const appliedFilters: string[] = [];
+type StudentReportFilters = NonNullable<ExportStudentsReportPayload['filters']>;
 
-    if (filters.search) {
-        appliedFilters.push(`Busca: ${filters.search}`);
-    }
+const getFirstFilterValue = (values: string[]) =>
+    values.find((value) => value.trim().length > 0);
 
-    if (filters.courseTypes.length) {
-        appliedFilters.push(
-            `Modalidade: ${filters.courseTypes
-                .map((type) => courseTypeLabels[type as AdminStudentCourseType])
-                .join(', ')}`,
-        );
-    }
-
-    if (filters.city.length) {
-        appliedFilters.push(`Localizacao: ${filters.city.join(', ')}`);
-    }
-
-    if (filters.disabilityType.length) {
-        appliedFilters.push(
-            `PCD: ${filters.disabilityType
-                .map(
-                    (type) =>
-                        disabilityLabels[type as AdminStudentDisabilityType],
-                )
-                .join(', ')}`,
-        );
-    }
-
-    return appliedFilters.length ? appliedFilters.join(' | ') : 'Sem filtros';
+const limitToSingleOption = (options: readonly Option[] | null | undefined) => {
+    const lastOption = options?.at(-1);
+    return lastOption ? [lastOption] : [];
 };
 
-const exportStudentsToPdf = (
-    printWindow: Window | null,
-    students: AdminStudentDto[],
-    title: string,
+const getErrorMessage = (error: unknown, fallback: string) =>
+    error instanceof Error ? error.message : fallback;
+
+const getUnsupportedStudentReportFilterMessage = (
+    filters: AppliedFiltersState,
 ) => {
-    if (!printWindow) {
-        toast.error(
-            'Não foi possivel abrir a janela de exportação. Verifique o bloqueador de pop-up.',
-        );
-        return;
+    const courseType = getFirstFilterValue(filters.courseTypes);
+    const disabilityType = getFirstFilterValue(filters.disabilityType);
+
+    if (
+        courseType === AdminStudentCourseType.PRESENTIAL ||
+        courseType === AdminStudentCourseType.ONLINE
+    ) {
+        return 'O relatório do backend ainda não suporta filtro por modalidade. Limpe esse filtro para exportar.';
     }
 
-    const generatedAt = new Intl.DateTimeFormat('pt-BR', {
-        dateStyle: 'short',
-        timeStyle: 'short',
-    }).format(new Date());
+    if (disabilityType === AdminStudentDisabilityType.NONE) {
+        return 'O relatório do backend ainda não suporta filtro por alunos sem PCD. Limpe esse filtro para exportar.';
+    }
 
-    const rows = students
-        .map(
-            (student) => `
-                <tr>
-                    <td>${student.fullName}</td>
-                    <td>${formatCpf(student.cpf)}</td>
-                    <td>${student.enrolledCourse?.name ?? 'Não inscrito'}</td>
-                    <td>${student.email}<br />${formatPhone(student.phoneNumber)}</td>
-                    <td>${student.city}/${student.state}</td>
-                    <td>${disabilityLabels[student.disabilityType]}</td>
-                </tr>
-            `,
-        )
-        .join('');
-
-    printWindow.document.write(`
-        <html lang="pt-BR">
-            <head>
-                <title>${title}</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        padding: 32px;
-                        color: #1d1d1d;
-                    }
-                    h1 {
-                        margin-bottom: 8px;
-                    }
-                    p {
-                        margin: 0 0 8px 0;
-                        color: #4f4f4f;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin-top: 24px;
-                    }
-                    th, td {
-                        border: 1px solid #e0e0e0;
-                        padding: 10px;
-                        text-align: left;
-                        font-size: 12px;
-                        vertical-align: top;
-                    }
-                    th {
-                        background: #f8f9fa;
-                    }
-                </style>
-            </head>
-            <body>
-                <h1>${title}</h1>
-                <p>Data de geração: ${generatedAt}</p>
-                <p>Total de alunos: ${students.length}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>CPF</th>
-                            <th>Curso</th>
-                            <th>Contato</th>
-                            <th>Localização</th>
-                            <th>PCD</th>
-                        </tr>
-                    </thead>
-                    <tbody>${rows}</tbody>
-                </table>
-            </body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+    return null;
 };
 
-async function getStudentsForExport(filters: AppliedFiltersState) {
-    const firstPage = await getAdminStudents({
-        ...filters,
-        page: 1,
-        limit: 100,
-    });
-
-    const totalPages = Math.ceil(firstPage.total / firstPage.limit);
-
-    if (totalPages <= 1) {
-        return firstPage.data;
+const getStudentReportStatus = (
+    courseType?: string,
+): StudentReportStatus | undefined => {
+    if (courseType === AdminStudentCourseType.NOT_ENROLLED) {
+        return 'NAO_INSCRITO';
     }
 
-    const pages = await Promise.all(
-        Array.from({ length: totalPages - 1 }, (_, index) =>
-            getAdminStudents({
-                ...filters,
-                page: index + 2,
-                limit: firstPage.limit,
-            }),
-        ),
+    return undefined;
+};
+
+const buildStudentReportFilters = (
+    filters: AppliedFiltersState,
+): StudentReportFilters | undefined => {
+    const reportFilters: StudentReportFilters = {};
+    const search = filters.search.trim();
+    const location = getFirstFilterValue(filters.city);
+    const disabilityType = getFirstFilterValue(filters.disabilityType);
+    const status = getStudentReportStatus(
+        getFirstFilterValue(filters.courseTypes),
     );
 
-    return [firstPage, ...pages].flatMap((page) => page.data);
-}
+    if (search) reportFilters.search = search;
+    if (location) reportFilters.location = location;
+    if (disabilityType) reportFilters.pcdType = disabilityType;
+    if (status) reportFilters.status = status;
 
-const handleExportSelected = (selectedStudents: AdminStudentDto[]) => {
-    if (selectedStudents.length === 0) {
-        toast.info('Selecione pelo menos um aluno para exportar.');
-        return;
-    }
-
-    // window.open deve ser chamado ANTES de qualquer await
-    const printWindow = window.open('', '_blank', 'width=1120,height=840');
-
-    try {
-        exportStudentsToPdf(printWindow, selectedStudents, 'Gestão de Alunos');
-    } catch {
-        printWindow?.close();
-        toast.error('Não foi possível exportar os alunos selecionados.');
-    }
+    return Object.keys(reportFilters).length ? reportFilters : undefined;
 };
 
 export default function Index() {
@@ -456,6 +357,7 @@ function AdminStudents() {
         useState<AdminStudentDto | null>(null);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+    const [isExportingSelected, setIsExportingSelected] = useState(false);
 
     const { data: locationsData } = useGetAdminLocations({ scope: 'STUDENT' });
 
@@ -503,26 +405,75 @@ function AdminStudents() {
     }, [isPending]);
 
     const students = data?.items ?? [];
+    const totalStudents = data?.meta.total ?? 0;
     const selectedCountLabel = `${Object.keys(selectedStudents).length} aluno${
         Object.keys(selectedStudents).length === 1 ? '' : 's'
     } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
 
     const handleExportAll = async () => {
-        const printWindow = window.open('', '_blank', 'width=1120,height=840');
+        const unsupportedFilterMessage =
+            getUnsupportedStudentReportFilterMessage(filters);
+
+        if (unsupportedFilterMessage) {
+            toast.info(unsupportedFilterMessage);
+            return;
+        }
+
+        if (totalStudents > STUDENT_REPORT_LIMIT) {
+            toast.info(
+                `O relatório permite até ${STUDENT_REPORT_LIMIT} alunos. Refine os filtros antes de exportar.`,
+            );
+            return;
+        }
+
         setIsExporting(true);
         try {
-            const students = await getStudentsForExport(filters);
-            if (students.length === 0) {
-                printWindow?.close();
-                toast.info('Nenhum aluno encontrado para exportar.');
-                return;
-            }
-            exportStudentsToPdf(printWindow, students, 'Gestão de Alunos');
-        } catch {
-            printWindow?.close();
-            toast.error('Não foi possível exportar a lista de alunos.');
+            await downloadStudentsReport({
+                mode: 'all',
+                filters: buildStudentReportFilters(filters),
+            });
+        } catch (error) {
+            toast.error(
+                getErrorMessage(
+                    error,
+                    'Não foi possível exportar a lista de alunos.',
+                ),
+            );
         } finally {
             setIsExporting(false);
+        }
+    };
+
+    const handleExportSelected = async () => {
+        const selectedIds = Object.keys(selectedStudents);
+
+        if (selectedIds.length === 0) {
+            toast.info('Selecione pelo menos um aluno para exportar.');
+            return;
+        }
+
+        if (selectedIds.length > STUDENT_REPORT_LIMIT) {
+            toast.info(
+                `O relatório permite até ${STUDENT_REPORT_LIMIT} alunos selecionados.`,
+            );
+            return;
+        }
+
+        setIsExportingSelected(true);
+        try {
+            await downloadStudentsReport({
+                mode: 'selected',
+                ids: selectedIds,
+            });
+        } catch (error) {
+            toast.error(
+                getErrorMessage(
+                    error,
+                    'Não foi possível exportar os alunos selecionados.',
+                ),
+            );
+        } finally {
+            setIsExportingSelected(false);
         }
     };
 
@@ -780,12 +731,15 @@ function AdminStudents() {
                                 Modalidade do curso
                             </label>
                             <MultSelect
-                                placeholder='Selecione as modalidades'
+                                placeholder='Selecione uma modalidade'
                                 options={courseTypeOptions}
                                 value={draftCourseTypes}
                                 onChange={(options) =>
-                                    setDraftCourseTypes([...(options ?? [])])
+                                    setDraftCourseTypes(
+                                        limitToSingleOption(options),
+                                    )
                                 }
+                                isClearable
                                 isSearchable
                             />
                         </div>
@@ -795,12 +749,15 @@ function AdminStudents() {
                                 Localização
                             </label>
                             <MultSelect
-                                placeholder='Selecione as cidades'
+                                placeholder='Selecione uma cidade'
                                 options={locationOptions}
                                 value={draftLocations}
                                 onChange={(options) =>
-                                    setDraftLocations([...(options ?? [])])
+                                    setDraftLocations(
+                                        limitToSingleOption(options),
+                                    )
                                 }
+                                isClearable
                                 isSearchable
                             />
                         </div>
@@ -810,14 +767,15 @@ function AdminStudents() {
                                 Status PCD
                             </label>
                             <MultSelect
-                                placeholder='Selecione os status'
+                                placeholder='Selecione um status'
                                 options={disabilityOptions}
                                 value={draftDisabilityTypes}
                                 onChange={(options) =>
                                     setDraftDisabilityTypes([
-                                        ...(options ?? []),
+                                        ...limitToSingleOption(options),
                                     ])
                                 }
+                                isClearable
                                 isSearchable
                             />
                         </div>
@@ -833,14 +791,15 @@ function AdminStudents() {
                         <button
                             type='button'
                             onClick={() => {
-                                handleExportSelected(
-                                    Object.values(
-                                        selectedStudents,
-                                    ) as AdminStudentDto[],
-                                );
+                                void handleExportSelected();
                             }}
+                            disabled={isExportingSelected}
                         >
-                            <PictureAsPdfRoundedIcon fontSize='small' />
+                            {isExportingSelected ? (
+                                <CircularProgress size={14} />
+                            ) : (
+                                <PictureAsPdfRoundedIcon fontSize='small' />
+                            )}
                             Exportar selecionados
                         </button>
 

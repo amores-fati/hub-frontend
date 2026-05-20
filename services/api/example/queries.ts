@@ -22,6 +22,6 @@ export const useGetAllExamples = (payload: ExamplePayload) =>
             examplesApi
                 .get('')
                 .then(
-                    (res) => (res.data as PaginatedDto<ExampleResponse>).data,
+                    (res) => (res.data as PaginatedDto<ExampleResponse>).items,
                 ),
     });
