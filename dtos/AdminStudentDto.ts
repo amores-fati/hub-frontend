@@ -9,9 +9,9 @@ import {
 } from './StudentDto';
 
 export enum AdminStudentCourseType {
-    PRESENTIAL = 'PRESENTIAL',
+    PRESENTIAL = 'PRESENCIAL',
     ONLINE = 'ONLINE',
-    NOT_ENROLLED = 'NOT_ENROLLED',
+    NOT_ENROLLED = 'NAO_INSCRITO',
 }
 
 export enum AdminStudentDisabilityType {
@@ -77,7 +77,7 @@ export type AdminStudentsQueryParams = {
     search?: string;
     disabilityType?: string[];
     city?: string[];
-    courseTypes?: string[];
+    modality?: string;
     sortBy?: string;
     sortOrder?: SortDirection;
 };
