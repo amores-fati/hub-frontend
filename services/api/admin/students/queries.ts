@@ -36,7 +36,7 @@ export const useGetAdminStudents = (
             payload.city,
             payload.limit,
             payload.disabilityType,
-            payload.courseTypes,
+            payload.modality,
         ],
         queryFn: () => getAdminStudents(payload),
     });

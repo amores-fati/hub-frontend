@@ -180,13 +180,13 @@ const disabilityOptions: Option[] = [
 type AppliedFiltersState = Required<
     Pick<
         AdminStudentsQueryParams,
-        'search' | 'courseTypes' | 'disabilityType' | 'city'
+        'search' | 'modality' | 'disabilityType' | 'city'
     >
 >;
 
 const initialFiltersState: AppliedFiltersState = {
     search: '',
-    courseTypes: [],
+    modality: undefined,
     disabilityType: [],
     city: [],
 };
@@ -276,7 +276,7 @@ const getErrorMessage = (error: unknown, fallback: string) =>
 const getUnsupportedStudentReportFilterMessage = (
     filters: AppliedFiltersState,
 ) => {
-    const courseType = getFirstFilterValue(filters.courseTypes);
+    const courseType = filters.modality;
     const disabilityType = getFirstFilterValue(filters.disabilityType);
 
     if (
@@ -310,9 +310,7 @@ const buildStudentReportFilters = (
     const search = filters.search.trim();
     const location = getFirstFilterValue(filters.city);
     const disabilityType = getFirstFilterValue(filters.disabilityType);
-    const status = getStudentReportStatus(
-        getFirstFilterValue(filters.courseTypes),
-    );
+    const status = getStudentReportStatus(filters.modality);
 
     if (search) reportFilters.search = search;
     if (location) reportFilters.location = location;
@@ -373,7 +371,7 @@ function AdminStudents() {
             page: paginator.page,
             limit: paginator.rowsPerPage,
             search: filters.search || undefined,
-            courseTypes: filters.courseTypes,
+            modality: filters.modality,
             disabilityType: filters.disabilityType,
             city: filters.city,
             sortBy: paginator.orderColumn,
@@ -481,7 +479,7 @@ function AdminStudents() {
         setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
-            courseTypes: draftCourseTypes.map((option) => String(option.value)),
+            modality: draftCourseTypes.map((option) => String(option.value))[0],
             city: draftLocations.map((option) => String(option.value)),
             disabilityType: draftDisabilityTypes.map((option) =>
                 String(option.value),

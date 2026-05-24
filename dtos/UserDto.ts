@@ -1,7 +1,7 @@
 export enum UserRole {
-    ADMIN = 'ADMIN',
-    STUDENT = 'STUDENT',
-    COMPANY = 'COMPANY',
+    ADMIN = 'ADMINISTRADOR',
+    STUDENT = 'ESTUDANTE',
+    COMPANY = 'EMPRESA',
 }
 
 export interface UserProfileDto {
