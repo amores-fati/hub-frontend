@@ -1,4 +1,9 @@
-import { AdminCourseModality, AdminCoursesResponse } from '@/dtos/AdminCourseDto';
+import {
+    AdminCourseDto,
+    AdminCourseModality,
+    AdminCoursesResponse,
+    CreateAdminCourseDto,
+} from '@/dtos/AdminCourseDto';
 
 export const getAdminCoursesMock = (): AdminCoursesResponse => ({
     data: [
@@ -46,4 +51,13 @@ export const getAdminCoursesMock = (): AdminCoursesResponse => ({
     total: 245,
     page: 1,
     limit: 5,
+});
+
+export const createAdminCourseMock = (data: CreateAdminCourseDto): AdminCourseDto => ({
+    id: 'mock-id-novo',
+    name: data.name,
+    modality: data.modality,
+    address: data.address,
+    startDate: data.startDate ?? '',
+    endDate: data.endDate ?? '',
 });

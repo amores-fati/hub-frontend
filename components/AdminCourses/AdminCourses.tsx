@@ -2,6 +2,7 @@
 
 import { Input, Select, Table } from '@/components/base';
 import { Option } from '@/components/base/Select/select';
+import { AdminCourseFormModal } from '@/components/AdminCourseFormModal';
 import { AdminCourseDto, AdminCourseModality } from '@/dtos/AdminCourseDto';
 import { getAdminCoursesMock } from '@/services/api/admin/courses/mock';
 import { Chip, Collapse, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
@@ -129,6 +130,7 @@ export function AdminCourses() {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [coursePendingDelete, setCoursePendingDelete] =
         useState<AdminCourseDto | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     const filteredCourses = useMemo(() => {
         let courses = MOCK_RESPONSE.data;
@@ -311,7 +313,7 @@ export function AdminCourses() {
                 </div>
 
                 <div className='admin-courses__header-actions'>
-                    <ButtonComponent onClick={() => {}}>
+                    <ButtonComponent onClick={() => setShowCreateModal(true)}>
                         <span className='admin-courses__button-content'>
                             <AddRoundedIcon fontSize='small' />
                             Novo Curso
@@ -378,7 +380,7 @@ export function AdminCourses() {
                             <Select
                                 placeholder='Selecione a modalidade'
                                 options={MODALITY_OPTIONS}
-                                value={draftModality}
+                                value={draftModality ?? undefined}
                                 onChange={(option) => setDraftModality(option)}
                                 isClearable
                             />
@@ -390,7 +392,7 @@ export function AdminCourses() {
                             <Select
                                 placeholder='Selecione o status'
                                 options={STATUS_OPTIONS}
-                                value={draftStatus}
+                                value={draftStatus ?? undefined}
                                 onChange={(option) => setDraftStatus(option)}
                                 isClearable
                             />
@@ -466,6 +468,15 @@ export function AdminCourses() {
                     />
                 )}
             </div>
+
+            <AdminCourseFormModal
+                open={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    setShowCreateModal(false);
+                    toast.success('Curso cadastrado com sucesso.');
+                }}
+            />
 
             <Dialog
                 open={!!coursePendingDelete}
