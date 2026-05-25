@@ -10,7 +10,12 @@ import {
 } from '@/dtos/AdminCourseDto';
 import { createAdminCourseMock } from '@/services/api/admin/courses/mock';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
-import { Dialog, DialogContent, DialogTitle, TextField } from '@mui/material';
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    TextField,
+} from '@mui/material';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import './index.scss';
@@ -121,27 +126,15 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            fullWidth
-            maxWidth='sm'
-            PaperProps={{ sx: { maxWidth: 729, borderRadius: '24px' } }}
-        >
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm' PaperProps={{ sx: { maxWidth: 729, borderRadius: '24px' } }}>
             <DialogTitle className='admin-course-form-modal__title'>
                 Cadastrar Novo Curso
             </DialogTitle>
 
-            <DialogContent
-                dividers
-                className='admin-course-form-modal__content'
-            >
+            <DialogContent dividers className='admin-course-form-modal__content'>
                 <div className='admin-course-form-modal__field'>
                     <label className='admin-course-form-modal__label'>
-                        Nome do curso{' '}
-                        <span className='admin-course-form-modal__required'>
-                            *
-                        </span>
+                        Nome do curso <span className='admin-course-form-modal__required'>*</span>
                     </label>
                     <Input
                         value={name}
@@ -150,18 +143,13 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                         error={nameError}
                     />
                     {nameError && (
-                        <span className='admin-course-form-modal__error'>
-                            Campo obrigatório
-                        </span>
+                        <span className='admin-course-form-modal__error'>Campo obrigatório</span>
                     )}
                 </div>
 
                 <div className='admin-course-form-modal__field'>
                     <label className='admin-course-form-modal__label'>
-                        Descrição Breve{' '}
-                        <span className='admin-course-form-modal__required'>
-                            *
-                        </span>
+                        Descrição Breve <span className='admin-course-form-modal__required'>*</span>
                     </label>
                     <TextField
                         multiline
@@ -175,23 +163,16 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                         error={descriptionError}
                     />
                     {descriptionError && (
-                        <span className='admin-course-form-modal__error'>
-                            Campo obrigatório
-                        </span>
+                        <span className='admin-course-form-modal__error'>Campo obrigatório</span>
                     )}
                 </div>
 
                 <div className='admin-course-form-modal__field'>
-                    <label className='admin-course-form-modal__label'>
-                        Imagem do Curso
-                    </label>
+                    <label className='admin-course-form-modal__label'>Imagem do Curso</label>
                     <div
                         className={`admin-course-form-modal__dropzone${isDragging ? ' admin-course-form-modal__dropzone--dragging' : ''}`}
                         onClick={() => fileInputRef.current?.click()}
-                        onDragOver={(e) => {
-                            e.preventDefault();
-                            setIsDragging(true);
-                        }}
+                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={(e) => {
                             e.preventDefault();
@@ -229,9 +210,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                 </div>
 
                 <div className='admin-course-form-modal__field'>
-                    <label className='admin-course-form-modal__label'>
-                        Endereço
-                    </label>
+                    <label className='admin-course-form-modal__label'>Endereço</label>
                     <Input
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
@@ -241,9 +220,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
 
                 <div className='admin-course-form-modal__grid-4'>
                     <div className='admin-course-form-modal__field'>
-                        <label className='admin-course-form-modal__label'>
-                            Vagas
-                        </label>
+                        <label className='admin-course-form-modal__label'>Vagas</label>
                         <Input
                             value={vacancyCount}
                             onChange={(e) => {
@@ -256,10 +233,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
 
                     <div className='admin-course-form-modal__field'>
                         <label className='admin-course-form-modal__label'>
-                            Modalidade{' '}
-                            <span className='admin-course-form-modal__required'>
-                                *
-                            </span>
+                            Modalidade <span className='admin-course-form-modal__required'>*</span>
                         </label>
                         <div className='admin-course-form-modal__select-overrides'>
                             <Select
@@ -270,18 +244,13 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                             />
                         </div>
                         {modalityError && (
-                            <span className='admin-course-form-modal__error'>
-                                Campo obrigatório
-                            </span>
+                            <span className='admin-course-form-modal__error'>Campo obrigatório</span>
                         )}
                     </div>
 
                     <div className='admin-course-form-modal__field'>
                         <label className='admin-course-form-modal__label'>
-                            Turno{' '}
-                            <span className='admin-course-form-modal__required'>
-                                *
-                            </span>
+                            Turno <span className='admin-course-form-modal__required'>*</span>
                         </label>
                         <div className='admin-course-form-modal__select-overrides'>
                             <Select
@@ -292,16 +261,12 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                             />
                         </div>
                         {shiftError && (
-                            <span className='admin-course-form-modal__error'>
-                                Campo obrigatório
-                            </span>
+                            <span className='admin-course-form-modal__error'>Campo obrigatório</span>
                         )}
                     </div>
 
                     <div className='admin-course-form-modal__field'>
-                        <label className='admin-course-form-modal__label'>
-                            Carga Horária
-                        </label>
+                        <label className='admin-course-form-modal__label'>Carga Horária</label>
                         <Input
                             value={workloadHours}
                             onChange={(e) => {
@@ -315,9 +280,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
 
                 <div className='admin-course-form-modal__grid-2'>
                     <div className='admin-course-form-modal__field'>
-                        <label className='admin-course-form-modal__label'>
-                            Data Início - Curso
-                        </label>
+                        <label className='admin-course-form-modal__label'>Data Início - Curso</label>
                         <input
                             type='date'
                             className='admin-course-form-modal__date-input'
@@ -332,9 +295,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                     </div>
 
                     <div className='admin-course-form-modal__field'>
-                        <label className='admin-course-form-modal__label'>
-                            Data Final - Curso
-                        </label>
+                        <label className='admin-course-form-modal__label'>Data Final - Curso</label>
                         <input
                             type='date'
                             className='admin-course-form-modal__date-input'
@@ -351,9 +312,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
 
                 <div className='admin-course-form-modal__grid-2'>
                     <div className='admin-course-form-modal__field'>
-                        <label className='admin-course-form-modal__label'>
-                            Data Início - Inscrições
-                        </label>
+                        <label className='admin-course-form-modal__label'>Data Início - Inscrições</label>
                         <input
                             type='date'
                             className='admin-course-form-modal__date-input'
@@ -368,9 +327,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                     </div>
 
                     <div className='admin-course-form-modal__field'>
-                        <label className='admin-course-form-modal__label'>
-                            Data Final - Inscrições
-                        </label>
+                        <label className='admin-course-form-modal__label'>Data Final - Inscrições</label>
                         <input
                             type='date'
                             className='admin-course-form-modal__date-input'
@@ -398,9 +355,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                 <button
                     type='button'
                     className='admin-course-form-modal__btn-submit'
-                    onClick={() => {
-                        void handleSubmit();
-                    }}
+                    onClick={() => { void handleSubmit(); }}
                     disabled={isLoading}
                 >
                     {isLoading ? 'Cadastrando...' : 'Cadastrar Curso'}
