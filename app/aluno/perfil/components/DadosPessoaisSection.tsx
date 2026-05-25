@@ -11,7 +11,7 @@ import {
 } from '@mui/icons-material';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import { ChangeEvent } from 'react';
-import { EditProfileForm, EditProfileFormSetter } from '../types';
+import { EditProfileForm, EditProfileFormSetter } from '../Types';
 import { SectionCard } from './SectionCard';
 
 const AccessibilityOptions = [

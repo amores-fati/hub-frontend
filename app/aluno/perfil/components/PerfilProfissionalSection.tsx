@@ -1,7 +1,7 @@
 import { Input, RadioGroup } from '@/components/base';
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import { ChangeEvent } from 'react';
-import { EditProfileForm, EditProfileFormSetter } from '../types';
+import { EditProfileForm, EditProfileFormSetter } from '../Types';
 import { SectionCard } from './SectionCard';
 
 const YesNoOptions = [
