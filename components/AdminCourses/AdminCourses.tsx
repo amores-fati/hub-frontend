@@ -139,7 +139,7 @@ export function AdminCourses() {
             courses = courses.filter((c) => c.name.toLowerCase().includes(q));
         }
         if (appliedModality) {
-            courses = courses.filter((c) => c.modality === appliedModality);
+            courses = courses.filter((c) => c.modality === (appliedModality as AdminCourseModality));
         }
         if (appliedStatus) {
             courses = courses.filter((c) => getCourseStatus(c) === appliedStatus);
