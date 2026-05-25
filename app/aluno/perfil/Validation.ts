@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { EditProfileForm } from './types';
+import { EditProfileForm } from './Types';
 
 export function validateProfileForm(form: EditProfileForm): boolean {
     if (!form.fullName.trim()) {

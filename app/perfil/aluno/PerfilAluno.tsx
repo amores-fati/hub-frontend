@@ -109,10 +109,8 @@ function CadastroAluno({ data }: { data: StudentRegisterPayload }) {
             <div className='stepper-custom'>
                 {steps.map((label, index) => {
                     const stepNumber = index + 1;
-                    const isActive =
-                        (stepNumber as StepperSteps) === activeStep;
-                    const isCompleted =
-                        (stepNumber as StepperSteps) < activeStep;
+                    const isActive = stepNumber === Number(activeStep);
+                    const isCompleted = stepNumber < Number(activeStep);
 
                     return (
                         <div

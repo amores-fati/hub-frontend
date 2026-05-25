@@ -77,6 +77,7 @@ export type AdminStudentsQueryParams = {
     search?: string;
     disabilityType?: string[];
     city?: string[];
+    locations?: string[];
     courseTypes?: string[];
     sortBy?: string;
     sortOrder?: SortDirection;

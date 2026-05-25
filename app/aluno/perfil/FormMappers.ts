@@ -1,7 +1,7 @@
 import { StudentProfile, UpdateStudentProfilePayload } from '@/dtos/StudentProfileDto';
 import { phoneNumberRegex } from '@/utils/regex';
 import { formatDate } from '@/utils/shared-functions/date';
-import { EditProfileForm } from './types';
+import { EditProfileForm } from './Types';
 
 export function profileToForm(data: StudentProfile): EditProfileForm {
     const disabilityType = data.disability?.type ?? '';

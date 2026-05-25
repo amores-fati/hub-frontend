@@ -318,7 +318,7 @@ const exportStudentsToPdf = (
                     <td>${student.fullName}</td>
                     <td>${formatCpf(student.cpf)}</td>
                     <td>${student.enrolledCourse?.name ?? 'Não inscrito'}</td>
-                    <td>${student.email}<br />${formatPhone(student.phone)}</td>
+                    <td>${student.email}<br />${formatPhone(student.phoneNumber)}</td>
                     <td>${student.city}/${student.state}</td>
                     <td>${disabilityLabels[student.disabilityType]}</td>
                 </tr>
@@ -398,7 +398,7 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
     const totalPages = Math.ceil(firstPage.total / firstPage.limit);
 
     if (totalPages <= 1) {
-        return firstPage.data;
+        return firstPage.items;
     }
 
     const pages = await Promise.all(
@@ -411,7 +411,7 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
         ),
     );
 
-    return [firstPage, ...pages].flatMap((page) => page.data);
+    return [firstPage, ...pages].flatMap((page) => page.items);
 }
 
 export function AdminStudents() {
@@ -458,8 +458,8 @@ export function AdminStudents() {
 
     const deleteStudentsMutation = useDeleteAdminStudents(selectedIds);
 
-    const students = data?.data ?? [];
-    const totalStudents = data?.total ?? 0;
+    const students = data?.items ?? [];
+    const totalStudents = data?.meta?.total ?? 0;
     const totalPages = Math.max(1, Math.ceil(totalStudents / PAGE_SIZE));
     const visibleStudentIds = students.map((student) => student.id);
     const selectedVisibleCount = visibleStudentIds.filter((id) =>
@@ -698,12 +698,12 @@ export function AdminStudents() {
                         <span>{student.email}</span>
                         <small>
                             <a
-                                href={buildWhatsAppLink(student.phone)}
+                                href={buildWhatsAppLink(student.phoneNumber)}
                                 target='_blank'
                                 rel='noreferrer'
                                 className='admin-students__contact-link'
                             >
-                                {formatPhone(student.phone)}
+                                {formatPhone(student.phoneNumber)}
                             </a>
                         </small>
                     </div>
@@ -956,7 +956,7 @@ export function AdminStudents() {
                             actionColumnConfig={{
                                 showWhatsapp: true,
                                 getWhatsappHref: (student) =>
-                                    buildWhatsAppLink(student.phone),
+                                    buildWhatsAppLink(student.phoneNumber),
                                 showDelete: true,
                                 onDelete: openSingleDeleteConfirmation,
                             }}
@@ -1066,7 +1066,7 @@ export function AdminStudents() {
                                     <div>
                                         <strong>Telefone</strong>
                                         <span>
-                                            {formatPhone(selectedStudent.phone)}
+                                            {formatPhone(selectedStudent.phoneNumber)}
                                         </span>
                                     </div>
                                     <div>

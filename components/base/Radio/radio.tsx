@@ -2,7 +2,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import MuiRadioGroup from '@mui/material/RadioGroup';
-import { ChangeEvent, useEffect } from 'react';
+import { ChangeEvent } from 'react';
 import './index.scss';
 
 export type RadioOption = {
@@ -21,10 +21,6 @@ export default function RadioGroup({
     value?: string;
 }) {
 
-    useEffect(() => {
-        console.log(value)
-        console.log(options)
-    }, [value])
 
     return (
         <FormControl>

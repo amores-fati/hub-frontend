@@ -19,6 +19,7 @@ import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
 import { getAdminStudentsFilterOptionsMock } from '@/services/api/admin/students/mock';
 import {
+    getAdminStudents,
     useGetAdminStudents,
 } from '@/services/api/admin/students/queries';
 import { Option } from '@/components/base/Select/select';
@@ -392,7 +393,7 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
     const totalPages = Math.ceil(firstPage.total / firstPage.limit);
 
     if (totalPages <= 1) {
-        return firstPage.data;
+        return firstPage.items;
     }
 
     const pages = await Promise.all(
@@ -405,7 +406,7 @@ async function getStudentsForExport(filters: AppliedFiltersState) {
         ),
     );
 
-    return [firstPage, ...pages].flatMap((page) => page.data);
+    return [firstPage, ...pages].flatMap((page) => page.items);
 }
 
 const handleExportSelected = (selectedStudents: AdminStudentDto[]) => {

@@ -9,10 +9,10 @@ import { DadosPessoaisSection } from './components/DadosPessoaisSection';
 import { EscolaridadeSection } from './components/EscolaridadeSection';
 import { OutrasInformacoesSection } from './components/OutrasInformacoesSection';
 import { PerfilProfissionalSection } from './components/PerfilProfissionalSection';
-import { formToUpdatePayload, profileToForm } from './formMappers';
+import { formToUpdatePayload, profileToForm } from './FormMappers';
 import './index.scss';
-import { EditProfileForm } from './types';
-import { validateProfileForm } from './validation';
+import { EditProfileForm } from './Types';
+import { validateProfileForm } from './Validation';
 
 export default function PerfilAluno() {
     const { data, isLoading } = useGetStudentProfile();
