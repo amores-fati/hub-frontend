@@ -16,6 +16,7 @@ import {
     DialogTitle,
     TextField,
 } from '@mui/material';
+import Image from 'next/image';
 import { useRef, useState } from 'react';
 import './index.scss';
 
@@ -181,10 +182,13 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                         }}
                     >
                         {imagePreview ? (
-                            <img
+                            <Image
                                 src={imagePreview}
                                 alt='Preview'
                                 className='admin-course-form-modal__dropzone-preview'
+                                unoptimized
+                                width={200}
+                                height={200}
                             />
                         ) : (
                             <>
@@ -351,7 +355,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                 <button
                     type='button'
                     className='admin-course-form-modal__btn-submit'
-                    onClick={handleSubmit}
+                    onClick={() => { void handleSubmit(); }}
                     disabled={isLoading}
                 >
                     {isLoading ? 'Cadastrando...' : 'Cadastrar Curso'}
