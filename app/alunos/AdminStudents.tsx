@@ -72,6 +72,7 @@ const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
     [AdminStudentDisabilityType.VISUAL]: 'Visual',
     [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
     [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
+    [AdminStudentDisabilityType.MULTIPLE]: 'Múltipla',
     [AdminStudentDisabilityType.OTHER]: 'Outra',
 };
 
@@ -492,7 +493,7 @@ function AdminStudents() {
         setIsLoading(false);
     }, [data, isLoading, isFetching]);
 
-    const { mutate: deleteStudentsMutation, isPending } = useDeleteAdminStudents(Object.keys(selectedStudents));
+    const { mutate: deleteStudentsMutation, isPending } = useDeleteAdminStudents();
 
     useEffect(() => {
         setSelectedStudents({});

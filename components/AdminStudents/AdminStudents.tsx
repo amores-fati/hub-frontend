@@ -66,6 +66,7 @@ const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
     [AdminStudentDisabilityType.VISUAL]: 'Visual',
     [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
     [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
+    [AdminStudentDisabilityType.MULTIPLE]: 'Múltipla',
     [AdminStudentDisabilityType.OTHER]: 'Outra',
 };
 
@@ -456,7 +457,7 @@ export function AdminStudents() {
         isAdmin,
     );
 
-    const deleteStudentsMutation = useDeleteAdminStudents(selectedIds);
+    const deleteStudentsMutation = useDeleteAdminStudents();
 
     const students = data?.items ?? [];
     const totalStudents = data?.meta?.total ?? 0;
