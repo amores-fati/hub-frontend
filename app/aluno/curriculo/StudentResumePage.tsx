@@ -148,7 +148,7 @@ export default function Index() {
 
     return (
         <StudentResumePage
-            studentId={studentId!}
+            studentId={studentId}
             profile={profile}
             resume={resume}
             isLoading={isLoadingProfile || isLoadingResume}

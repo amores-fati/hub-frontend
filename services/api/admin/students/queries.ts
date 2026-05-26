@@ -9,8 +9,24 @@ import { adminStudentsApi } from '.';
 import { PaginatedDto } from '@/dtos/PaginatedDto';
 import qs from 'qs';
 
-export const useGetAdminStudents = (payload: AdminStudentsQueryParams) =>
+export const getAdminStudents = (payload: AdminStudentsQueryParams) =>
+    adminStudentsApi
+        .get('/filter', {
+            params: payload,
+            paramsSerializer: (params) =>
+                qs.stringify(params, {
+                    arrayFormat: 'repeat',
+                    encoder: (value) => encodeURIComponent(value),
+                }),
+        })
+        .then((res) => res.data as PaginatedDto<AdminStudentDto>);
+
+export const useGetAdminStudents = (
+    payload: AdminStudentsQueryParams,
+    enabled = true,
+) =>
     useQuery({
+        enabled,
         queryKey: [
             QUERY_KEYS.ADMIN_STUDENTS,
             payload.sortOrder,
@@ -20,17 +36,7 @@ export const useGetAdminStudents = (payload: AdminStudentsQueryParams) =>
             payload.city,
             payload.limit,
             payload.disabilityType,
-            payload.courseTypes,
+            payload.modality,
         ],
-        queryFn: () =>
-            adminStudentsApi
-                .get('/filter', {
-                    params: payload,
-                    paramsSerializer: (params) =>
-                        qs.stringify(params, {
-                            arrayFormat: 'repeat',
-                            encoder: (value) => encodeURIComponent(value),
-                        }),
-                })
-                .then((res) => res.data as PaginatedDto<AdminStudentDto>),
+        queryFn: () => getAdminStudents(payload),
     });
