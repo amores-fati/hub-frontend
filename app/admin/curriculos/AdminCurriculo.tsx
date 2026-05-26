@@ -393,14 +393,16 @@ function AdminCurriculo() {
             sortable: false,
             render: (c) => (
                 <div className='admin-curriculos__actions'>
-                    <IconButton
-                        className='custom-table__action-button'
-                        component='a'
-                        href={`/admin/curriculo/${c.id}`}
-                        title='Ver currículo'
-                    >
-                        <AssignmentIndIcon fontSize='small' />
-                    </IconButton>
+                 <IconButton
+    className='custom-table__action-button'
+    component='a'
+    href={`/admin/curriculo?studentId=${c.studentId}`}
+    title='Ver currículo'
+>
+    <AssignmentIndIcon fontSize='small' />
+</IconButton>
+
+
                     <IconButton
                         className='admin-curriculos__action-btn'
                         component='a'
@@ -460,11 +462,7 @@ function AdminCurriculo() {
                 <div>
                     <span className='admin-curriculos__eyebrow'>Área administrativa</span>
                     <h1 className='admin-curriculos__title'>Gestão de Currículos</h1>
-                    <p className='admin-curriculos__subtitle'>
-                        Administração centralizada de{' '}
-                        <span className='admin-curriculos__subtitle-highlight'>currículos</span>{' '}
-                        disponibilizados pelo instituto.
-                    </p>
+                
                 </div>
                 <div className='admin-curriculos__header-action'>
                     <ButtonComponent
@@ -517,7 +515,7 @@ function AdminCurriculo() {
                 </small>
 
                 <button
-                    className={`admin-curriculos__filter-toggle${showAdvancedFilters ? ' admin-curriculos__filter-toggle--active' : ''}`}
+                    className='admin-curriculos__advanced-toggle'
                     onClick={() => setShowAdvancedFilters((v) => !v)}
                     type='button'
                 >
@@ -607,7 +605,7 @@ function AdminCurriculo() {
             )}
 
             {/* Tabela */}
-            <div className='admin-curriculos__table-wrapper'>
+            <div className='admin-curriculos__table-card admin-curriculos__table-wrapper'>
                 {isError ? (
                     <div className='admin-curriculos__empty'>
                         <h2>Erro ao carregar currículos</h2>

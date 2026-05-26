@@ -11,6 +11,7 @@ export enum AdminCurriculumStatus {
 
 export type AdminCurriculumDto = {
     id: string;
+    studentId: string;
     fullName: string;
     cpf: string;
     activityArea: string;

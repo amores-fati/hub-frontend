@@ -159,6 +159,7 @@
 
 .admin-curriculos__table-wrapper {
     overflow-x: auto;
+    overflow-y: auto;
 }
 
 .admin-curriculos__table {
@@ -207,12 +208,18 @@
     display: flex;
     align-items: center;
     gap: 0.875rem;
+}
 
-    span {
-        display: block;
-        color: var(--text-muted);
-        font: var(--footnote);
-    }
+.admin-curriculos__student-name {
+    display: block;
+    color: var(--text-primary);
+    font: var(--body-2-semibold);
+}
+
+.admin-curriculos__student-cpf {
+    display: block;
+    color: var(--text-muted);
+    font: var(--footnote);
 }
 
 .admin-curriculos__name-button {
@@ -271,22 +278,71 @@
     color: var(--branco) !important;
 }
 
+// ── Modalidade ───────────────────────────────────────────────────────────────
 .admin-curriculos__badge--presencial {
     background: var(--secondary-color) !important;
 }
 
 .admin-curriculos__badge--online {
-    background: var(--primary-color) !important;
-    color: var(--preto-1) !important;
+    background: var(--info) !important;
+    color: var(--branco) !important;
 }
 
+.admin-curriculos__badge--hibrido {
+    background: var(--tertiary-color) !important;
+}
+
+// ── Status ────────────────────────────────────────────────────────────────────
+.admin-curriculos__badge--ativo {
+    background: #22c55e !important;
+}
+
+.admin-curriculos__badge--inativo {
+    background: var(--cinza-2) !important;
+}
+
+// ── Área de interesse ─────────────────────────────────────────────────────────
+.admin-curriculos__badge--area-design {
+    background: var(--secondary-color) !important;
+}
+
+.admin-curriculos__badge--area-desenvolvimento {
+    background: var(--tertiary-color) !important;
+}
+
+.admin-curriculos__badge--area-dados {
+    background: var(--info) !important;
+    color: var(--branco) !important;
+}
+
+.admin-curriculos__badge--area-infraestrutura {
+    background: #78909c !important;
+}
+
+.admin-curriculos__badge--area-gestao {
+    background: #43a047 !important;
+}
+
+.admin-curriculos__badge--area-frontend {
+    background: var(--tertiary-color) !important;
+}
+
+.admin-curriculos__badge--area-backend {
+    background: #0288d1 !important;
+}
+
+.admin-curriculos__badge--area-generalista {
+    background: #fb8c00 !important;
+}
+
+// ── Utilitários legados ───────────────────────────────────────────────────────
 .admin-curriculos__badge--neutral {
     background: var(--tertiary-color) !important;
 }
 
 .admin-curriculos__badge--info {
     background: var(--info) !important;
-    color: var(--preto-1) !important;
+    color: var(--branco) !important;
 }
 
 .admin-curriculos__badge--danger {
@@ -298,9 +354,14 @@
     gap: 0.5rem;
 }
 
-.admin-curriculos__action-button {
+.admin-curriculos__action-button,
+.admin-curriculos__action-btn {
     border: 1px solid var(--border-color) !important;
     color: var(--text-primary) !important;
+
+    &:disabled {
+        opacity: 0.35 !important;
+    }
 }
 
 .admin-curriculos__action-button--danger {

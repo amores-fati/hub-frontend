@@ -671,7 +671,7 @@ function AdminStudents() {
                     <IconButton
                         className='custom-table__action-button'
                         component='a'
-                        href={`/admin/curriculo?studentId=${student.id}`}
+                        href={`/admin/curriculos?studentId=${student.id}`}
                     >
                         <AssignmentIndIcon fontSize='small' />
                     </IconButton>
