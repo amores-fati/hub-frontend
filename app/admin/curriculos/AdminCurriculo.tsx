@@ -56,12 +56,15 @@ const statusLabels: Record<AdminCurriculumStatus, string> = {
 };
 
 const areaLabels: Record<string, string> = {
+    design: 'Design',
+    desenvolvimento: 'Desenvolvimento',
+    dados: 'Dados',
+    infraestrutura: 'Infraestrutura',
+    gestao: 'Gestão',
+    // mapeamentos legados para compatibilidade com dados existentes
     frontend: 'Frontend',
     backend: 'Backend',
-    design: 'Design',
     generalista: 'Generalista',
-    // mapeamentos legados para compatibilidade com dados existentes
-    dados: 'Dados',
     data: 'Dados',
     qa: 'QA',
     ux: 'UX',
@@ -83,10 +86,11 @@ const locationOptions: Option[] = [
 ];
 
 const areaOptions: Option[] = [
-    { value: 'frontend', label: 'Frontend' },
-    { value: 'backend', label: 'Backend' },
     { value: 'design', label: 'Design' },
-    { value: 'generalista', label: 'Generalista' },
+    { value: 'desenvolvimento', label: 'Desenvolvimento' },
+    { value: 'dados', label: 'Dados' },
+    { value: 'infraestrutura', label: 'Infraestrutura' },
+    { value: 'gestao', label: 'Gestão' },
 ];
 
 const modalityOptions: Option[] = [

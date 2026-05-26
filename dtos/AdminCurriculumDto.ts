@@ -20,6 +20,8 @@ export type AdminCurriculumDto = {
     githubUrl?: string | null;
     linkedinUrl?: string | null;
     phoneNumber?: string | null;
+    city?: string | null;
+    state?: string | null;
 };
 
 export type AdminCurriculaQueryParams = {
