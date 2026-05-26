@@ -40,7 +40,7 @@ import BasicTable from '@/components/base/Table2/table';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { UserRole } from '@/dtos/UserDto';
 import { useRouter } from 'next/navigation';
-import { useGetAdminCurricula } from '@/services/api/admin/curricula/queries';
+import { useGetAdminCurriculum } from '@/services/api/admin/curriculum/queries';
 
 // ─── Labels & options ────────────────────────────────────────────────────────
 
@@ -268,7 +268,7 @@ function AdminCurriculo() {
         status: filters.status.length ? filters.status : undefined,
     };
 
-    const { data, isLoading, isFetching, isError } = useGetAdminCurricula(queryParams);
+    const { data, isLoading, isFetching, isError } = useGetAdminCurriculum(queryParams);
 
     useEffect(() => {
         if (data?.items) {

@@ -72,10 +72,18 @@ export const PAGES: Page[] = [
     },
     {
         path: '/admin/curriculo',
-        navbarEnabled: true,
+        navbarEnabled: false,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
         name: 'Currículo do Aluno',
+        icon: <AssignmentIndIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/admin/curriculos',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Gestão de Currículos',
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
     {
@@ -110,7 +118,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,
-            expectedPath: '/curriculos',
+            expectedPath: '/admin/curriculos',
         },
     ],
     [UserRole.STUDENT]: [

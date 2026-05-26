@@ -1,10 +1,3 @@
-import { Suspense } from 'react';
-import AdminStudentResumePage from './AdminStudentResumePage';
+import AdminCurriculoPage from './AdminCurriculo';
 
-export default function CurriculosAdminPage() {
-    return (
-        <Suspense>
-            <AdminStudentResumePage />
-        </Suspense>
-    );
-}
+export default AdminCurriculoPage;
