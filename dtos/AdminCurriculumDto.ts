@@ -33,4 +33,6 @@ export type AdminCurriculaQueryParams = {
     activityArea?: string[];
     modality?: string[];
     status?: string[];
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
 };

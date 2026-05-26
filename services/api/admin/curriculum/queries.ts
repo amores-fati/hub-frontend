@@ -19,6 +19,8 @@ export const useGetAdminCurriculum = (payload: AdminCurriculaQueryParams) =>
             payload.activityArea,
             payload.modality,
             payload.status,
+            payload.sortBy,
+            payload.sortOrder,
         ],
         queryFn: () =>
             adminCurriculumApi
@@ -27,7 +29,8 @@ export const useGetAdminCurriculum = (payload: AdminCurriculaQueryParams) =>
                     paramsSerializer: (params) =>
                         qs.stringify(params, {
                             arrayFormat: 'repeat',
-                            encoder: (value) => encodeURIComponent(value),
+                            encoder: (value: string) =>
+                                encodeURIComponent(value),
                         }),
                 })
                 .then((res) => res.data as PaginatedDto<AdminCurriculumDto>),

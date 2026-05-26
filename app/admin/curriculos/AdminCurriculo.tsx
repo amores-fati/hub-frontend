@@ -41,6 +41,7 @@ import { useAuth } from '@/providers/Auth/AuthProvider';
 import { UserRole } from '@/dtos/UserDto';
 import { useRouter } from 'next/navigation';
 import { useGetAdminCurriculum } from '@/services/api/admin/curriculum/queries';
+import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 
 // ─── Labels & options ────────────────────────────────────────────────────────
 
@@ -70,21 +71,6 @@ const areaLabels: Record<string, string> = {
     ux: 'UX',
 };
 
-const locationOptions: Option[] = [
-    { value: 'Florianopolis', label: 'Florianópolis/SC' },
-    { value: 'Porto Alegre', label: 'Porto Alegre/RS' },
-    { value: 'Curitiba', label: 'Curitiba/PR' },
-    { value: 'Sao Paulo', label: 'São Paulo/SP' },
-    { value: 'Campinas', label: 'Campinas/SP' },
-    { value: 'Santos', label: 'Santos/SP' },
-    { value: 'Recife', label: 'Recife/PE' },
-    { value: 'Belo Horizonte', label: 'Belo Horizonte/MG' },
-    { value: 'Rio de Janeiro', label: 'Rio de Janeiro/RJ' },
-    { value: 'Niteroi', label: 'Niterói/RJ' },
-    { value: 'Canoas', label: 'Canoas/RS' },
-    { value: 'Salvador', label: 'Salvador/BA' },
-];
-
 const areaOptions: Option[] = [
     { value: 'design', label: 'Design' },
     { value: 'desenvolvimento', label: 'Desenvolvimento' },
@@ -94,14 +80,29 @@ const areaOptions: Option[] = [
 ];
 
 const modalityOptions: Option[] = [
-    { value: AdminCurriculumModality.PRESENCIAL, label: modalityLabels[AdminCurriculumModality.PRESENCIAL] },
-    { value: AdminCurriculumModality.ONLINE, label: modalityLabels[AdminCurriculumModality.ONLINE] },
-    { value: AdminCurriculumModality.HIBRIDO, label: modalityLabels[AdminCurriculumModality.HIBRIDO] },
+    {
+        value: AdminCurriculumModality.PRESENCIAL,
+        label: modalityLabels[AdminCurriculumModality.PRESENCIAL],
+    },
+    {
+        value: AdminCurriculumModality.ONLINE,
+        label: modalityLabels[AdminCurriculumModality.ONLINE],
+    },
+    {
+        value: AdminCurriculumModality.HIBRIDO,
+        label: modalityLabels[AdminCurriculumModality.HIBRIDO],
+    },
 ];
 
 const statusOptions: Option[] = [
-    { value: AdminCurriculumStatus.ATIVO, label: statusLabels[AdminCurriculumStatus.ATIVO] },
-    { value: AdminCurriculumStatus.INATIVO, label: statusLabels[AdminCurriculumStatus.INATIVO] },
+    {
+        value: AdminCurriculumStatus.ATIVO,
+        label: statusLabels[AdminCurriculumStatus.ATIVO],
+    },
+    {
+        value: AdminCurriculumStatus.INATIVO,
+        label: statusLabels[AdminCurriculumStatus.INATIVO],
+    },
 ];
 
 // ─── Badge helpers ────────────────────────────────────────────────────────────
@@ -124,13 +125,26 @@ const getStatusBadgeClass = (status: AdminCurriculumStatus) =>
 
 // ─── PDF export helpers ───────────────────────────────────────────────────────
 
+/** Escapa caracteres HTML para evitar XSS no document.write do printWindow. */
+const escapeHtml = (value: string | null | undefined): string => {
+    if (value == null) return '';
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+};
+
 const exportCurriculaToPdf = (
     printWindow: Window | null,
     curricula: AdminCurriculumDto[],
     title: string,
 ) => {
     if (!printWindow) {
-        toast.error('Não foi possível abrir a janela de exportação. Verifique o bloqueador de pop-up.');
+        toast.error(
+            'Não foi possível abrir a janela de exportação. Verifique o bloqueador de pop-up.',
+        );
         return;
     }
     const generatedAt = new Intl.DateTimeFormat('pt-BR', {
@@ -140,11 +154,11 @@ const exportCurriculaToPdf = (
     const rows = curricula
         .map(
             (c) => `<tr>
-                <td>${c.fullName}</td>
-                <td>${c.cpf}</td>
-                <td>${areaLabels[c.activityArea] ?? c.activityArea ?? 'Não informado'}</td>
-                <td>${modalityLabels[c.modality] ?? c.modality}</td>
-                <td>${statusLabels[c.status] ?? c.status}</td>
+                <td>${escapeHtml(c.fullName)}</td>
+                <td>${escapeHtml(c.cpf)}</td>
+                <td>${escapeHtml(areaLabels[c.activityArea] ?? c.activityArea ?? 'Não informado')}</td>
+                <td>${escapeHtml(modalityLabels[c.modality] ?? c.modality)}</td>
+                <td>${escapeHtml(statusLabels[c.status] ?? c.status)}</td>
             </tr>`,
         )
         .join('');
@@ -228,25 +242,37 @@ function AdminCurriculo() {
         if (!user || user.role !== UserRole.ADMIN) router.push('/login');
     }, [user, isHydrated]);
 
-    const page = useTableStore((s) => s.paginator.page);
-    const rowsPerPage = useTableStore((s) => s.paginator.rowsPerPage);
+    const paginator = useTableStore((s) => ({ ...s.paginator }));
     const setPaginator = useTableStore((s) => s.setPaginator);
     const setIsLoading = useTableStore((s) => s.setIsLoading);
     const setCells = useTableStore(
-        (s: State<AdminCurriculumDto> & Action<AdminCurriculumDto>) => s.setCells,
+        (s: State<AdminCurriculumDto> & Action<AdminCurriculumDto>) =>
+            s.setCells,
     );
     const setContent = useTableStore(
-        (s: State<AdminCurriculumDto> & Action<AdminCurriculumDto>) => s.setContent,
+        (s: State<AdminCurriculumDto> & Action<AdminCurriculumDto>) =>
+            s.setContent,
     );
     const selectedCurricula = useTableStore((s) => s.selectedRows);
     const setSelectedCurricula = useTableStore((s) => s.setSelectedRows);
+
+    const { data: locationsData } = useGetAdminLocations({ scope: 'STUDENT' });
+    const locationOptions = useMemo(
+        () =>
+            (locationsData ?? []).map((loc) => ({
+                value: loc.city,
+                label: `${loc.city}/${loc.uf}`,
+            })),
+        [locationsData],
+    );
 
     const [searchInput, setSearchInput] = useState('');
     const [draftLocations, setDraftLocations] = useState<Option[]>([]);
     const [draftAreas, setDraftAreas] = useState<Option[]>([]);
     const [draftModalities, setDraftModalities] = useState<Option[]>([]);
     const [draftStatuses, setDraftStatuses] = useState<Option[]>([]);
-    const [filters, setFilters] = useState<AppliedFiltersState>(initialFiltersState);
+    const [filters, setFilters] =
+        useState<AppliedFiltersState>(initialFiltersState);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
 
@@ -254,37 +280,45 @@ function AdminCurriculo() {
         () =>
             Boolean(
                 filters.search ||
-                    filters.cities.length ||
-                    filters.activityArea.length ||
-                    filters.modality.length ||
-                    filters.status.length,
+                filters.cities.length ||
+                filters.activityArea.length ||
+                filters.modality.length ||
+                filters.status.length,
             ),
         [filters],
     );
 
-    const queryParams: AdminCurriculaQueryParams = {
-        page,
-        limit: rowsPerPage,
+    const getParameters = (): AdminCurriculaQueryParams => ({
+        page: paginator.page,
+        limit: paginator.rowsPerPage,
         search: filters.search || undefined,
         cities: filters.cities.length ? filters.cities : undefined,
-        activityArea: filters.activityArea.length ? filters.activityArea : undefined,
+        activityArea: filters.activityArea.length
+            ? filters.activityArea
+            : undefined,
         modality: filters.modality.length ? filters.modality : undefined,
         status: filters.status.length ? filters.status : undefined,
-    };
+        sortBy: paginator.orderColumn,
+        sortOrder: paginator.orderDirection,
+    });
 
-    const { data, isLoading, isFetching, isError } = useGetAdminCurriculum(queryParams);
+    const { data, isLoading, isFetching, isError } =
+        useGetAdminCurriculum(getParameters());
 
     useEffect(() => {
-        if (data?.items) {
-            setContent(data.items);
-            setPaginator({ itemsCount: data.meta.total });
-        }
-        setIsLoading(isLoading || isFetching);
+        if (isLoading || isFetching) setIsLoading(true);
+    }, [isLoading, isFetching]);
+
+    useEffect(() => {
+        if (!data?.items) return;
+        setContent(data.items);
+        setPaginator({ itemsCount: data.meta.total });
+        setIsLoading(false);
     }, [data, isLoading, isFetching]);
 
     useEffect(() => {
         setSelectedCurricula({});
-    }, [filters, page]);
+    }, [filters, paginator.page]);
 
     const selectedCount = Object.keys(selectedCurricula).length;
     const selectedCountLabel = `${selectedCount} currículo${selectedCount === 1 ? '' : 's'} selecionado${selectedCount === 1 ? '' : 's'}`;
@@ -348,8 +382,12 @@ function AdminCurriculo() {
                             .join('')}
                     </Avatar>
                     <div>
-                        <span className='admin-curriculos__student-name'>{c.fullName}</span>
-                        <span className='admin-curriculos__student-cpf'>{c.cpf}</span>
+                        <span className='admin-curriculos__student-name'>
+                            {c.fullName}
+                        </span>
+                        <span className='admin-curriculos__student-cpf'>
+                            {c.cpf}
+                        </span>
                     </div>
                 </div>
             ),
@@ -360,7 +398,11 @@ function AdminCurriculo() {
             sortable: true,
             render: (c) => (
                 <Chip
-                    label={areaLabels[c.activityArea] ?? c.activityArea ?? 'Não informado'}
+                    label={
+                        areaLabels[c.activityArea] ??
+                        c.activityArea ??
+                        'Não informado'
+                    }
                     className={getAreaBadgeClass(c.activityArea)}
                 />
             ),
@@ -393,16 +435,14 @@ function AdminCurriculo() {
             sortable: false,
             render: (c) => (
                 <div className='admin-curriculos__actions'>
-                 <IconButton
-    className='custom-table__action-button'
-    component='a'
-    href={`/admin/curriculo?studentId=${c.studentId}`}
-    title='Ver currículo'
->
-    <AssignmentIndIcon fontSize='small' />
-</IconButton>
-
-
+                    <IconButton
+                        className='custom-table__action-button'
+                        component='a'
+                        href={`/admin/curriculo?studentId=${c.studentId}`}
+                        title='Ver currículo'
+                    >
+                        <AssignmentIndIcon fontSize='small' />
+                    </IconButton>
                     <IconButton
                         className='admin-curriculos__action-btn'
                         component='a'
@@ -460,9 +500,12 @@ function AdminCurriculo() {
             {/* Cabeçalho */}
             <div className='admin-curriculos__header'>
                 <div>
-                    <span className='admin-curriculos__eyebrow'>Área administrativa</span>
-                    <h1 className='admin-curriculos__title'>Gestão de Currículos</h1>
-                
+                    <span className='admin-curriculos__eyebrow'>
+                        Área administrativa
+                    </span>
+                    <h1 className='admin-curriculos__title'>
+                        Gestão de Currículos
+                    </h1>
                 </div>
                 <div className='admin-curriculos__header-action'>
                     <ButtonComponent
@@ -502,7 +545,10 @@ function AdminCurriculo() {
                             Buscar
                         </span>
                     </ButtonComponent>
-                    <ButtonComponent variant='secondary' onClick={handleClearFilters}>
+                    <ButtonComponent
+                        variant='secondary'
+                        onClick={handleClearFilters}
+                    >
                         <span className='admin-curriculos__button-content'>
                             <RestartAltRoundedIcon fontSize='small' />
                             Limpar
@@ -533,42 +579,58 @@ function AdminCurriculo() {
                 <Collapse in={showAdvancedFilters}>
                     <div className='admin-curriculos__advanced-grid'>
                         <div className='admin-curriculos__filter-group'>
-                            <label className='admin-curriculos__filter-label'>Localização</label>
+                            <label className='admin-curriculos__filter-label'>
+                                Localização
+                            </label>
                             <MultSelect
                                 placeholder='Selecione as cidades'
                                 options={locationOptions}
                                 value={draftLocations}
-                                onChange={(opts) => setDraftLocations([...(opts ?? [])])}
+                                onChange={(opts) =>
+                                    setDraftLocations([...(opts ?? [])])
+                                }
                                 isSearchable
                             />
                         </div>
                         <div className='admin-curriculos__filter-group'>
-                            <label className='admin-curriculos__filter-label'>Área de Interesse</label>
+                            <label className='admin-curriculos__filter-label'>
+                                Área de Interesse
+                            </label>
                             <MultSelect
                                 placeholder='Selecione as áreas'
                                 options={areaOptions}
                                 value={draftAreas}
-                                onChange={(opts) => setDraftAreas([...(opts ?? [])])}
+                                onChange={(opts) =>
+                                    setDraftAreas([...(opts ?? [])])
+                                }
                                 isSearchable
                             />
                         </div>
                         <div className='admin-curriculos__filter-group'>
-                            <label className='admin-curriculos__filter-label'>Preferência</label>
+                            <label className='admin-curriculos__filter-label'>
+                                Preferência
+                            </label>
                             <MultSelect
                                 placeholder='Selecione as modalidades'
                                 options={modalityOptions}
                                 value={draftModalities}
-                                onChange={(opts) => setDraftModalities([...(opts ?? [])])}
+                                onChange={(opts) =>
+                                    setDraftModalities([...(opts ?? [])])
+                                }
                                 isSearchable
                             />
                         </div>
                         <div className='admin-curriculos__filter-group'>
-                            <label className='admin-curriculos__filter-label'>Status</label>
+                            <label className='admin-curriculos__filter-label'>
+                                Status
+                            </label>
                             <MultSelect
                                 placeholder='Selecione os status'
                                 options={statusOptions}
                                 value={draftStatuses}
-                                onChange={(opts) => setDraftStatuses([...(opts ?? [])])}
+                                onChange={(opts) =>
+                                    setDraftStatuses([...(opts ?? [])])
+                                }
                                 isSearchable
                             />
                         </div>
@@ -579,14 +641,18 @@ function AdminCurriculo() {
             {/* Barra de seleção em lote */}
             {selectedCount > 0 && (
                 <div className='admin-curriculos__bulk-bar'>
-                    <strong className='admin-curriculos__bulk-count'>{selectedCountLabel}</strong>
+                    <strong className='admin-curriculos__bulk-count'>
+                        {selectedCountLabel}
+                    </strong>
                     <span className='admin-curriculos__bulk-divider' />
                     <button
                         type='button'
                         className='admin-curriculos__bulk-export-btn'
                         onClick={() =>
                             handleExportSelected(
-                                Object.values(selectedCurricula) as AdminCurriculumDto[],
+                                Object.values(
+                                    selectedCurricula,
+                                ) as AdminCurriculumDto[],
                             )
                         }
                     >
@@ -607,27 +673,37 @@ function AdminCurriculo() {
             {/* Tabela */}
             <div className='admin-curriculos__table-card admin-curriculos__table-wrapper'>
                 {isError ? (
-                    <div className='admin-curriculos__empty'>
+                    <div className='admin-curriculos__empty-state'>
                         <h2>Erro ao carregar currículos</h2>
-                        <p>Não foi possível buscar os dados. Tente novamente.</p>
+                        <p>
+                            Não foi possível buscar os dados. Tente novamente.
+                        </p>
                     </div>
                 ) : isBusy && items.length === 0 ? (
-                    <div className='admin-curriculos__loading'>
+                    <div className='admin-curriculos__loading-state'>
                         <CircularProgress size={32} />
                     </div>
                 ) : isEmpty ? (
                     hasFilters ? (
-                        <div className='admin-curriculos__empty'>
-                            <h2>Nenhum currículo encontrado com os filtros aplicados.</h2>
+                        <div className='admin-curriculos__empty-state'>
+                            <h2>
+                                Nenhum currículo encontrado com os filtros
+                                aplicados.
+                            </h2>
                             <p>Tente ajustar a busca ou limpar os filtros.</p>
-                            <ButtonComponent variant='secondary' onClick={handleClearFilters}>
+                            <ButtonComponent
+                                variant='secondary'
+                                onClick={handleClearFilters}
+                            >
                                 Limpar filtros
                             </ButtonComponent>
                         </div>
                     ) : (
-                        <div className='admin-curriculos__empty'>
+                        <div className='admin-curriculos__empty-state'>
                             <h2>Nenhum currículo cadastrado</h2>
-                            <p>Nenhum currículo foi encontrado na plataforma.</p>
+                            <p>
+                                Nenhum currículo foi encontrado na plataforma.
+                            </p>
                         </div>
                     )
                 ) : (

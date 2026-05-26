@@ -45,6 +45,26 @@
     letter-spacing: 0.08em;
 }
 
+.admin-curriculos__title {
+    font: var(--titulo-1);
+    line-height: 1.2;
+    margin-bottom: var(--spacing-xs);
+}
+
+.admin-curriculos__subtitle {
+    margin: 0;
+    color: var(--cinza-2);
+}
+
+.admin-curriculos__subtitle-highlight {
+    color: var(--tertiary-color);
+    font-weight: 600;
+}
+
+.admin-curriculos__search-wrapper {
+    width: 100%;
+}
+
 .admin-curriculos__filters-card,
 .admin-curriculos__table-card,
 .admin-curriculos__bulk-bar {
@@ -104,8 +124,13 @@
 .admin-curriculos__advanced-grid {
     padding-top: var(--spacing-sm);
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--spacing-md);
+}
+
+.admin-curriculos__filter-group {
+    display: flex;
+    flex-direction: column;
 }
 
 .admin-curriculos__field-label {
@@ -118,13 +143,49 @@
 .admin-curriculos__bulk-bar {
     padding: var(--spacing-md) var(--spacing-lg);
     display: flex;
-    justify-content: space-between;
     align-items: center;
     gap: var(--spacing-md);
+}
 
-    strong {
-        color: var(--tertiary-color);
-        font: var(--callout-bold);
+.admin-curriculos__bulk-count {
+    color: var(--tertiary-color);
+    font: var(--callout-bold);
+}
+
+.admin-curriculos__bulk-divider {
+    flex: 1;
+}
+
+.admin-curriculos__bulk-export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius);
+    font: var(--callout);
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+        background: var(--surface-alt);
+    }
+}
+
+.admin-curriculos__bulk-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+        background: var(--surface-alt);
+        color: var(--text-primary);
     }
 }
 
@@ -531,9 +592,12 @@
         margin-left: 0;
     }
 
-    .admin-curriculos__search-row,
-    .admin-curriculos__advanced-grid {
+    .admin-curriculos__search-row {
         grid-template-columns: 1fr;
+    }
+
+    .admin-curriculos__advanced-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
