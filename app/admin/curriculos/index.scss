@@ -1,0 +1,491 @@
+.admin-curriculos {
+    width: min(1240px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.admin-curriculos--restricted {
+    min-height: calc(100vh - 100px);
+    justify-content: center;
+}
+
+.admin-curriculos__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-lg);
+
+    h1 {
+        font: var(--titulo-1);
+        line-height: 1.2;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    p {
+        margin: 0;
+        color: var(--cinza-2);
+    }
+}
+
+.admin-curriculos__header-action {
+    width: min(220px, 100%);
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.admin-curriculos__eyebrow {
+    display: inline-flex;
+    margin-bottom: var(--spacing-sm);
+    color: var(--tertiary-color);
+    font: var(--footnote-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.admin-curriculos__filters-card,
+.admin-curriculos__table-card,
+.admin-curriculos__bulk-bar {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-curriculos__filters-card {
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.admin-curriculos__search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.admin-curriculos__search-input {
+    .custom-input {
+        width: 100%;
+    }
+}
+
+.admin-curriculos__search-helper {
+    display: block;
+    margin-top: 0.45rem;
+    color: var(--text-muted);
+    font: var(--footnote);
+}
+
+.admin-curriculos__button-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-curriculos__advanced-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--tertiary-color);
+    font: var(--callout-bold);
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+.admin-curriculos__advanced-grid {
+    padding-top: var(--spacing-sm);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-md);
+}
+
+.admin-curriculos__field-label {
+    display: inline-block;
+    margin-bottom: var(--spacing-sm);
+    color: var(--cinza-2);
+    font: var(--footnote-bold);
+}
+
+.admin-curriculos__bulk-bar {
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    strong {
+        color: var(--tertiary-color);
+        font: var(--callout-bold);
+    }
+}
+
+.admin-curriculos__bulk-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--text-primary);
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--border-radius);
+        transition: background-color var(--transition-fast);
+    }
+
+    button:hover {
+        background: var(--surface-alt);
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.admin-curriculos__table-card {
+    overflow: hidden;
+}
+
+.admin-curriculos__table-wrapper {
+    overflow-x: auto;
+}
+
+.admin-curriculos__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead tr {
+        background: var(--surface-alt);
+    }
+
+    th,
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        text-align: left;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    th {
+        color: var(--cinza-2);
+        font: var(--footnote-bold);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+
+    tbody tr:hover {
+        background: rgba(103, 58, 183, 0.03);
+    }
+}
+
+.admin-curriculos__sort-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--cinza-2);
+    font: inherit;
+    text-transform: inherit;
+}
+
+.admin-curriculos__sort-button--active {
+    color: var(--tertiary-color);
+}
+
+.admin-curriculos__student-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+
+    span {
+        display: block;
+        color: var(--text-muted);
+        font: var(--footnote);
+    }
+}
+
+.admin-curriculos__name-button {
+    color: var(--text-primary);
+    font: var(--body-2-semibold);
+    text-align: left;
+}
+
+.admin-curriculos__name-button:hover {
+    color: var(--tertiary-color);
+}
+
+.admin-curriculos__avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(239, 70, 134, 0.12);
+    color: var(--secondary-color);
+    font: var(--footnote-bold);
+}
+
+.admin-curriculos__avatar--large {
+    width: 4rem;
+    height: 4rem;
+    font: var(--callout-bold);
+}
+
+.admin-curriculos__meta-cell {
+    display: flex;
+    flex-direction: column;
+
+    span {
+        color: var(--text-primary);
+        font: var(--subhead);
+    }
+
+    small {
+        color: var(--text-muted);
+    }
+}
+
+.admin-curriculos__contact-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.admin-curriculos__contact-link:hover {
+    color: var(--tertiary-color);
+    text-decoration: underline;
+}
+
+.admin-curriculos__badge {
+    border-radius: 999px !important;
+    font: var(--button-1) !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--branco) !important;
+}
+
+.admin-curriculos__badge--presencial {
+    background: var(--secondary-color) !important;
+}
+
+.admin-curriculos__badge--online {
+    background: var(--primary-color) !important;
+    color: var(--preto-1) !important;
+}
+
+.admin-curriculos__badge--neutral {
+    background: var(--tertiary-color) !important;
+}
+
+.admin-curriculos__badge--info {
+    background: var(--info) !important;
+    color: var(--preto-1) !important;
+}
+
+.admin-curriculos__badge--danger {
+    background: var(--error) !important;
+}
+
+.admin-curriculos__actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-curriculos__action-button {
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.admin-curriculos__action-button--danger {
+    color: var(--secondary-color) !important;
+}
+
+.admin-curriculos__footer {
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    p {
+        margin: 0;
+    }
+
+    .MuiPaginationItem-root {
+        color: var(--text-primary);
+        border-radius: 0.65rem;
+    }
+
+    .MuiPaginationItem-root.Mui-selected {
+        background: var(--tertiary-color);
+        color: var(--branco);
+    }
+}
+
+.admin-curriculos__loading-state,
+.admin-curriculos__empty-state {
+    padding: var(--spacing-2xl);
+    text-align: center;
+}
+
+.admin-curriculos__details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.admin-curriculos__dialog-title {
+    padding-bottom: 0.5rem !important;
+}
+
+.admin-curriculos__dialog-content {
+    background: linear-gradient(
+        180deg,
+        rgba(103, 58, 183, 0.04),
+        rgba(255, 255, 255, 0.98) 28%
+    ) !important;
+}
+
+.admin-curriculos__details-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border: 1px solid rgba(103, 58, 183, 0.08);
+    border-radius: var(--border-radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+
+    h3 {
+        margin-bottom: 0.25rem;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    small {
+        color: var(--text-muted);
+    }
+}
+
+.admin-curriculos__details-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.admin-curriculos__details-section {
+    padding: var(--spacing-lg);
+    border: 1px solid rgba(103, 58, 183, 0.08);
+    border-radius: var(--border-radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-curriculos__details-section-header {
+    margin-bottom: var(--spacing-md);
+
+    h4 {
+        margin-bottom: 0.25rem;
+        font: var(--heading);
+    }
+
+    span {
+        color: var(--text-muted);
+        font: var(--footnote);
+    }
+}
+
+.admin-curriculos__details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+
+    div {
+        padding: 0.875rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        background: var(--surface-alt);
+    }
+
+    strong,
+    span {
+        display: block;
+    }
+
+    strong {
+        margin-bottom: 0.35rem;
+        color: var(--cinza-2);
+        font: var(--footnote-bold);
+    }
+
+    span {
+        color: var(--text-primary);
+        word-break: break-word;
+    }
+}
+
+.admin-curriculos__details-grid-item--full {
+    grid-column: 1 / -1;
+}
+
+.MuiDialogActions-root {
+    padding: 1rem 1.5rem 1.5rem;
+    background: var(--surface);
+    border-top: 1px solid rgba(103, 58, 183, 0.08);
+}
+
+.MuiDialog-paper:has(.admin-curriculos__dialog-content) {
+    border-radius: var(--border-radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 640px) {
+    .admin-curriculos__details-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 960px) {
+    .admin-curriculos__header,
+    .admin-curriculos__footer,
+    .admin-curriculos__bulk-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-curriculos__header-action {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .admin-curriculos__search-row,
+    .admin-curriculos__advanced-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-curriculos {
+        padding: var(--spacing-md);
+    }
+
+    .admin-curriculos__details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-curriculos__details-grid-item--full {
+        grid-column: auto;
+    }
+}
