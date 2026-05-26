@@ -276,7 +276,7 @@ const getErrorMessage = (error: unknown, fallback: string) =>
 const getUnsupportedStudentReportFilterMessage = (
     filters: AppliedFiltersState,
 ) => {
-    const courseType = filters.modality;
+    const courseType = filters.modality as AdminStudentCourseType | undefined;
     const disabilityType = getFirstFilterValue(filters.disabilityType);
 
     if (
