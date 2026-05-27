@@ -114,7 +114,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
     [UserRole.ADMIN]: [
         { title: 'Dashboard', icon: <DashboardIcon />, expectedPath: '/' },
         { title: 'Alunos', icon: <GroupIcon />, expectedPath: '/alunos' },
-        { title: 'Cursos', icon: <MenuBookIcon />, expectedPath: '/admin/cursos' },
+        {
+            title: 'Cursos',
+            icon: <MenuBookIcon />,
+            expectedPath: '/admin/cursos',
+        },
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,

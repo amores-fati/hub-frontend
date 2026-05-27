@@ -5,7 +5,14 @@ import { Option } from '@/components/base/Select/select';
 import { AdminCourseFormModal } from '@/components/AdminCourseFormModal';
 import { AdminCourseDto, AdminCourseModality } from '@/dtos/AdminCourseDto';
 import { getAdminCoursesMock } from '@/services/api/admin/courses/mock';
-import { Chip, Collapse, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import {
+    Chip,
+    Collapse,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -139,10 +146,14 @@ export function AdminCourses() {
             courses = courses.filter((c) => c.name.toLowerCase().includes(q));
         }
         if (appliedModality) {
-            courses = courses.filter((c) => c.modality === (appliedModality as AdminCourseModality));
+            courses = courses.filter(
+                (c) => c.modality === (appliedModality as AdminCourseModality),
+            );
         }
         if (appliedStatus) {
-            courses = courses.filter((c) => getCourseStatus(c) === appliedStatus);
+            courses = courses.filter(
+                (c) => getCourseStatus(c) === appliedStatus,
+            );
         }
         return courses;
     }, [appliedSearch, appliedModality, appliedStatus]);
@@ -161,8 +172,7 @@ export function AdminCourses() {
     const allVisibleSelected =
         visibleIds.length > 0 && selectedVisibleCount === visibleIds.length;
     const someVisibleSelected =
-        selectedVisibleCount > 0 &&
-        selectedVisibleCount < visibleIds.length;
+        selectedVisibleCount > 0 && selectedVisibleCount < visibleIds.length;
 
     const selectedCountLabel = `${selectedIds.length} curso${selectedIds.length === 1 ? '' : 's'} selecionado${selectedIds.length === 1 ? '' : 's'}`;
 
@@ -192,7 +202,9 @@ export function AdminCourses() {
 
     const toggleSelectAll = () => {
         if (allVisibleSelected) {
-            setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
+            setSelectedIds((prev) =>
+                prev.filter((id) => !visibleIds.includes(id)),
+            );
         } else {
             setSelectedIds((prev) => [...new Set([...prev, ...visibleIds])]);
         }
@@ -320,7 +332,10 @@ export function AdminCourses() {
                         </span>
                     </ButtonComponent>
 
-                    <ButtonComponent variant='secondary' onClick={handleExportAll}>
+                    <ButtonComponent
+                        variant='secondary'
+                        onClick={handleExportAll}
+                    >
                         <span className='admin-courses__button-content'>
                             <FileDownloadOutlinedIcon fontSize='small' />
                             Exportar Lista
