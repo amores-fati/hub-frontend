@@ -69,6 +69,7 @@ export type AdminStudentDto = {
         imageUsage: boolean;
     };
     photoUrl?: string | null;
+    curriculumIsAvailable: boolean;
 };
 
 export type AdminStudentsQueryParams = {
