@@ -4,7 +4,6 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import ScienceIcon from '@mui/icons-material/Science';
 import WorkIcon from '@mui/icons-material/Work';
 import React, { JSX } from 'react';
 
@@ -42,14 +41,6 @@ export const PAGES: Page[] = [
         name: 'Login',
     },
     {
-        path: '/admin/testes-relatorios',
-        navbarEnabled: true,
-        requireRoles: [UserRole.ADMIN],
-        requireAuth: true,
-        name: 'Testes de Relatorios',
-        icon: <ScienceIcon className='sidebar-icon' />,
-    },
-    {
         path: '/cadastro/aluno',
         navbarEnabled: false,
         requireRoles: [],
@@ -80,11 +71,19 @@ export const PAGES: Page[] = [
         icon: <GroupIcon className='sidebar-icon' />,
     },
     {
+        path: '/admin/curriculo',
+        navbarEnabled: false,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Currículo do Aluno',
+        icon: <AssignmentIndIcon className='sidebar-icon' />,
+    },
+    {
         path: '/admin/curriculos',
         navbarEnabled: true,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
-        name: 'Currículo do Aluno',
+        name: 'Gestão de Currículos',
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
     {
@@ -119,12 +118,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,
-            expectedPath: '/curriculos',
-        },
-        {
-            title: 'Testes',
-            icon: <ScienceIcon />,
-            expectedPath: '/admin/testes-relatorios',
+            expectedPath: '/admin/curriculos',
         },
     ],
     [UserRole.STUDENT]: [

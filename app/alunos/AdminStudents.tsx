@@ -280,7 +280,9 @@ const getUnsupportedStudentReportFilterMessage = (
     const disabilityType = getFirstFilterValue(filters.disabilityType);
 
     if (
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         courseType === AdminStudentCourseType.PRESENTIAL ||
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         courseType === AdminStudentCourseType.ONLINE
     ) {
         return 'O relatório do backend ainda não suporta filtro por modalidade. Limpe esse filtro para exportar.';
@@ -620,7 +622,7 @@ function AdminStudents() {
                     <IconButton
                         className='custom-table__action-button'
                         component='a'
-                        href={`/admin/curriculos?studentId=${student.id}`}
+                        href={`/admin/curriculo?studentId=${student.id}`}
                     >
                         <AssignmentIndIcon fontSize='small' />
                     </IconButton>
