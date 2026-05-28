@@ -39,7 +39,7 @@ export type AdminCurriculaQueryParams = {
     page?: number;
     limit?: number;
     search?: string;
-    cities?: string[];
+    city?: string[];
     activityArea?: string[];
     preference?: 'remoto' | 'presencial';
     status?: 'available' | 'unavailable';

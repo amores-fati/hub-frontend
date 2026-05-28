@@ -206,7 +206,7 @@ const handleExportSelected = (selected: AdminCurriculumDto[]) => {
 
 type AppliedFiltersState = {
     search: string;
-    cities: string[];
+    city: string[];
     activityArea: string[];
     modality: 'remoto' | 'presencial' | null;
     status: 'available' | 'unavailable' | null;
@@ -214,7 +214,7 @@ type AppliedFiltersState = {
 
 const initialFiltersState: AppliedFiltersState = {
     search: '',
-    cities: [],
+    city: [],
     activityArea: [],
     modality: null,
     status: null,
@@ -257,7 +257,7 @@ function AdminCurriculo() {
     const locationOptions = useMemo(
         () =>
             (locationsData ?? []).map((loc) => ({
-                value: loc.city,
+                value: `${loc.city}/${loc.uf}`,
                 label: `${loc.city}/${loc.uf}`,
             })),
         [locationsData],
@@ -281,7 +281,7 @@ function AdminCurriculo() {
         () =>
             Boolean(
                 filters.search ||
-                filters.cities.length ||
+                filters.city.length ||
                 filters.activityArea.length ||
                 filters.modality ||
                 filters.status,
@@ -293,7 +293,7 @@ function AdminCurriculo() {
         page: paginator.page,
         limit: paginator.rowsPerPage,
         search: filters.search || undefined,
-        cities: filters.cities.length ? filters.cities : undefined,
+        city: filters.city.length ? filters.city : undefined,
         activityArea: filters.activityArea.length
             ? filters.activityArea
             : undefined,
@@ -328,7 +328,7 @@ function AdminCurriculo() {
         setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
-            cities: draftLocations.map((o) => String(o.value)),
+            city: draftLocations.map((o) => String(o.value)),
             activityArea: draftAreas.map((o) => String(o.value)),
             modality: draftModalities,
             status: draftStatuses,
