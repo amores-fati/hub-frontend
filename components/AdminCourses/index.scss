@@ -86,16 +86,12 @@
 
 .admin-courses__advanced-grid {
     padding-top: var(--spacing-sm);
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--spacing-md);
 }
 
-.admin-courses__field-label {
-    display: inline-block;
-    margin-bottom: var(--spacing-sm);
-    color: var(--cinza-2);
-    font: var(--footnote-bold);
+.admin-courses__advanced-placeholder {
+    margin: 0;
+    color: var(--text-muted);
+    font: var(--footnote);
 }
 
 .admin-courses__bulk-bar {

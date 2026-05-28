@@ -15,6 +15,7 @@ import {
     AdminStudentDto,
     AdminStudentsQueryParams,
 } from '@/dtos/AdminStudentDto';
+import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
 import { useGetAdminStudents } from '@/services/api/admin/students/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
@@ -74,6 +75,7 @@ const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
     [AdminStudentDisabilityType.VISUAL]: 'Visual',
     [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
     [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
+    [AdminStudentDisabilityType.MULTIPLE]: 'Múltipla',
     [AdminStudentDisabilityType.OTHER]: 'Outra',
 };
 
@@ -279,10 +281,9 @@ const getUnsupportedStudentReportFilterMessage = (
     const disabilityType = getFirstFilterValue(filters.disabilityType);
 
     if (
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-        courseType === AdminStudentCourseType.PRESENTIAL ||
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-        courseType === AdminStudentCourseType.ONLINE
+        (courseType as AdminStudentCourseType) ===
+            AdminStudentCourseType.PRESENTIAL ||
+        (courseType as AdminStudentCourseType) === AdminStudentCourseType.ONLINE
     ) {
         return 'O relatório do backend ainda não suporta filtro por modalidade. Limpe esse filtro para exportar.';
     }
@@ -618,15 +619,13 @@ function AdminStudents() {
                     >
                         <WhatsAppIcon fontSize='small' />
                     </IconButton>
-                    {student.curriculumIsAvailable && (
-                        <IconButton
-                            className='custom-table__action-button'
-                            component='a'
-                            href={`/admin/curriculo?studentId=${student.id}`}
-                        >
-                            <AssignmentIndIcon fontSize='small' />
-                        </IconButton>
-                    )}
+                    <IconButton
+                        className='custom-table__action-button'
+                        component='a'
+                        href={`/admin/curriculos?studentId=${student.id}`}
+                    >
+                        <AssignmentIndIcon fontSize='small' />
+                    </IconButton>
                 </>
             ),
         },
