@@ -16,6 +16,7 @@ export const useGetAdminCurriculum = (payload: AdminCurriculaQueryParams) =>
             payload.search,
             payload.cities,
             payload.activityArea,
+            payload.preference,
             payload.status,
             payload.sortBy,
             payload.sortOrder,

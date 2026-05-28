@@ -1,12 +1,12 @@
 export enum AdminCurriculumModality {
     PRESENCIAL = 'PRESENCIAL',
-    ONLINE = 'ONLINE',
+    ONLINE = 'remoto',
     HIBRIDO = 'HIBRIDO',
 }
 
 export enum AdminCurriculumStatus {
-    ATIVO = 'ATIVO',
-    INATIVO = 'INATIVO',
+    ATIVO = 'available',
+    INATIVO = 'unavailable',
 }
 
 export type AdminCurriculumDto = {
@@ -21,8 +21,8 @@ export type AdminCurriculumDto = {
     github?: string | null;
     linkedin?: string | null;
     phone?: string | null;
-    city?: string | null;
-    state?: string | null;
+    city: string | null;
+    state: string | null;
 };
 
 export type AdminCurriculumPaginatedDto = {
@@ -41,6 +41,7 @@ export type AdminCurriculaQueryParams = {
     search?: string;
     cities?: string[];
     activityArea?: string[];
+    preference?: 'remoto' | 'presencial';
     status?: 'available' | 'unavailable';
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';

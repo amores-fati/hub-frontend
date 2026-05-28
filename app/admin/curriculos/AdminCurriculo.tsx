@@ -1,13 +1,13 @@
 'use client';
 
-import { Input, MultSelect } from '@/components/base';
+import { Input, MultSelect, Select } from '@/components/base';
 import {
     AdminCurriculumDto,
     AdminCurriculumModality,
     AdminCurriculumStatus,
     AdminCurriculaQueryParams,
 } from '@/dtos/AdminCurriculumDto';
-import { Option } from '@/components/base/Select/select';
+import { CustomSelect, Option } from '@/components/base/Select/select';
 import {
     Avatar,
     Chip,
@@ -42,12 +42,13 @@ import { UserRole } from '@/dtos/UserDto';
 import { useRouter } from 'next/navigation';
 import { useGetAdminCurriculum } from '@/services/api/admin/curriculum/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
+import { cityStateToLocation } from '../../../utils/shared-functions/formatter';
 
 // ─── Labels & options ────────────────────────────────────────────────────────
 
 const modalityLabels: Record<AdminCurriculumModality, string> = {
     [AdminCurriculumModality.PRESENCIAL]: 'Presencial',
-    [AdminCurriculumModality.ONLINE]: 'Online',
+    [AdminCurriculumModality.ONLINE]: 'Remoto',
     [AdminCurriculumModality.HIBRIDO]: 'Híbrido',
 };
 
@@ -87,10 +88,6 @@ const modalityOptions: Option[] = [
     {
         value: AdminCurriculumModality.ONLINE,
         label: modalityLabels[AdminCurriculumModality.ONLINE],
-    },
-    {
-        value: AdminCurriculumModality.HIBRIDO,
-        label: modalityLabels[AdminCurriculumModality.HIBRIDO],
     },
 ];
 
@@ -157,8 +154,8 @@ const exportCurriculaToPdf = (
                 <td>${escapeHtml(c.fullName)}</td>
                 <td>${escapeHtml(c.cpf)}</td>
                 <td>${escapeHtml(areaLabels[c.activityArea] ?? c.activityArea ?? 'Não informado')}</td>
-                <td>${escapeHtml(modalityLabels[c.modality] ?? c.modality)}</td>
-                <td>${escapeHtml(statusLabels[c.status] ?? c.status)}</td>
+                <td>${escapeHtml(modalityLabels[c.preference] ?? c.preference)}</td>
+                <td>${escapeHtml(c.isAvailable ? 'Ativo' : 'Inativo')}</td>
             </tr>`,
         )
         .join('');
@@ -211,16 +208,16 @@ type AppliedFiltersState = {
     search: string;
     cities: string[];
     activityArea: string[];
-    modality: string[];
-    status: string[];
+    modality: 'remoto' | 'presencial' | null;
+    status: 'available' | 'unavailable' | null;
 };
 
 const initialFiltersState: AppliedFiltersState = {
     search: '',
     cities: [],
     activityArea: [],
-    modality: [],
-    status: [],
+    modality: null,
+    status: null,
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -269,8 +266,12 @@ function AdminCurriculo() {
     const [searchInput, setSearchInput] = useState('');
     const [draftLocations, setDraftLocations] = useState<Option[]>([]);
     const [draftAreas, setDraftAreas] = useState<Option[]>([]);
-    const [draftModalities, setDraftModalities] = useState<Option[]>([]);
-    const [draftStatuses, setDraftStatuses] = useState<Option[]>([]);
+    const [draftModalities, setDraftModalities] = useState<
+        'remoto' | 'presencial' | null
+    >(null);
+    const [draftStatuses, setDraftStatuses] = useState<
+        'available' | 'unavailable' | null
+    >(null);
     const [filters, setFilters] =
         useState<AppliedFiltersState>(initialFiltersState);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -282,8 +283,8 @@ function AdminCurriculo() {
                 filters.search ||
                 filters.cities.length ||
                 filters.activityArea.length ||
-                filters.modality.length ||
-                filters.status.length,
+                filters.modality ||
+                filters.status,
             ),
         [filters],
     );
@@ -296,8 +297,8 @@ function AdminCurriculo() {
         activityArea: filters.activityArea.length
             ? filters.activityArea
             : undefined,
-        modality: filters.modality.length ? filters.modality : undefined,
-        status: filters.status.length ? filters.status : undefined,
+        preference: filters.modality ? filters.modality : undefined,
+        status: filters.status ? filters.status : undefined,
         sortBy: paginator.orderColumn,
         sortOrder: paginator.orderDirection,
     });
@@ -310,7 +311,6 @@ function AdminCurriculo() {
     }, [isLoading, isFetching]);
 
     useEffect(() => {
-        console.log(data);
         if (!data?.data) return;
         setContent(data.data);
         setPaginator({ itemsCount: data.meta.total });
@@ -330,8 +330,8 @@ function AdminCurriculo() {
             search: searchInput.trim(),
             cities: draftLocations.map((o) => String(o.value)),
             activityArea: draftAreas.map((o) => String(o.value)),
-            modality: draftModalities.map((o) => String(o.value)),
-            status: draftStatuses.map((o) => String(o.value)),
+            modality: draftModalities,
+            status: draftStatuses,
         });
     };
 
@@ -339,8 +339,8 @@ function AdminCurriculo() {
         setSearchInput('');
         setDraftLocations([]);
         setDraftAreas([]);
-        setDraftModalities([]);
-        setDraftStatuses([]);
+        setDraftModalities('remoto');
+        setDraftStatuses('available');
         setPaginator({ page: 1 });
         setFilters(initialFiltersState);
     };
@@ -369,7 +369,7 @@ function AdminCurriculo() {
             key: 'fullName',
             header: 'Aluno',
             type: CellType.TEXT,
-            sortable: true,
+            sortable: false,
             render: (c) => (
                 <div className='admin-curriculos__student-cell'>
                     <Avatar
@@ -394,9 +394,15 @@ function AdminCurriculo() {
             ),
         },
         {
+            key: 'city',
+            header: 'Localização',
+            sortable: false,
+            render: (c) => <>{cityStateToLocation(c.city, c.state)}</>,
+        },
+        {
             key: 'preference',
             header: 'Preferência',
-            sortable: true,
+            sortable: false,
             render: (c) => (
                 <Chip
                     label={modalityLabels[c.preference] ?? c.preference}
@@ -407,7 +413,7 @@ function AdminCurriculo() {
         {
             key: 'isAvailable',
             header: 'Status',
-            sortable: true,
+            sortable: false,
             render: (c) => (
                 <Chip
                     label={c.isAvailable ? 'Ativo' : 'Inativo'}
@@ -580,28 +586,16 @@ function AdminCurriculo() {
                         </div>
                         <div className='admin-curriculos__filter-group'>
                             <label className='admin-curriculos__filter-label'>
-                                Área de Interesse
-                            </label>
-                            <MultSelect
-                                placeholder='Selecione as áreas'
-                                options={areaOptions}
-                                value={draftAreas}
-                                onChange={(opts) =>
-                                    setDraftAreas([...(opts ?? [])])
-                                }
-                                isSearchable
-                            />
-                        </div>
-                        <div className='admin-curriculos__filter-group'>
-                            <label className='admin-curriculos__filter-label'>
                                 Preferência
                             </label>
-                            <MultSelect
-                                placeholder='Selecione as modalidades'
+                            <CustomSelect
+                                isClearable={true}
+                                placeholder='Selecione os modalidades'
                                 options={modalityOptions}
-                                value={draftModalities}
-                                onChange={(opts) =>
-                                    setDraftModalities([...(opts ?? [])])
+                                onChange={(e) =>
+                                    setDraftModalities(
+                                        e?.value as 'remoto' | 'presencial',
+                                    )
                                 }
                                 isSearchable
                             />
@@ -610,12 +604,14 @@ function AdminCurriculo() {
                             <label className='admin-curriculos__filter-label'>
                                 Status
                             </label>
-                            <MultSelect
+                            <CustomSelect
+                                isClearable={true}
                                 placeholder='Selecione os status'
                                 options={statusOptions}
-                                value={draftStatuses}
-                                onChange={(opts) =>
-                                    setDraftStatuses([...(opts ?? [])])
+                                onChange={(e) =>
+                                    setDraftStatuses(
+                                        e?.value as 'available' | 'unavailable',
+                                    )
                                 }
                                 isSearchable
                             />
