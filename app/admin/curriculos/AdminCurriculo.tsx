@@ -118,8 +118,8 @@ const getModalityBadgeClass = (modality: AdminCurriculumModality) => {
     return 'admin-curriculos__badge admin-curriculos__badge--hibrido';
 };
 
-const getStatusBadgeClass = (status: AdminCurriculumStatus) =>
-    status === AdminCurriculumStatus.ATIVO
+const getStatusBadgeClass = (isAvailable: boolean) =>
+    isAvailable
         ? 'admin-curriculos__badge admin-curriculos__badge--ativo'
         : 'admin-curriculos__badge admin-curriculos__badge--inativo';
 
@@ -310,8 +310,9 @@ function AdminCurriculo() {
     }, [isLoading, isFetching]);
 
     useEffect(() => {
-        if (!data?.items) return;
-        setContent(data.items);
+        console.log(data);
+        if (!data?.data) return;
+        setContent(data.data);
         setPaginator({ itemsCount: data.meta.total });
         setIsLoading(false);
     }, [data, isLoading, isFetching]);
@@ -345,7 +346,7 @@ function AdminCurriculo() {
     };
 
     const handleExportAll = () => {
-        const items = data?.items ?? [];
+        const items = data?.data ?? [];
         if (items.length === 0) {
             toast.info('Nenhum currículo encontrado para exportar.');
             return;
@@ -393,39 +394,24 @@ function AdminCurriculo() {
             ),
         },
         {
-            key: 'activityArea',
-            header: 'Área de Interesse',
-            sortable: true,
-            render: (c) => (
-                <Chip
-                    label={
-                        areaLabels[c.activityArea] ??
-                        c.activityArea ??
-                        'Não informado'
-                    }
-                    className={getAreaBadgeClass(c.activityArea)}
-                />
-            ),
-        },
-        {
-            key: 'modality',
+            key: 'preference',
             header: 'Preferência',
             sortable: true,
             render: (c) => (
                 <Chip
-                    label={modalityLabels[c.modality] ?? c.modality}
-                    className={getModalityBadgeClass(c.modality)}
+                    label={modalityLabels[c.preference] ?? c.preference}
+                    className={getModalityBadgeClass(c.preference)}
                 />
             ),
         },
         {
-            key: 'status',
+            key: 'isAvailable',
             header: 'Status',
             sortable: true,
             render: (c) => (
                 <Chip
-                    label={statusLabels[c.status] ?? c.status}
-                    className={getStatusBadgeClass(c.status)}
+                    label={c.isAvailable ? 'Ativo' : 'Inativo'}
+                    className={getStatusBadgeClass(c.isAvailable)}
                 />
             ),
         },
@@ -446,10 +432,10 @@ function AdminCurriculo() {
                     <IconButton
                         className='admin-curriculos__action-btn'
                         component='a'
-                        href={c.githubUrl ?? '#'}
+                        href={c.github ?? '#'}
                         target='_blank'
                         rel='noopener noreferrer'
-                        disabled={!c.githubUrl}
+                        disabled={!c.github}
                         title='GitHub'
                     >
                         <GitHubIcon fontSize='small' />
@@ -457,10 +443,10 @@ function AdminCurriculo() {
                     <IconButton
                         className='admin-curriculos__action-btn'
                         component='a'
-                        href={c.linkedinUrl ?? '#'}
+                        href={c.linkedin ?? '#'}
                         target='_blank'
                         rel='noopener noreferrer'
-                        disabled={!c.linkedinUrl}
+                        disabled={!c.linkedin}
                         title='LinkedIn'
                     >
                         <LinkedInIcon fontSize='small' />
@@ -469,13 +455,13 @@ function AdminCurriculo() {
                         className='admin-curriculos__action-btn'
                         component='a'
                         href={
-                            c.phoneNumber
-                                ? `https://wa.me/55${c.phoneNumber.replace(/\D/g, '')}`
+                            c.phone
+                                ? `https://wa.me/55${c.phone.replace(/\D/g, '')}`
                                 : '#'
                         }
                         target='_blank'
                         rel='noopener noreferrer'
-                        disabled={!c.phoneNumber}
+                        disabled={!c.phone}
                         title='WhatsApp'
                     >
                         <WhatsAppIcon fontSize='small' />
@@ -492,7 +478,7 @@ function AdminCurriculo() {
     if (!isHydrated || !user || user.role !== UserRole.ADMIN) return null;
 
     const isBusy = isLoading || isFetching;
-    const items = data?.items ?? [];
+    const items = data?.data ?? [];
     const isEmpty = !isBusy && items.length === 0;
 
     return (

@@ -1,4 +1,4 @@
 import { createHttpClient } from '@/services/http-client';
-import { coreApi } from '../..';
+import { adminApi } from '..';
 
-export const adminCurriculumApi = createHttpClient('/curricula', coreApi);
+export const adminCurriculumApi = createHttpClient('/resumes', adminApi);

@@ -15,14 +15,24 @@ export type AdminCurriculumDto = {
     fullName: string;
     cpf: string;
     activityArea: string;
-    modality: AdminCurriculumModality;
-    status: AdminCurriculumStatus;
+    preference: AdminCurriculumModality;
+    isAvailable: boolean;
     photoUrl?: string | null;
-    githubUrl?: string | null;
-    linkedinUrl?: string | null;
-    phoneNumber?: string | null;
+    github?: string | null;
+    linkedin?: string | null;
+    phone?: string | null;
     city?: string | null;
     state?: string | null;
+};
+
+export type AdminCurriculumPaginatedDto = {
+    data: AdminCurriculumDto[];
+    meta: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    };
 };
 
 export type AdminCurriculaQueryParams = {
@@ -31,8 +41,7 @@ export type AdminCurriculaQueryParams = {
     search?: string;
     cities?: string[];
     activityArea?: string[];
-    modality?: string[];
-    status?: string[];
+    status?: 'available' | 'unavailable';
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
 };
