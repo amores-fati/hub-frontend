@@ -1,8 +1,7 @@
 import {
-    AdminCurriculumDto,
     AdminCurriculaQueryParams,
+    AdminCurriculumPaginatedDto,
 } from '@/dtos/AdminCurriculumDto';
-import { PaginatedDto } from '@/dtos/PaginatedDto';
 import QUERY_KEYS from '@/utils/contants/queries';
 import { useQuery } from '@tanstack/react-query';
 import qs from 'qs';
@@ -15,16 +14,16 @@ export const useGetAdminCurriculum = (payload: AdminCurriculaQueryParams) =>
             payload.page,
             payload.limit,
             payload.search,
-            payload.cities,
+            payload.city,
             payload.activityArea,
-            payload.modality,
+            payload.preference,
             payload.status,
             payload.sortBy,
             payload.sortOrder,
         ],
         queryFn: () =>
             adminCurriculumApi
-                .get('/filter', {
+                .get('', {
                     params: payload,
                     paramsSerializer: (params) =>
                         qs.stringify(params, {
@@ -33,5 +32,5 @@ export const useGetAdminCurriculum = (payload: AdminCurriculaQueryParams) =>
                                 encodeURIComponent(value),
                         }),
                 })
-                .then((res) => res.data as PaginatedDto<AdminCurriculumDto>),
+                .then((res) => res.data as AdminCurriculumPaginatedDto),
     });

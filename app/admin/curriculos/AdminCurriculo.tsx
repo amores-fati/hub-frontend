@@ -1,13 +1,13 @@
 'use client';
 
-import { Input, MultSelect } from '@/components/base';
+import { Input, MultSelect, Select } from '@/components/base';
 import {
     AdminCurriculumDto,
     AdminCurriculumModality,
     AdminCurriculumStatus,
     AdminCurriculaQueryParams,
 } from '@/dtos/AdminCurriculumDto';
-import { Option } from '@/components/base/Select/select';
+import { CustomSelect, Option } from '@/components/base/Select/select';
 import {
     Avatar,
     Chip,
@@ -42,12 +42,13 @@ import { UserRole } from '@/dtos/UserDto';
 import { useRouter } from 'next/navigation';
 import { useGetAdminCurriculum } from '@/services/api/admin/curriculum/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
+import { cityStateToLocation } from '../../../utils/shared-functions/formatter';
 
 // ─── Labels & options ────────────────────────────────────────────────────────
 
 const modalityLabels: Record<AdminCurriculumModality, string> = {
     [AdminCurriculumModality.PRESENCIAL]: 'Presencial',
-    [AdminCurriculumModality.ONLINE]: 'Online',
+    [AdminCurriculumModality.ONLINE]: 'Remoto',
     [AdminCurriculumModality.HIBRIDO]: 'Híbrido',
 };
 
@@ -88,10 +89,6 @@ const modalityOptions: Option[] = [
         value: AdminCurriculumModality.ONLINE,
         label: modalityLabels[AdminCurriculumModality.ONLINE],
     },
-    {
-        value: AdminCurriculumModality.HIBRIDO,
-        label: modalityLabels[AdminCurriculumModality.HIBRIDO],
-    },
 ];
 
 const statusOptions: Option[] = [
@@ -118,8 +115,8 @@ const getModalityBadgeClass = (modality: AdminCurriculumModality) => {
     return 'admin-curriculos__badge admin-curriculos__badge--hibrido';
 };
 
-const getStatusBadgeClass = (status: AdminCurriculumStatus) =>
-    status === AdminCurriculumStatus.ATIVO
+const getStatusBadgeClass = (isAvailable: boolean) =>
+    isAvailable
         ? 'admin-curriculos__badge admin-curriculos__badge--ativo'
         : 'admin-curriculos__badge admin-curriculos__badge--inativo';
 
@@ -157,8 +154,8 @@ const exportCurriculaToPdf = (
                 <td>${escapeHtml(c.fullName)}</td>
                 <td>${escapeHtml(c.cpf)}</td>
                 <td>${escapeHtml(areaLabels[c.activityArea] ?? c.activityArea ?? 'Não informado')}</td>
-                <td>${escapeHtml(modalityLabels[c.modality] ?? c.modality)}</td>
-                <td>${escapeHtml(statusLabels[c.status] ?? c.status)}</td>
+                <td>${escapeHtml(modalityLabels[c.preference] ?? c.preference)}</td>
+                <td>${escapeHtml(c.isAvailable ? 'Ativo' : 'Inativo')}</td>
             </tr>`,
         )
         .join('');
@@ -209,18 +206,18 @@ const handleExportSelected = (selected: AdminCurriculumDto[]) => {
 
 type AppliedFiltersState = {
     search: string;
-    cities: string[];
+    city: string[];
     activityArea: string[];
-    modality: string[];
-    status: string[];
+    modality: 'remoto' | 'presencial' | null;
+    status: 'available' | 'unavailable' | null;
 };
 
 const initialFiltersState: AppliedFiltersState = {
     search: '',
-    cities: [],
+    city: [],
     activityArea: [],
-    modality: [],
-    status: [],
+    modality: null,
+    status: null,
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -260,7 +257,7 @@ function AdminCurriculo() {
     const locationOptions = useMemo(
         () =>
             (locationsData ?? []).map((loc) => ({
-                value: loc.city,
+                value: `${loc.city}/${loc.uf}`,
                 label: `${loc.city}/${loc.uf}`,
             })),
         [locationsData],
@@ -269,8 +266,12 @@ function AdminCurriculo() {
     const [searchInput, setSearchInput] = useState('');
     const [draftLocations, setDraftLocations] = useState<Option[]>([]);
     const [draftAreas, setDraftAreas] = useState<Option[]>([]);
-    const [draftModalities, setDraftModalities] = useState<Option[]>([]);
-    const [draftStatuses, setDraftStatuses] = useState<Option[]>([]);
+    const [draftModalities, setDraftModalities] = useState<
+        'remoto' | 'presencial' | null
+    >(null);
+    const [draftStatuses, setDraftStatuses] = useState<
+        'available' | 'unavailable' | null
+    >(null);
     const [filters, setFilters] =
         useState<AppliedFiltersState>(initialFiltersState);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -280,10 +281,10 @@ function AdminCurriculo() {
         () =>
             Boolean(
                 filters.search ||
-                filters.cities.length ||
+                filters.city.length ||
                 filters.activityArea.length ||
-                filters.modality.length ||
-                filters.status.length,
+                filters.modality ||
+                filters.status,
             ),
         [filters],
     );
@@ -292,12 +293,12 @@ function AdminCurriculo() {
         page: paginator.page,
         limit: paginator.rowsPerPage,
         search: filters.search || undefined,
-        cities: filters.cities.length ? filters.cities : undefined,
+        city: filters.city.length ? filters.city : undefined,
         activityArea: filters.activityArea.length
             ? filters.activityArea
             : undefined,
-        modality: filters.modality.length ? filters.modality : undefined,
-        status: filters.status.length ? filters.status : undefined,
+        preference: filters.modality ? filters.modality : undefined,
+        status: filters.status ? filters.status : undefined,
         sortBy: paginator.orderColumn,
         sortOrder: paginator.orderDirection,
     });
@@ -310,8 +311,8 @@ function AdminCurriculo() {
     }, [isLoading, isFetching]);
 
     useEffect(() => {
-        if (!data?.items) return;
-        setContent(data.items);
+        if (!data?.data) return;
+        setContent(data.data);
         setPaginator({ itemsCount: data.meta.total });
         setIsLoading(false);
     }, [data, isLoading, isFetching]);
@@ -327,10 +328,10 @@ function AdminCurriculo() {
         setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
-            cities: draftLocations.map((o) => String(o.value)),
+            city: draftLocations.map((o) => String(o.value)),
             activityArea: draftAreas.map((o) => String(o.value)),
-            modality: draftModalities.map((o) => String(o.value)),
-            status: draftStatuses.map((o) => String(o.value)),
+            modality: draftModalities,
+            status: draftStatuses,
         });
     };
 
@@ -338,14 +339,14 @@ function AdminCurriculo() {
         setSearchInput('');
         setDraftLocations([]);
         setDraftAreas([]);
-        setDraftModalities([]);
-        setDraftStatuses([]);
+        setDraftModalities('remoto');
+        setDraftStatuses('available');
         setPaginator({ page: 1 });
         setFilters(initialFiltersState);
     };
 
     const handleExportAll = () => {
-        const items = data?.items ?? [];
+        const items = data?.data ?? [];
         if (items.length === 0) {
             toast.info('Nenhum currículo encontrado para exportar.');
             return;
@@ -368,7 +369,7 @@ function AdminCurriculo() {
             key: 'fullName',
             header: 'Aluno',
             type: CellType.TEXT,
-            sortable: true,
+            sortable: false,
             render: (c) => (
                 <div className='admin-curriculos__student-cell'>
                     <Avatar
@@ -393,39 +394,30 @@ function AdminCurriculo() {
             ),
         },
         {
-            key: 'activityArea',
-            header: 'Área de Interesse',
-            sortable: true,
-            render: (c) => (
-                <Chip
-                    label={
-                        areaLabels[c.activityArea] ??
-                        c.activityArea ??
-                        'Não informado'
-                    }
-                    className={getAreaBadgeClass(c.activityArea)}
-                />
-            ),
+            key: 'city',
+            header: 'Localização',
+            sortable: false,
+            render: (c) => <>{cityStateToLocation(c.city, c.state)}</>,
         },
         {
-            key: 'modality',
+            key: 'preference',
             header: 'Preferência',
-            sortable: true,
+            sortable: false,
             render: (c) => (
                 <Chip
-                    label={modalityLabels[c.modality] ?? c.modality}
-                    className={getModalityBadgeClass(c.modality)}
+                    label={modalityLabels[c.preference] ?? c.preference}
+                    className={getModalityBadgeClass(c.preference)}
                 />
             ),
         },
         {
-            key: 'status',
+            key: 'isAvailable',
             header: 'Status',
-            sortable: true,
+            sortable: false,
             render: (c) => (
                 <Chip
-                    label={statusLabels[c.status] ?? c.status}
-                    className={getStatusBadgeClass(c.status)}
+                    label={c.isAvailable ? 'Ativo' : 'Inativo'}
+                    className={getStatusBadgeClass(c.isAvailable)}
                 />
             ),
         },
@@ -446,10 +438,10 @@ function AdminCurriculo() {
                     <IconButton
                         className='admin-curriculos__action-btn'
                         component='a'
-                        href={c.githubUrl ?? '#'}
+                        href={c.github ?? '#'}
                         target='_blank'
                         rel='noopener noreferrer'
-                        disabled={!c.githubUrl}
+                        disabled={!c.github}
                         title='GitHub'
                     >
                         <GitHubIcon fontSize='small' />
@@ -457,10 +449,10 @@ function AdminCurriculo() {
                     <IconButton
                         className='admin-curriculos__action-btn'
                         component='a'
-                        href={c.linkedinUrl ?? '#'}
+                        href={c.linkedin ?? '#'}
                         target='_blank'
                         rel='noopener noreferrer'
-                        disabled={!c.linkedinUrl}
+                        disabled={!c.linkedin}
                         title='LinkedIn'
                     >
                         <LinkedInIcon fontSize='small' />
@@ -469,13 +461,13 @@ function AdminCurriculo() {
                         className='admin-curriculos__action-btn'
                         component='a'
                         href={
-                            c.phoneNumber
-                                ? `https://wa.me/55${c.phoneNumber.replace(/\D/g, '')}`
+                            c.phone
+                                ? `https://wa.me/55${c.phone.replace(/\D/g, '')}`
                                 : '#'
                         }
                         target='_blank'
                         rel='noopener noreferrer'
-                        disabled={!c.phoneNumber}
+                        disabled={!c.phone}
                         title='WhatsApp'
                     >
                         <WhatsAppIcon fontSize='small' />
@@ -492,7 +484,7 @@ function AdminCurriculo() {
     if (!isHydrated || !user || user.role !== UserRole.ADMIN) return null;
 
     const isBusy = isLoading || isFetching;
-    const items = data?.items ?? [];
+    const items = data?.data ?? [];
     const isEmpty = !isBusy && items.length === 0;
 
     return (
@@ -594,28 +586,16 @@ function AdminCurriculo() {
                         </div>
                         <div className='admin-curriculos__filter-group'>
                             <label className='admin-curriculos__filter-label'>
-                                Área de Interesse
-                            </label>
-                            <MultSelect
-                                placeholder='Selecione as áreas'
-                                options={areaOptions}
-                                value={draftAreas}
-                                onChange={(opts) =>
-                                    setDraftAreas([...(opts ?? [])])
-                                }
-                                isSearchable
-                            />
-                        </div>
-                        <div className='admin-curriculos__filter-group'>
-                            <label className='admin-curriculos__filter-label'>
                                 Preferência
                             </label>
-                            <MultSelect
-                                placeholder='Selecione as modalidades'
+                            <CustomSelect
+                                isClearable={true}
+                                placeholder='Selecione os modalidades'
                                 options={modalityOptions}
-                                value={draftModalities}
-                                onChange={(opts) =>
-                                    setDraftModalities([...(opts ?? [])])
+                                onChange={(e) =>
+                                    setDraftModalities(
+                                        e?.value as 'remoto' | 'presencial',
+                                    )
                                 }
                                 isSearchable
                             />
@@ -624,12 +604,14 @@ function AdminCurriculo() {
                             <label className='admin-curriculos__filter-label'>
                                 Status
                             </label>
-                            <MultSelect
+                            <CustomSelect
+                                isClearable={true}
                                 placeholder='Selecione os status'
                                 options={statusOptions}
-                                value={draftStatuses}
-                                onChange={(opts) =>
-                                    setDraftStatuses([...(opts ?? [])])
+                                onChange={(e) =>
+                                    setDraftStatuses(
+                                        e?.value as 'available' | 'unavailable',
+                                    )
                                 }
                                 isSearchable
                             />

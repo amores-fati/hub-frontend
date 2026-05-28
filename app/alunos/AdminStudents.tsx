@@ -15,7 +15,6 @@ import {
     AdminStudentDto,
     AdminStudentsQueryParams,
 } from '@/dtos/AdminStudentDto';
-import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
 import { useGetAdminStudents } from '@/services/api/admin/students/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
@@ -186,7 +185,7 @@ type AppliedFiltersState = Required<
 
 const initialFiltersState: AppliedFiltersState = {
     search: '',
-    modality: undefined,
+    modality: '',
     disabilityType: [],
     city: [],
 };
@@ -619,13 +618,15 @@ function AdminStudents() {
                     >
                         <WhatsAppIcon fontSize='small' />
                     </IconButton>
-                    <IconButton
-                        className='custom-table__action-button'
-                        component='a'
-                        href={`/admin/curriculo?studentId=${student.id}`}
-                    >
-                        <AssignmentIndIcon fontSize='small' />
-                    </IconButton>
+                    {student.curriculumIsAvailable && (
+                        <IconButton
+                            className='custom-table__action-button'
+                            component='a'
+                            href={`/admin/curriculo?studentId=${student.id}`}
+                        >
+                            <AssignmentIndIcon fontSize='small' />
+                        </IconButton>
+                    )}
                 </>
             ),
         },
