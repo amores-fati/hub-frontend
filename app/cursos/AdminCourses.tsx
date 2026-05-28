@@ -2,7 +2,6 @@
 
 import { Input, Loading, MultSelect, Select, Table } from '@/components/base';
 import { useAuth } from '@/providers/Auth/AuthProvider';
-import { getAdminStudentsFilterOptionsMock } from '@/services/api/admin/students/mock';
 import { Option } from '@/components/base/Select/select';
 import {
     Avatar,
@@ -15,15 +14,18 @@ import {
     DialogTitle,
     IconButton,
 } from '@mui/material';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
-import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
-import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
-import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
+import {
+    SearchRounded as SearchRoundedIcon,
+    FilterListRounded as FilterListRoundedIcon,
+    DeleteOutlineRounded as DeleteOutlineRoundedIcon,
+    WhatsApp as WhatsAppIcon,
+    PictureAsPdfRounded as PictureAsPdfRoundedIcon,
+    RestartAltRounded as RestartAltRoundedIcon,
+    FileDownloadOutlined as FileDownloadOutlinedIcon,
+    KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
+    KeyboardArrowUpRounded as KeyboardArrowUpRoundedIcon,
+    AddRounded as AddRoundedIcon,
+} from '@mui/icons-material';
 import { ButtonComponent } from '@/components/base/Button/button';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -51,6 +53,7 @@ import { AdminStudentCourseType } from '../../dtos/AdminStudentDto';
 import { useDeleteAdminStudents } from '../../services/api/admin/students/mutations';
 import { dateRegex } from '../../utils/regex';
 import LoadingModal from '../../components/Modal';
+import { AdminCourseFormModal } from '../../components/AdminCourseFormModal';
 
 const PAGE_SIZE = 20;
 
@@ -239,7 +242,8 @@ function AdminStudents() {
     const selectedCourses = useTableStore((state) => state.selectedRows);
     const setSelectedCourses = useTableStore((state) => state.setSelectedRows);
 
-    const [searchInput, setSearchInput] = useState('');
+    const [searchInput, setSearchInput] = useState<string>('');
+    const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
     const [modality, setModality] = useState<Option[]>([]);
     const [draftLocations, setDraftLocations] = useState<Option[]>([]);
     const [draftDisabilityTypes, setDraftDisabilityTypes] = useState<Option[]>(
@@ -433,6 +437,25 @@ function AdminStudents() {
                     <h1>Gestão de Cursos</h1>
                 </div>
 
+                <div className='admin-courses__header-actions'>
+                    <ButtonComponent onClick={() => setShowCreateModal(true)}>
+                        <span className='admin-courses__button-content'>
+                            <AddRoundedIcon fontSize='small' />
+                            Novo Curso
+                        </span>
+                    </ButtonComponent>
+
+                    <ButtonComponent
+                        variant='secondary'
+                        onClick={handleExportAll}
+                    >
+                        <span className='admin-courses__button-content'>
+                            <FileDownloadOutlinedIcon fontSize='small' />
+                            Exportar Lista
+                        </span>
+                    </ButtonComponent>
+                </div>
+
                 <div className='admin-courses__header-action'>
                     <ButtonComponent
                         variant='secondary'
@@ -592,6 +615,16 @@ function AdminStudents() {
                     </>
                 )}
             </div>
+
+            <AdminCourseFormModal
+                open={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    setShowCreateModal(false);
+                    toast.success('Curso cadastrado com sucesso.');
+                }}
+            />
+
             {!!selectedCourse && (
                 <CourseModalWrapper
                     courseId={selectedCourse.id}
