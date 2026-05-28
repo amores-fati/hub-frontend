@@ -2,7 +2,7 @@ import { Input, RadioGroup } from '@/components/base';
 import { Scholarship } from '@/dtos/StudentDto';
 import SchoolIcon from '@mui/icons-material/School';
 import { ChangeEvent } from 'react';
-import { EditProfileForm, EditProfileFormSetter } from '../types';
+import { EditProfileForm, EditProfileFormSetter } from '../Types';
 import { SectionCard } from './SectionCard';
 
 const ScholarshipOptions = [

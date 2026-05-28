@@ -21,6 +21,7 @@ export enum AdminStudentDisabilityType {
     VISUAL = 'VISUAL',
     INTELLECTUAL = 'INTELECTUAL',
     PSYCHOSOCIAL = 'PSICOSSOCIAL',
+    MULTIPLE = 'MULTIPLA',
     OTHER = 'OUTRA',
 }
 

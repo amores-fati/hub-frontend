@@ -7,9 +7,9 @@ import qs from 'qs';
 
 import { adminStudentsApi } from '.';
 
-export const useDeleteAdminStudents = (studentIds: string[]) =>
+export const useDeleteAdminStudents = () =>
     useMutation({
-        mutationFn: () =>
+        mutationFn: (studentIds: string[]) =>
             adminStudentsApi
                 .delete<unknown>('', {
                     data: { ids: studentIds },
@@ -19,7 +19,7 @@ export const useDeleteAdminStudents = (studentIds: string[]) =>
                         }),
                 })
                 .then((res) => res.data),
-        onSuccess: async (res: unknown) => {
+        onSuccess: async (res: unknown, studentIds: string[]) => {
             toast.success(
                 studentIds.length > 1
                     ? 'Alunos excluidos com sucesso.'

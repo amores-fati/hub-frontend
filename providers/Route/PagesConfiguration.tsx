@@ -71,15 +71,23 @@ export const PAGES: Page[] = [
         icon: <GroupIcon className='sidebar-icon' />,
     },
     {
-        path: '/admin/curriculo',
-        navbarEnabled: false,
-        requireAuth: true,
+        path: '/admin/cursos',
+        navbarEnabled: true,
         requireRoles: [UserRole.ADMIN],
-        name: 'Currículo do Aluno',
-        icon: <AssignmentIndIcon className='sidebar-icon' />,
+        requireAuth: false,
+        name: 'Gestão de Cursos',
+        icon: <MenuBookIcon className='sidebar-icon' />,
     },
     {
         path: '/admin/curriculos',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Gestão de Currículos',
+        icon: <AssignmentIndIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/admin/curriculo',
         navbarEnabled: true,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
@@ -114,7 +122,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
     [UserRole.ADMIN]: [
         { title: 'Dashboard', icon: <DashboardIcon />, expectedPath: '/' },
         { title: 'Alunos', icon: <GroupIcon />, expectedPath: '/alunos' },
-        { title: 'Cursos', icon: <MenuBookIcon />, expectedPath: '/cursos' },
+        {
+            title: 'Cursos',
+            icon: <MenuBookIcon />,
+            expectedPath: '/admin/cursos',
+        },
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,

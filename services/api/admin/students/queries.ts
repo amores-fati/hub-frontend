@@ -1,6 +1,7 @@
 import {
     AdminStudentDto,
     AdminStudentsQueryParams,
+    AdminStudentsResponseDto,
 } from '@/dtos/AdminStudentDto';
 import QUERY_KEYS from '@/utils/contants/queries';
 import { useQuery } from '@tanstack/react-query';
@@ -9,21 +10,9 @@ import { adminStudentsApi } from '.';
 import { PaginatedDto } from '@/dtos/PaginatedDto';
 import qs from 'qs';
 
-export const getAdminStudents = (payload: AdminStudentsQueryParams) =>
-    adminStudentsApi
-        .get('/filter', {
-            params: payload,
-            paramsSerializer: (params) =>
-                qs.stringify(params, {
-                    arrayFormat: 'repeat',
-                    encoder: (value) => encodeURIComponent(value),
-                }),
-        })
-        .then((res) => res.data as PaginatedDto<AdminStudentDto>);
-
 export const useGetAdminStudents = (
     payload: AdminStudentsQueryParams,
-    enabled = true,
+    enabled: boolean = true,
 ) =>
     useQuery({
         enabled,
@@ -38,5 +27,15 @@ export const useGetAdminStudents = (
             payload.disabilityType,
             payload.modality,
         ],
-        queryFn: () => getAdminStudents(payload),
+        queryFn: () =>
+            adminStudentsApi
+                .get('/filter', {
+                    params: payload,
+                    paramsSerializer: (params) =>
+                        qs.stringify(params, {
+                            arrayFormat: 'repeat',
+                            encoder: (value) => encodeURIComponent(value),
+                        }),
+                })
+                .then((res) => res.data as PaginatedDto<AdminStudentDto>),
     });

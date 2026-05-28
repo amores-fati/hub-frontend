@@ -4,7 +4,7 @@ import { phoneNumberRegex } from '@/utils/regex';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { EditProfileForm, EditProfileFormSetter } from '../types';
+import { EditProfileForm, EditProfileFormSetter } from '../Types';
 import { SectionCard } from './SectionCard';
 
 type Props = {

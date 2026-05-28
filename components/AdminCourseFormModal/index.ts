@@ -1,0 +1,1 @@
+export { AdminCourseFormModal } from './AdminCourseFormModal';
