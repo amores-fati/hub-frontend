@@ -10,7 +10,10 @@ import { adminStudentsApi } from '.';
 import { PaginatedDto } from '@/dtos/PaginatedDto';
 import qs from 'qs';
 
-export const useGetAdminStudents = (payload: AdminStudentsQueryParams) =>
+export const useGetAdminStudents = (
+    payload: AdminStudentsQueryParams,
+    enabled: boolean = true,
+) =>
     useQuery({
         enabled,
         queryKey: [
