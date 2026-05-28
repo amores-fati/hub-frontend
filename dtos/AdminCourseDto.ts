@@ -1,3 +1,5 @@
+import { SortDirection } from '../stores/TableStoreProvider';
+
 export enum AdminCourseModality {
     PRESENTIAL = 'presential',
     ONLINE = 'online',
@@ -11,13 +13,19 @@ export enum AdminCourseShift {
 
 export type AdminCourseDto = {
     id: string;
-    name: string;
+    title: string;
+    description: string;
     modality: AdminCourseModality;
-    address: string | null;
+    location: string;
     startDate: string;
     endDate: string;
+    workloadHours: number;
+    vacancyCount: number;
+    enrollmentStart: string;
+    enrollmentEnd: string;
+    imageUrl: string;
+    externalLink: string;
 };
-
 export type AdminCoursesResponse = {
     data: AdminCourseDto[];
     total: number;
@@ -26,11 +34,15 @@ export type AdminCoursesResponse = {
 };
 
 export type AdminCoursesQueryParams = {
-    page: number;
-    limit: number;
+    modality?: AdminCourseModality;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
     search?: string;
+    sortBy?: string;
+    sortOrder?: SortDirection;
 };
-
 export type CreateAdminCourseDto = {
     name: string;
     description: string;

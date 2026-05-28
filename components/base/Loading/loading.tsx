@@ -13,8 +13,16 @@ export function Loading({ className }: { className?: string }) {
                         x2='0%'
                         y2='100%'
                     >
-                        <stop offset='0%' stopColor='#e8433b' />
-                        <stop offset='100%' stopColor='#fcb043' />
+                        <stop
+                            offset='0%'
+                            stopColor='#e8433b'
+                            suppressHydrationWarning
+                        />
+                        <stop
+                            offset='100%'
+                            stopColor='#fcb043'
+                            suppressHydrationWarning
+                        />
                     </linearGradient>
                 </defs>
             </svg>
