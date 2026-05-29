@@ -10,9 +10,9 @@ export type VacancyDto = {
     vacancyCount: number;
     isPcd: boolean;
     announcementDate: string;
-    workplaceType?: WorkplaceType;
-    description?: string;
-    link?: string;
+    workplaceType?: WorkplaceType | null;
+    description?: string | null;
+    link?: string | null;
     skills?: string[];
 };
 
