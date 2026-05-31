@@ -297,6 +297,14 @@
     background: var(--error) !important;
 }
 
+.admin-courses__badge--active {
+    background: var(--success) !important;
+}
+
+.admin-courses__badge--inactive {
+    background: var(--error) !important;
+}
+
 .admin-courses__actions {
     display: flex;
     gap: 0.5rem;

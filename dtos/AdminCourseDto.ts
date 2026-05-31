@@ -21,6 +21,7 @@ export type AdminCourseDto = {
     startDate: string;
     endDate: string;
     workloadHours: string;
+    status: string;
     vacancyCount: number;
     enrollmentStart: string;
     enrollmentEnd: string;

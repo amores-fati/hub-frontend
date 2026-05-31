@@ -356,6 +356,20 @@ function AdminStudents() {
             ),
         },
         {
+            key: 'status',
+            header: 'Status',
+            sortable: false,
+            render: (course: AdminCourseDto) => {
+                const isActive = new Date(course.endDate) > new Date();
+                return (
+                    <Chip
+                        label={isActive ? 'Ativo' : 'Inativo'}
+                        className={`admin-courses__badge ${isActive ? 'admin-courses__badge--active' : 'admin-courses__badge--inactive'}`}
+                    />
+                );
+            },
+        },
+        {
             key: 'modality',
             header: 'Modalidade',
             sortable: false,
