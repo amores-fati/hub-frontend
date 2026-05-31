@@ -106,6 +106,9 @@ export default function HomePage() {
                         stats: dashboardData!,
                         disabilityDistribution: disabilityData!,
                         studentsByCity: countByCityData!,
+                        // TODO
+                        enrollmentsByMonth: [],
+                        impactTimeline: [],
                     }}
                 />
             </section>
