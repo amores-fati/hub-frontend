@@ -1,11 +1,11 @@
 import { UserRole } from '@/dtos/UserDto';
 import {
-    HomeFilled,
-    Person as PersonIcon,
     AssignmentInd as AssignmentIndIcon,
     Dashboard as DashboardIcon,
     Group as GroupIcon,
+    HomeFilled,
     MenuBook as MenuBookIcon,
+    Person as PersonIcon,
     Work as WorkIcon,
 } from '@mui/icons-material';
 import React, { JSX } from 'react';
@@ -69,7 +69,7 @@ export const PAGES: Page[] = [
         path: '/alunos',
         navbarEnabled: true,
         requireRoles: [UserRole.ADMIN],
-        requireAuth: false,
+        requireAuth: true,
         name: 'Gestão de Alunos',
         icon: <GroupIcon className='sidebar-icon' />,
     },
