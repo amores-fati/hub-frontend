@@ -8,6 +8,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 import { AxiosError } from 'axios';
 import {
     ChangeEvent,
@@ -187,6 +188,7 @@ export function StudentResumePage({
     const [about, setAbout] = useState('');
     const [linkedinUrl, setLinkedinUrl] = useState('');
     const [githubUrl, setGithubUrl] = useState('');
+    const [videoPresentationUrl, setVideoPresentationUrl] = useState('');
     const [isEditingResume, setIsEditingResume] = useState(false);
     const [skillInput, setSkillInput] = useState('');
     const [skills, setSkills] = useState<ResumeSkill[]>([]);
@@ -230,6 +232,7 @@ export function StudentResumePage({
         setAbout(resume?.about ?? '');
         setLinkedinUrl(resume?.linkedinUrl ?? '');
         setGithubUrl(resume?.githubUrl ?? '');
+        setVideoPresentationUrl(resume?.videoPresentationUrl ?? '');
         setSkills(resume?.skills ?? []);
     }, [isEditingResume, resume]);
 
@@ -246,6 +249,7 @@ export function StudentResumePage({
         setAbout(resume?.about ?? '');
         setLinkedinUrl(resume?.linkedinUrl ?? '');
         setGithubUrl(resume?.githubUrl ?? '');
+        setVideoPresentationUrl(resume?.videoPresentationUrl ?? '');
         setSelectedPhotoFile(null);
         setSelectedPhotoPreview((previousPreview) => {
             if (previousPreview?.startsWith('blob:')) {
@@ -317,6 +321,11 @@ export function StudentResumePage({
             return;
         }
 
+        if (!isValidAbsoluteUrl(videoPresentationUrl)) {
+            toast.error('Informe uma URL completa do YouTube.');
+            return;
+        }
+
         if (profileName.trim().length > 100) {
             toast.error('O nome deve ter no máximo 100 caracteres.');
             return;
@@ -345,6 +354,7 @@ export function StudentResumePage({
                 about: toNullableString(about),
                 linkedinUrl: toNullableString(linkedinUrl),
                 githubUrl: toNullableString(githubUrl),
+                videoPresentationUrl: toNullableString(videoPresentationUrl),
             });
 
             if (selectedPhotoFile) {
@@ -565,6 +575,24 @@ export function StudentResumePage({
                                     placeholder='Informe seu nome social'
                                     maxLength={100}
                                 />
+                            </label>
+
+                            <label className='student-resume-field'>
+                                <span>Video de Apresentação (YouTube)</span>
+                                <div className='student-resume-field__input'>
+                                    <input
+                                        value={videoPresentationUrl}
+                                        disabled={!isEditingResume}
+                                        onChange={(event) =>
+                                            setVideoPresentationUrl(
+                                                event.target.value,
+                                            )
+                                        }
+                                        placeholder='https://www.youtube.com/watch?v=seu-video'
+                                        type='url'
+                                    />
+                                    <YouTubeIcon fontSize='small' />
+                                </div>
                             </label>
                         </div>
 

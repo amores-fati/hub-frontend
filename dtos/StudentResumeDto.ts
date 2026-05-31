@@ -8,6 +8,7 @@ export type StudentResume = {
     about: string | null;
     linkedinUrl: string | null;
     githubUrl: string | null;
+    videoPresentationUrl: string | null;
     photoUrl: string | null;
     skills: ResumeSkill[];
 };
@@ -16,6 +17,7 @@ export type UpdateStudentResumePayload = {
     about?: string | null;
     linkedinUrl?: string | null;
     githubUrl?: string | null;
+    videoPresentationUrl?: string | null;
 };
 
 export type AddResumeSkillPayload = {
