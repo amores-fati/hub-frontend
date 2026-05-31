@@ -1,34 +1,28 @@
-import {
-    AdminStudentDto,
-    AdminStudentsQueryParams,
-    AdminStudentsResponseDto,
-} from '@/dtos/AdminStudentDto';
+import { AdminStudentDto } from '@/dtos/AdminStudentDto';
 import QUERY_KEYS from '@/utils/contants/queries';
 import { useQuery } from '@tanstack/react-query';
 
-import { adminStudentsApi } from '.';
-import { PaginatedDto } from '@/dtos/PaginatedDto';
+import { adminCoursesApi } from '.';
 import qs from 'qs';
+import {
+    AdminCourseDto,
+    AdminCoursesQueryParams,
+    AdminCoursesResponse,
+} from '@/dtos/AdminCourseDto';
 
-export const useGetAdminStudents = (
-    payload: AdminStudentsQueryParams,
-    enabled: boolean = true,
-) =>
+export const useGetAdminCourses = (payload: AdminCoursesQueryParams) =>
     useQuery({
-        enabled,
         queryKey: [
-            QUERY_KEYS.ADMIN_STUDENTS,
+            QUERY_KEYS.COURSES,
             payload.sortOrder,
             payload.sortBy,
             payload.search,
             payload.page,
-            payload.city,
             payload.limit,
-            payload.disabilityType,
             payload.modality,
         ],
         queryFn: () =>
-            adminStudentsApi
+            adminCoursesApi
                 .get('/filter', {
                     params: payload,
                     paramsSerializer: (params) =>
@@ -37,5 +31,15 @@ export const useGetAdminStudents = (
                             encoder: (value) => encodeURIComponent(value),
                         }),
                 })
-                .then((res) => res.data as PaginatedDto<AdminStudentDto>),
+                .then((res) => res.data as AdminCoursesResponse),
+    });
+
+export const useGetAdminCourseById = (id?: string) =>
+    useQuery({
+        enabled: !!id,
+        queryKey: [QUERY_KEYS.COURSES, id],
+        queryFn: () =>
+            adminCoursesApi
+                .get(`${id}`, {})
+                .then((res) => res.data as AdminCourseDto),
     });

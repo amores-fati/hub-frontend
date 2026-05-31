@@ -1,10 +1,13 @@
 import { UserRole } from '@/dtos/UserDto';
-import { HomeFilled, Person as PersonIcon } from '@mui/icons-material';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import GroupIcon from '@mui/icons-material/Group';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import WorkIcon from '@mui/icons-material/Work';
+import {
+    HomeFilled,
+    Person as PersonIcon,
+    AssignmentInd as AssignmentIndIcon,
+    Dashboard as DashboardIcon,
+    Group as GroupIcon,
+    MenuBook as MenuBookIcon,
+    Work as WorkIcon
+} from '@mui/icons-material';
 import React, { JSX } from 'react';
 
 export type Page = {
@@ -65,21 +68,29 @@ export const PAGES: Page[] = [
     {
         path: '/alunos',
         navbarEnabled: true,
-        requireRoles: [],
+        requireRoles: [UserRole.ADMIN],
         requireAuth: false,
         name: 'Gestão de Alunos',
         icon: <GroupIcon className='sidebar-icon' />,
     },
     {
-        path: '/admin/curriculo',
-        navbarEnabled: false,
+        path: '/aluno/curriculo',
+        navbarEnabled: true,
         requireAuth: true,
-        requireRoles: [UserRole.ADMIN],
-        name: 'Currículo do Aluno',
+        requireRoles: [UserRole.STUDENT],
+        name: 'Gestão de Currículos',
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
     {
-        path: '/admin/curriculos',
+        path: '/cursos',
+        navbarEnabled: true,
+        requireRoles: [UserRole.ADMIN],
+        requireAuth: false,
+        name: 'Gestão de Cursos',
+        icon: <GroupIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/curriculos',
         navbarEnabled: true,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
@@ -87,11 +98,11 @@ export const PAGES: Page[] = [
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
     {
-        path: '/aluno/curriculo',
+        path: '/curriculo',
         navbarEnabled: true,
-        requireRoles: [UserRole.STUDENT],
         requireAuth: true,
-        name: 'Currículo',
+        requireRoles: [UserRole.ADMIN],
+        name: 'Gestão de Currículos',
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
     {
@@ -118,7 +129,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,
-            expectedPath: '/admin/curriculos',
+            expectedPath: '/curriculos',
         },
     ],
     [UserRole.STUDENT]: [
@@ -132,11 +143,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             icon: <AssignmentIndIcon />,
             expectedPath: '/aluno/curriculo',
         },
-        {
-            title: 'Perfil',
-            icon: <PersonIcon />,
-            expectedPath: '/aluno/perfil',
-        },
+        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/aluno/perfil' },
     ],
     [UserRole.COMPANY]: [
         { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },

@@ -1,4 +1,4 @@
-.admin-students {
+.admin-courses {
     width: min(1240px, calc(100% - 2rem));
     margin: 0 auto;
     padding: var(--spacing-xl);
@@ -7,12 +7,12 @@
     gap: var(--spacing-lg);
 }
 
-.admin-students--restricted {
+.admin-courses--restricted {
     min-height: calc(100vh - 100px);
     justify-content: center;
 }
 
-.admin-students__header {
+.admin-courses__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -30,13 +30,13 @@
     }
 }
 
-.admin-students__header-action {
+.admin-courses__header-action {
     width: min(220px, 100%);
     margin-left: auto;
     flex-shrink: 0;
 }
 
-.admin-students__eyebrow {
+.admin-courses__eyebrow {
     display: inline-flex;
     margin-bottom: var(--spacing-sm);
     color: var(--tertiary-color);
@@ -45,49 +45,49 @@
     letter-spacing: 0.08em;
 }
 
-.admin-students__filters-card,
-.admin-students__table-card,
-.admin-students__bulk-bar {
+.admin-courses__filters-card,
+.admin-courses__table-card,
+.admin-courses__bulk-bar {
     background: var(--surface);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-sm);
 }
 
-.admin-students__filters-card {
+.admin-courses__filters-card {
     padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
 }
 
-.admin-students__search-row {
+.admin-courses__search-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: var(--spacing-md);
     align-items: center;
 }
 
-.admin-students__search-input {
+.admin-courses__search-input {
     .custom-input {
         width: 100%;
     }
 }
 
-.admin-students__search-helper {
+.admin-courses__search-helper {
     display: block;
     margin-top: 0.45rem;
     color: var(--text-muted);
     font: var(--footnote);
 }
 
-.admin-students__button-content {
+.admin-courses__button-content {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.admin-students__advanced-toggle {
+.admin-courses__advanced-toggle {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -101,21 +101,21 @@
     }
 }
 
-.admin-students__advanced-grid {
+.admin-courses__advanced-grid {
     padding-top: var(--spacing-sm);
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--spacing-md);
 }
 
-.admin-students__field-label {
+.admin-courses__field-label {
     display: inline-block;
     margin-bottom: var(--spacing-sm);
     color: var(--cinza-2);
     font: var(--footnote-bold);
 }
 
-.admin-students__bulk-bar {
+.admin-courses__bulk-bar {
     padding: var(--spacing-md) var(--spacing-lg);
     display: flex;
     justify-content: space-between;
@@ -128,7 +128,7 @@
     }
 }
 
-.admin-students__bulk-actions {
+.admin-courses__bulk-actions {
     display: flex;
     gap: var(--spacing-sm);
     align-items: center;
@@ -153,15 +153,15 @@
     }
 }
 
-.admin-students__table-card {
+.admin-courses__table-card {
     overflow: hidden;
 }
 
-.admin-students__table-wrapper {
+.admin-courses__table-wrapper {
     overflow-x: auto;
 }
 
-.admin-students__table {
+.admin-courses__table {
     width: 100%;
     border-collapse: collapse;
 
@@ -190,7 +190,7 @@
     }
 }
 
-.admin-students__sort-button {
+.admin-courses__sort-button {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
@@ -199,11 +199,11 @@
     text-transform: inherit;
 }
 
-.admin-students__sort-button--active {
+.admin-courses__sort-button--active {
     color: var(--tertiary-color);
 }
 
-.admin-students__student-cell {
+.admin-courses__student-cell {
     display: flex;
     align-items: center;
     gap: 0.875rem;
@@ -215,17 +215,17 @@
     }
 }
 
-.admin-students__name-button {
+.admin-courses__name-button {
     color: var(--text-primary);
     font: var(--body-2-semibold);
     text-align: left;
 }
 
-.admin-students__name-button:hover {
+.admin-courses__name-button:hover {
     color: var(--tertiary-color);
 }
 
-.admin-students__avatar {
+.admin-courses__avatar {
     width: 2.5rem;
     height: 2.5rem;
     background: rgba(239, 70, 134, 0.12);
@@ -233,13 +233,13 @@
     font: var(--footnote-bold);
 }
 
-.admin-students__avatar--large {
+.admin-courses__avatar--large {
     width: 4rem;
     height: 4rem;
     font: var(--callout-bold);
 }
 
-.admin-students__meta-cell {
+.admin-courses__meta-cell {
     display: flex;
     flex-direction: column;
 
@@ -253,17 +253,17 @@
     }
 }
 
-.admin-students__contact-link {
+.admin-courses__contact-link {
     color: inherit;
     text-decoration: none;
 }
 
-.admin-students__contact-link:hover {
+.admin-courses__contact-link:hover {
     color: var(--tertiary-color);
     text-decoration: underline;
 }
 
-.admin-students__badge {
+.admin-courses__badge {
     border-radius: 999px !important;
     font: var(--button-1) !important;
     letter-spacing: 0.04em;
@@ -271,43 +271,55 @@
     color: var(--branco) !important;
 }
 
-.admin-students__badge--presential {
+.admin-courses__badge--date {
     background: var(--secondary-color) !important;
 }
 
-.admin-students__badge--online {
+.admin-courses__badge--presential {
+    background: var(--secondary-color) !important;
+}
+
+.admin-courses__badge--online {
     background: var(--primary-color) !important;
     color: var(--preto-1) !important;
 }
 
-.admin-students__badge--neutral {
+.admin-courses__badge--neutral {
     background: var(--tertiary-color) !important;
 }
 
-.admin-students__badge--info {
+.admin-courses__badge--info {
     background: var(--info) !important;
     color: var(--preto-1) !important;
 }
 
-.admin-students__badge--danger {
+.admin-courses__badge--danger {
     background: var(--error) !important;
 }
 
-.admin-students__actions {
+.admin-courses__badge--active {
+    background: var(--success) !important;
+}
+
+.admin-courses__badge--inactive {
+    background: var(--error) !important;
+}
+
+.admin-courses__actions {
     display: flex;
     gap: 0.5rem;
 }
 
-.admin-students__action-button {
+.admin-courses__action-button {
     border: 1px solid var(--border-color) !important;
     color: var(--text-primary) !important;
 }
 
-.admin-students__action-button--danger {
+.admin-courses__action-button--danger {
     color: var(--secondary-color) !important;
 }
 
-.admin-students__footer {
+.admin-courses__footer {
     padding: 1rem 1.25rem;
     display: flex;
     justify-content: space-between;
@@ -329,23 +341,42 @@
     }
 }
 
-.admin-students__loading-state,
-.admin-students__empty-state {
+.admin-courses__loading-state,
+.admin-courses__empty-state {
     padding: var(--spacing-2xl);
     text-align: center;
 }
 
-.admin-students__details {
+.admin-courses__details {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
+
+    .register-steps {
+        // Grid de 3 colunas para os radio groups de experiência
+        &__grid {
+            display: grid;
+            gap: 1rem 2rem;
+        }
+
+        // Campo que ocupa linha inteira (área de atuação, escolaridade, etc.)
+        &__field--full {
+            grid-column: 1 / -1;
+        }
+
+        &__inline-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    }
 }
 
-.admin-students__dialog-title {
+.admin-courses__dialog-title {
     padding-bottom: 0.5rem !important;
 }
 
-.admin-students__dialog-content {
+.admin-courses__dialog-content {
     background: linear-gradient(
         180deg,
         rgba(103, 58, 183, 0.04),
@@ -353,37 +384,24 @@
     ) !important;
 }
 
-.admin-students__details-header {
-    display: flex;
-    align-items: center;
+.admin-courses__details-header {
+    // display: flex;
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
     border: 1px solid rgba(103, 58, 183, 0.08);
     border-radius: var(--border-radius-lg);
     background: var(--surface);
     box-shadow: var(--shadow-sm);
-
-    h3 {
-        margin-bottom: 0.25rem;
-    }
-
-    p {
-        margin: 0;
-    }
-
-    small {
-        color: var(--text-muted);
-    }
 }
 
-.admin-students__details-badges {
+.admin-courses__details-badges {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 0.75rem;
 }
 
-.admin-students__details-section {
+.admin-courses__details-section {
     padding: var(--spacing-lg);
     border: 1px solid rgba(103, 58, 183, 0.08);
     border-radius: var(--border-radius-lg);
@@ -391,7 +409,7 @@
     box-shadow: var(--shadow-sm);
 }
 
-.admin-students__details-section-header {
+.admin-courses__details-section-header {
     margin-bottom: var(--spacing-md);
 
     h4 {
@@ -405,17 +423,9 @@
     }
 }
 
-.admin-students__details-grid {
+.admin-courses__details-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-md);
-
-    div {
-        padding: 0.875rem 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        background: var(--surface-alt);
-    }
 
     strong,
     span {
@@ -434,7 +444,7 @@
     }
 }
 
-.admin-students__details-grid-item--full {
+.admin-courses__details-grid-item--full {
     grid-column: 1 / -1;
 }
 
@@ -444,48 +454,48 @@
     border-top: 1px solid rgba(103, 58, 183, 0.08);
 }
 
-.MuiDialog-paper:has(.admin-students__dialog-content) {
+.MuiDialog-paper:has(.admin-courses__dialog-content) {
     border-radius: var(--border-radius-xl);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
 }
 
 @media (max-width: 640px) {
-    .admin-students__details-header {
+    .admin-courses__details-header {
         flex-direction: column;
         align-items: flex-start;
     }
 }
 
 @media (max-width: 960px) {
-    .admin-students__header,
-    .admin-students__footer,
-    .admin-students__bulk-bar {
+    .admin-courses__header,
+    .admin-courses__footer,
+    .admin-courses__bulk-bar {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .admin-students__header-action {
+    .admin-courses__header-action {
         width: 100%;
         margin-left: 0;
     }
 
-    .admin-students__search-row,
-    .admin-students__advanced-grid {
+    .admin-courses__search-row,
+    .admin-courses__advanced-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 640px) {
-    .admin-students {
+    .admin-courses {
         padding: var(--spacing-md);
     }
 
-    .admin-students__details-grid {
+    .admin-courses__details-grid {
         grid-template-columns: 1fr;
     }
 
-    .admin-students__details-grid-item--full {
+    .admin-courses__details-grid-item--full {
         grid-column: auto;
     }
 }

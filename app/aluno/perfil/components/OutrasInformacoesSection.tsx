@@ -5,7 +5,7 @@ import { dateRegex, integerRegex } from '@/utils/regex';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { ChangeEvent } from 'react';
 import { SingleValue } from 'react-select';
-import { EditProfileForm, EditProfileFormSetter } from '../types';
+import { EditProfileForm, EditProfileFormSetter } from '../Types';
 import { SectionCard } from './SectionCard';
 
 const GenderOptions = [
