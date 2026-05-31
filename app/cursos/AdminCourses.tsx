@@ -25,6 +25,7 @@ import {
     KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
     KeyboardArrowUpRounded as KeyboardArrowUpRoundedIcon,
     AddRounded as AddRoundedIcon,
+    DeleteOutlineRounded,
 } from '@mui/icons-material';
 import { ButtonComponent } from '@/components/base/Button/button';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
@@ -54,6 +55,7 @@ import { useDeleteAdminStudents } from '../../services/api/admin/students/mutati
 import { dateRegex } from '../../utils/regex';
 import LoadingModal from '../../components/Modal';
 import { AdminCourseFormModal } from '../../components/AdminCourseFormModal';
+import { useDeleteCourseMutation } from '../../services/api/courses/mutations';
 
 const PAGE_SIZE = 20;
 
@@ -282,9 +284,8 @@ function AdminStudents() {
         setIsLoading(false);
     }, [data, isLoading, isFetching]);
 
-    const { mutate: deleteCoursesMutation, isPending } = useDeleteAdminStudents(
-        Object.keys(selectedCourses),
-    );
+    const { mutate: deleteCourseMutation, isPending } =
+        useDeleteCourseMutation();
 
     useEffect(() => {
         setSelectedCourses({});
@@ -440,21 +441,24 @@ function AdminStudents() {
                 />
             ),
         },
-        // {
-        //     key: 'actions',
-        //     header: 'Ações',
-        //     sortable: false,
-        //     render: (course: AdminCourseDto) => (
-        //         <IconButton
-        //             className='custom-table__action-button'
-        //             component='a'
-        //             target='_blank'
-        //             rel='noreferrer'
-        //         >
-        //             <WhatsAppIcon fontSize='small' />
-        //         </IconButton>
-        //     ),
-        // },
+        {
+            key: 'actions',
+            header: 'Ações',
+            sortable: false,
+            render: (course: AdminCourseDto) => (
+                <IconButton
+                    className='custom-table__action-button'
+                    component='a'
+                    target='_blank'
+                    rel='noreferrer'
+                    onClick={() =>
+                        deleteConfirmation(deleteCourseMutation, course.id)
+                    }
+                >
+                    <DeleteOutlineRounded fontSize='small' />
+                </IconButton>
+            ),
+        },
     ];
 
     useEffect(() => {

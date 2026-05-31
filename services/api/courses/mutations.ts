@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { coursesApi } from '.';
 import { queryClient } from '@/services/query-client';
 import { CreateAdminCourseDto } from '@/dtos/AdminCourseDto';
+import { adminStudentsApi } from '../admin/students';
 
 const handleEnrollmentError = (data: AxiosError<{ message?: string }>) => {
     if (data.response?.status === 409) {
@@ -113,3 +114,30 @@ export const useUpdateCourseMutation = (courseId: string) => {
         },
     });
 };
+
+export const useDeleteCourseMutation = () =>
+    useMutation({
+        mutationFn: (courseId: string) =>
+            coursesApi.delete<unknown>(`/${courseId}`).then((res) => res.data),
+        onSuccess: async (res: unknown) => {
+            toast.success('Cursos excluído com sucesso.');
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.COURSES],
+            });
+
+            return res;
+        },
+        onError: async (error: AxiosError<{ message?: string }> | Error) => {
+            if (error instanceof Error && error.name === 'NOT_FOUND') {
+                toast.error('Curso não encontrado ou já excluído.');
+                return;
+            }
+
+            if (error instanceof AxiosError && error.response?.status === 404) {
+                toast.error('Curso não encontrado ou já excluído.');
+                return;
+            }
+
+            toast.error('Não foi possível excluir o curso agora.');
+        },
+    });
