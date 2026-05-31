@@ -113,8 +113,10 @@ const exportCoursesToPdf = (
                     <td>${course.title}</td>
                     <td>${course.modality}</td>
                     <td>${course.location}</td>
-                    <td>${formatDate(course.startDate)}</td>
-                    <td>${formatDate(course.endDate)}</td>
+                    <td>${formatDateToBR(course.startDate)}</td>
+                    <td>${formatDateToBR(course.endDate)}</td>
+                    <td>${formatDateToBR(course.enrollmentStart)}</td>
+                    <td>${formatDateToBR(course.enrollmentEnd)}</td>
                 </tr>
             `,
         )
@@ -166,6 +168,8 @@ const exportCoursesToPdf = (
                             <th>Localização</th>
                             <th>Data Inicial</th>
                             <th>Data Final</th>
+                            <th>Início de Inscrição</th>
+                            <th>Fim de Inscrição</th>
                         </tr>
                     </thead>
                     <tbody>${rows}</tbody>
@@ -246,7 +250,7 @@ function AdminStudents() {
 
     const [searchInput, setSearchInput] = useState<string>('');
     const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
-    const [modality, setModality] = useState<Option[]>([]);
+    const [modality, setModality] = useState<Option | null>(null);
     const [filters, setFilters] =
         useState<AppliedFiltersState>(initialFiltersState);
     const [selectedCourse, setSelectedCourse] = useState<AdminCourseDto | null>(
@@ -319,7 +323,9 @@ function AdminStudents() {
         setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
-            modality: modality.map((option) => String(option.value)),
+            modality: modality
+                ? (modality.value as AdminCourseModality)
+                : undefined,
         });
     };
 
@@ -576,13 +582,11 @@ function AdminStudents() {
                             <label className='admin-courses__field-label'>
                                 Modalidade do curso
                             </label>
-                            <MultSelect
+                            <Select
                                 placeholder='Selecione as modalidades'
                                 options={courseTypeOptions}
                                 value={modality}
-                                onChange={(options) =>
-                                    setModality([...(options ?? [])])
-                                }
+                                onChange={(option) => setModality(option)}
                                 isSearchable
                             />
                         </div>
@@ -609,7 +613,7 @@ function AdminStudents() {
                             Exportar selecionados
                         </button>
 
-                        <button
+                        {/* <button
                             type='button'
                             onClick={() => {
                                 void deleteConfirmation(
@@ -620,7 +624,7 @@ function AdminStudents() {
                         >
                             <DeleteOutlineRoundedIcon fontSize='small' />
                             Excluir selecionados
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             )}
