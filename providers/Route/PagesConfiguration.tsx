@@ -6,7 +6,7 @@ import {
     Dashboard as DashboardIcon,
     Group as GroupIcon,
     MenuBook as MenuBookIcon,
-    Work as WorkIcon
+    Work as WorkIcon,
 } from '@mui/icons-material';
 import React, { JSX } from 'react';
 
@@ -90,7 +90,7 @@ export const PAGES: Page[] = [
         icon: <GroupIcon className='sidebar-icon' />,
     },
     {
-        path: '/curriculos',
+        path: '/admin/curriculos',
         navbarEnabled: true,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
@@ -98,7 +98,7 @@ export const PAGES: Page[] = [
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
     {
-        path: '/curriculo',
+        path: '/admin/curriculo',
         navbarEnabled: true,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
@@ -129,7 +129,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,
-            expectedPath: '/curriculos',
+            expectedPath: '/admin/curriculos',
         },
     ],
     [UserRole.STUDENT]: [
@@ -143,7 +143,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             icon: <AssignmentIndIcon />,
             expectedPath: '/aluno/curriculo',
         },
-        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/aluno/perfil' },
+        {
+            title: 'Perfil',
+            icon: <PersonIcon />,
+            expectedPath: '/aluno/perfil',
+        },
     ],
     [UserRole.COMPANY]: [
         { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },
