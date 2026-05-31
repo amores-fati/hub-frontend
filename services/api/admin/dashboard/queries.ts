@@ -1,25 +1,92 @@
-import { AdminDashboardDto } from '@/dtos/AdminDashboardDto';
+import {
+    AdminDashboardDto,
+    DashboardStatsDto,
+    DisabilityDistributionDto,
+    StudentsByCityDto,
+} from '@/dtos/AdminDashboardDto';
 import QUERY_KEYS from '@/utils/contants/queries';
 import { useQuery } from '@tanstack/react-query';
 
 import { adminDashboardApi } from '.';
-import { getAdminDashboardMock } from './mock';
 
-const USE_MOCK_ADMIN_DASHBOARD = true;
-
-const getAdminDashboard = async (): Promise<AdminDashboardDto> => {
-    if (USE_MOCK_ADMIN_DASHBOARD) {
-        return getAdminDashboardMock();
-    }
-
-    return adminDashboardApi
-        .get('')
-        .then((res) => res.data as AdminDashboardDto);
+type GeneralStats = {
+    totalStudents: number;
+    totalPcdStudents: number;
+    totalOpenedJobs: number;
 };
 
-export const useGetAdminDashboard = (enabled = true) =>
+// Busca estatísticas gerais do dashboard
+export const useGetDashboardStats = (enabled = true) =>
     useQuery({
         enabled,
-        queryKey: [QUERY_KEYS.ADMIN_DASHBOARD],
-        queryFn: getAdminDashboard,
+        queryKey: [QUERY_KEYS.ADMIN_DASHBOARD, 'stats'],
+        queryFn: () =>
+            adminDashboardApi.get<GeneralStats>('/dashboard').then((res) => {
+                const response = res.data;
+
+                return {
+                    totalActiveVacancies: response.totalOpenedJobs,
+                    totalPcd: response.totalPcdStudents,
+                    totalStudents: response.totalStudents,
+                } as DashboardStatsDto;
+            }),
+    });
+
+type DisabilityStats = {
+    disabilityType: string;
+    count: number;
+}[];
+
+// Busca distribuição de alunos por tipo de deficiência
+export const useGetDisabilityStats = (enabled = true) =>
+    useQuery({
+        enabled,
+        queryKey: [QUERY_KEYS.ADMIN_DASHBOARD, 'disability-stats'],
+        queryFn: () =>
+            adminDashboardApi
+                .get<DisabilityStats>('/students/disability-stats')
+                .then((res) => {
+                    const response = res.data;
+
+                    const handledResponse = [];
+
+                    for (const item of response) {
+                        handledResponse.push({
+                            disabilityType: item.disabilityType,
+                            count: item.count,
+                        });
+                    }
+                    return handledResponse as DisabilityDistributionDto[];
+                }),
+    });
+
+type StudentCountByCity = {
+    uf: string;
+    cityName: string;
+    studentsCount: number;
+}[];
+
+// Busca quantidade de alunos por cidade/UF
+export const useGetStudentCountByCity = (enabled = true) =>
+    useQuery({
+        enabled,
+        queryKey: [QUERY_KEYS.ADMIN_DASHBOARD, 'students-by-city'],
+        queryFn: () =>
+            adminDashboardApi
+                .get<StudentCountByCity>('/students/count-by-city')
+                .then((res) => {
+                    const response = res.data;
+
+                    const handledResponse = [];
+
+                    for (const item of response) {
+                        handledResponse.push({
+                            city: item.cityName,
+                            state: item.uf,
+                            count: item.studentsCount,
+                        });
+                    }
+
+                    return handledResponse as StudentsByCityDto[];
+                }),
     });

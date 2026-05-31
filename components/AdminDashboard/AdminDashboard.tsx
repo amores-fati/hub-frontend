@@ -10,13 +10,13 @@ import { StatCard } from './StatCard';
 import { StatusDonutChart } from './StatusDonutChart';
 import { StatCardItem } from './Types';
 import './index.scss';
-type AdminDashboardProps = { data: AdminDashboardDto };
-export function AdminDashboard({ data }: AdminDashboardProps) {
+
+export function AdminDashboard({ data }: { data: AdminDashboardDto }) {
     const stats: StatCardItem[] = [
         {
             key: 'totalStudents',
             label: 'Total de alunos',
-            value: data.stats.totalStudents,
+            value: data.stats?.totalStudents!,
             icon: <PersonRoundedIcon />,
             accentClassName: 'admin-stat-card--primary',
             helperText: 'Base cadastrada',
@@ -24,7 +24,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
         {
             key: 'totalPcd',
             label: 'Alunos PCD',
-            value: data.stats.totalPcd,
+            value: data.stats?.totalPcd!,
             icon: <Diversity3RoundedIcon />,
             accentClassName: 'admin-stat-card--tertiary',
             helperText: 'Inclusão ativa',
@@ -32,7 +32,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
         {
             key: 'totalActiveVacancies',
             label: 'Vagas ativas',
-            value: data.stats.totalActiveVacancies,
+            value: data.stats?.totalActiveVacancies!,
             icon: <WorkOutlineRoundedIcon />,
             accentClassName: 'admin-stat-card--neutral',
             helperText: 'Oportunidades abertas',
@@ -57,15 +57,15 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
                     <StatCard key={item.key} item={item} />
                 ))}{' '}
             </section>{' '}
-            <section className='admin-dashboard__grid admin-dashboard__grid--two-columns'>
+            <section className='admin-dashboard__grid admin-dashboard__grid'>
                 {' '}
-                <EnrollmentChart data={data.enrollmentsByMonth} />{' '}
+                {/* <EnrollmentChart data={data.enrollmentsByMonth} />{' '} */}
                 <StatusDonutChart data={data.disabilityDistribution} />{' '}
             </section>{' '}
-            <section className='admin-dashboard__grid admin-dashboard__grid--two-columns'>
+            <section className='admin-dashboard__grid admin-dashboard__grid'>
                 {' '}
                 <CourseCapacityList data={data.studentsByCity} />{' '}
-                <ImpactTimeline data={data.impactTimeline} />{' '}
+                {/* <ImpactTimeline data={data.impactTimeline} />{' '} */}
             </section>{' '}
         </div>
     );

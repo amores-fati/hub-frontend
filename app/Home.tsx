@@ -4,10 +4,14 @@ import { AdminDashboard } from '@/components/AdminDashboard';
 import { Loading } from '@/components/base';
 import { UserRole } from '@/dtos/UserDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
-import { useGetAdminDashboard } from '@/services/api/admin/dashboard/queries';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import './home.scss';
+import {
+    useGetDashboardStats,
+    useGetDisabilityStats,
+    useGetStudentCountByCity,
+} from '../services/api/admin/dashboard/queries';
 
 type HomeFallbackProps = {
     description: string;
@@ -35,12 +39,25 @@ export default function HomePage() {
     const isAdmin = user?.role === UserRole.ADMIN;
     const isStudent = role === UserRole.STUDENT;
     const shouldRenderAdminHome = isHydrated && (withOutLogin || isAdmin);
+
     const {
         data: dashboardData,
-        isLoading,
-        isFetching,
-        isError,
-    } = useGetAdminDashboard(shouldRenderAdminHome);
+        isLoading: isDashboardLoading,
+        isError: isDashboardError,
+    } = useGetDashboardStats();
+    const {
+        data: disabilityData,
+        isLoading: isDisabilityLoading,
+        isError: isDisabilityError,
+    } = useGetDisabilityStats();
+    const {
+        data: countByCityData,
+        isLoading: isStudentCountLoading,
+        isError: isStudentCountError,
+    } = useGetStudentCountByCity();
+
+    if (isDashboardLoading || isDisabilityLoading || isStudentCountLoading)
+        <Loading />;
 
     useEffect(() => {
         if (isHydrated && isStudent) {
@@ -56,7 +73,11 @@ export default function HomePage() {
         );
     }
 
-    if (shouldRenderAdminHome && (isLoading || isFetching) && !dashboardData) {
+    if (
+        shouldRenderAdminHome &&
+        (isDashboardLoading || isDisabilityLoading || isStudentCountLoading) &&
+        !dashboardData
+    ) {
         return (
             <section className='home-page home-page--centered'>
                 <Loading className='home-page__loading' />
@@ -64,7 +85,10 @@ export default function HomePage() {
         );
     }
 
-    if (shouldRenderAdminHome && isError) {
+    if (
+        shouldRenderAdminHome &&
+        (isDashboardError || isDisabilityError || isStudentCountError)
+    ) {
         return (
             <HomeFallback
                 tag='Erro ao carregar'
@@ -77,7 +101,13 @@ export default function HomePage() {
     if (shouldRenderAdminHome && dashboardData) {
         return (
             <section className='home-page'>
-                <AdminDashboard data={dashboardData} />
+                <AdminDashboard
+                    data={{
+                        stats: dashboardData!,
+                        disabilityDistribution: disabilityData!,
+                        studentsByCity: countByCityData!,
+                    }}
+                />
             </section>
         );
     }
