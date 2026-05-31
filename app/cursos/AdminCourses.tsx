@@ -245,10 +245,6 @@ function AdminStudents() {
     const [searchInput, setSearchInput] = useState<string>('');
     const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
     const [modality, setModality] = useState<Option[]>([]);
-    const [draftLocations, setDraftLocations] = useState<Option[]>([]);
-    const [draftDisabilityTypes, setDraftDisabilityTypes] = useState<Option[]>(
-        [],
-    );
     const [filters, setFilters] =
         useState<AppliedFiltersState>(initialFiltersState);
     const [selectedCourse, setSelectedCourse] = useState<AdminCourseDto | null>(
@@ -344,7 +340,7 @@ function AdminStudents() {
             key: 'title',
             header: 'Nome',
             type: CellType.TEXT,
-            sortable: true,
+            sortable: false,
             render: (course: AdminCourseDto) => (
                 <div className='admin-students__student-cell'>
                     <div>
@@ -362,16 +358,18 @@ function AdminStudents() {
         {
             key: 'modality',
             header: 'Modalidade',
-            sortable: true,
+            sortable: false,
             render: (course: AdminCourseDto) => (
                 <Chip
                     label={
-                        course.modality === AdminCourseModality.PRESENTIAL
+                        `${course.modality}`.toLowerCase() ===
+                        `${AdminCourseModality.PRESENTIAL}`.toLowerCase()
                             ? 'PRESENCIAL'
                             : 'ONLINE'
                     }
                     className={
-                        course.modality === AdminCourseModality.PRESENTIAL
+                        `${course.modality}`.toLowerCase() ===
+                        `${AdminCourseModality.PRESENTIAL}`.toLowerCase()
                             ? 'admin-courses__badge admin-courses__badge--presential'
                             : 'admin-courses__badge admin-courses__badge--online'
                     }
@@ -382,12 +380,12 @@ function AdminStudents() {
             key: 'location',
             header: 'Localidade',
             type: CellType.TEXT,
-            sortable: true,
+            sortable: false,
         },
         {
             key: 'startDate',
             header: 'Data Inicial',
-            sortable: true,
+            sortable: false,
             render: (course: AdminCourseDto) => (
                 <Chip
                     label={formatDateToBR(course.startDate)}
@@ -398,7 +396,7 @@ function AdminStudents() {
         {
             key: 'endDate',
             header: 'Data Final',
-            sortable: true,
+            sortable: false,
             render: (course: AdminCourseDto) => (
                 <Chip
                     label={formatDateToBR(course.endDate)}
@@ -407,20 +405,42 @@ function AdminStudents() {
             ),
         },
         {
-            key: 'actions',
-            header: 'Ações',
+            key: 'enrollmentStart',
+            header: 'Data Inicial Registro',
             sortable: false,
             render: (course: AdminCourseDto) => (
-                <IconButton
-                    className='custom-table__action-button'
-                    component='a'
-                    target='_blank'
-                    rel='noreferrer'
-                >
-                    <WhatsAppIcon fontSize='small' />
-                </IconButton>
+                <Chip
+                    label={formatDateToBR(course.enrollmentStart)}
+                    className='admin-courses__badge admin-courses__badge--date'
+                />
             ),
         },
+        {
+            key: 'enrollmentEnd',
+            header: 'Data Final Registro',
+            sortable: false,
+            render: (course: AdminCourseDto) => (
+                <Chip
+                    label={formatDateToBR(course.enrollmentEnd)}
+                    className='admin-courses__badge admin-courses__badge--date'
+                />
+            ),
+        },
+        // {
+        //     key: 'actions',
+        //     header: 'Ações',
+        //     sortable: false,
+        //     render: (course: AdminCourseDto) => (
+        //         <IconButton
+        //             className='custom-table__action-button'
+        //             component='a'
+        //             target='_blank'
+        //             rel='noreferrer'
+        //         >
+        //             <WhatsAppIcon fontSize='small' />
+        //         </IconButton>
+        //     ),
+        // },
     ];
 
     useEffect(() => {
@@ -438,6 +458,15 @@ function AdminStudents() {
                 </div>
 
                 <div className='admin-courses__header-actions'>
+                    {/* <ButtonComponent onClick={() => setShowCreateModal(true)}>
+                        <span className='admin-courses__button-content'>
+                            <AddRoundedIcon fontSize='small' />
+                            Novo Curso
+                        </span>
+                    </ButtonComponent> */}
+                </div>
+
+                <div className='admin-courses__header-action'>
                     <ButtonComponent onClick={() => setShowCreateModal(true)}>
                         <span className='admin-courses__button-content'>
                             <AddRoundedIcon fontSize='small' />
@@ -445,19 +474,7 @@ function AdminStudents() {
                         </span>
                     </ButtonComponent>
 
-                    <ButtonComponent
-                        variant='secondary'
-                        onClick={handleExportAll}
-                    >
-                        <span className='admin-courses__button-content'>
-                            <FileDownloadOutlinedIcon fontSize='small' />
-                            Exportar Lista
-                        </span>
-                    </ButtonComponent>
-                </div>
-
-                <div className='admin-courses__header-action'>
-                    <ButtonComponent
+                    {/* <ButtonComponent
                         variant='secondary'
                         onClick={() => {
                             void handleExportAll();
@@ -472,7 +489,7 @@ function AdminStudents() {
                             )}
                             Exportar todos cursos
                         </span>
-                    </ButtonComponent>
+                    </ButtonComponent> */}
                 </div>
             </div>
 
@@ -619,16 +636,16 @@ function AdminStudents() {
             <AdminCourseFormModal
                 open={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
-                onSuccess={() => {
-                    setShowCreateModal(false);
-                    toast.success('Curso cadastrado com sucesso.');
-                }}
             />
 
             {!!selectedCourse && (
                 <CourseModalWrapper
+                    open={!!selectedCourse.id}
                     courseId={selectedCourse.id}
-                    onClose={() => setSelectedCourse(null)}
+                    onClose={() => {
+                        setSelectedCourse(null);
+                        setShowCreateModal(false);
+                    }}
                 />
             )}
         </section>
@@ -636,237 +653,30 @@ function AdminStudents() {
 }
 
 function CourseModalWrapper({
+    open,
     courseId,
     onClose,
 }: {
+    open: boolean;
     courseId?: string;
     onClose: () => void;
 }) {
     const { data: course, isLoading } = useGetAdminCourseById(courseId);
 
-    const DEFAULT_COURSE = {
-        id: '',
-        startDate: '',
-        endDate: '',
-        enrollmentStart: '',
-        enrollmentEnd: '',
-        title: '',
-        description: '',
-        modality: AdminCourseModality.ONLINE,
-        location: '',
-        workloadHours: 0,
-        vacancyCount: 0,
-        imageUrl: '',
-        externalLink: '',
-    };
-
     if (isLoading) return <LoadingModal isOpen={!!isLoading} />;
+    if (!course) return <LoadingModal isOpen={!!isLoading} />;
 
     return (
-        <CourseModal
-            isOpen={true}
+        <AdminCourseFormModal
+            open={open}
             onClose={onClose}
-            course={course ?? DEFAULT_COURSE}
+            course={{
+                ...course,
+                startDate: formatDateToBR(course?.startDate!)!,
+                endDate: formatDateToBR(course?.endDate!)!,
+                enrollmentStart: formatDateToBR(course?.enrollmentStart!)!,
+                enrollmentEnd: formatDateToBR(course?.enrollmentEnd!)!,
+            }}
         />
-    );
-}
-
-function CourseModal({
-    course,
-    isOpen,
-    onClose,
-}: {
-    course: AdminCourseDto;
-    isOpen: boolean;
-    onClose: () => void;
-}) {
-    const [form, setForm] = useState<AdminCourseDto>({ ...course });
-
-    function onTitleChange(
-        newValue: ChangeEvent<HTMLInputElement> | undefined,
-    ) {
-        setForm((prevState: AdminCourseDto) => {
-            return {
-                ...prevState,
-                title: newValue?.target?.value ?? '',
-            };
-        });
-    }
-
-    function onDescriptionChange(
-        newValue: ChangeEvent<HTMLInputElement> | undefined,
-    ) {
-        setForm((prevState: AdminCourseDto) => {
-            return {
-                ...prevState,
-                description: newValue?.target?.value ?? '',
-            };
-        });
-    }
-
-    function onModalityChange(newValue: Option | null) {
-        if (!newValue) return;
-        setForm((prevState: AdminCourseDto) => ({
-            ...prevState,
-            modality: newValue.value as AdminCourseModality,
-        }));
-    }
-
-    function onStartDateChange(
-        newValue: ChangeEvent<HTMLInputElement> | undefined,
-    ) {
-        setForm((prevState: AdminCourseDto) => {
-            return {
-                ...prevState,
-                startDate: dateRegex(newValue?.target?.value ?? null) ?? '',
-            };
-        });
-    }
-
-    function onEndDateChange(
-        newValue: ChangeEvent<HTMLInputElement> | undefined,
-    ) {
-        setForm((prevState: AdminCourseDto) => {
-            return {
-                ...prevState,
-                endDate: dateRegex(newValue?.target?.value ?? null) ?? '',
-            };
-        });
-    }
-
-    function onStartEDateChange(
-        newValue: ChangeEvent<HTMLInputElement> | undefined,
-    ) {
-        setForm((prevState: AdminCourseDto) => {
-            return {
-                ...prevState,
-                enrollmentStart:
-                    dateRegex(newValue?.target?.value ?? null) ?? '',
-            };
-        });
-    }
-
-    function onEndEDateChange(
-        newValue: ChangeEvent<HTMLInputElement> | undefined,
-    ) {
-        setForm((prevState: AdminCourseDto) => {
-            return {
-                ...prevState,
-                enrollmentEnd: dateRegex(newValue?.target?.value ?? null) ?? '',
-            };
-        });
-    }
-
-    return (
-        <>
-            <Dialog open={!!isOpen} onClose={onClose} fullWidth maxWidth='md'>
-                <DialogTitle className='admin-courses__dialog-title'>
-                    {!!course.id ? 'Editar Curso' : 'Novo Curso'}
-                </DialogTitle>
-                <DialogContent
-                    dividers
-                    className='admin-courses__dialog-content'
-                >
-                    <div className='admin-courses__details'>
-                        <div className='admin-courses__details-header'>
-                            <div>
-                                <p className='field-label'>
-                                    Nome <span className='required'>*</span>
-                                </p>
-                                <Input
-                                    onChange={onTitleChange}
-                                    value={form.title}
-                                />
-                            </div>
-
-                            <div>
-                                <p className='field-label'>
-                                    Descrição{' '}
-                                    <span className='required'>*</span>
-                                </p>
-                                <Input
-                                    onChange={onDescriptionChange}
-                                    value={form.description}
-                                />
-                            </div>
-
-                            <div>
-                                <p className='field-label'>
-                                    Modalidade{' '}
-                                    <span className='required'>*</span>
-                                </p>
-                                <Select
-                                    placeholder=''
-                                    defaultValue={courseTypeOptions[0]}
-                                    options={courseTypeOptions}
-                                    onChange={onModalityChange}
-                                />
-                            </div>
-                        </div>
-
-                        <section className='admin-courses__details-section'>
-                            <div className='admin-courses__details-grid'>
-                                <div>
-                                    <p className='field-label'>
-                                        Data Início{' '}
-                                        <span className='required'>*</span>
-                                    </p>
-                                    <Input
-                                        placeholder='dd/mm/aaaa'
-                                        onChange={onStartDateChange}
-                                        value={formatDateToBR(form.startDate)}
-                                    />
-                                </div>
-
-                                <div>
-                                    <p className='field-label'>
-                                        Data Final{' '}
-                                        <span className='required'>*</span>
-                                    </p>
-                                    <Input
-                                        placeholder='dd/mm/aaaa'
-                                        onChange={onEndDateChange}
-                                        value={formatDateToBR(form.endDate)}
-                                    />
-                                </div>
-
-                                <div>
-                                    <p className='field-label'>
-                                        Data Inicial Inscrições{' '}
-                                        <span className='required'>*</span>
-                                    </p>
-                                    <Input
-                                        placeholder='dd/mm/aaaa'
-                                        onChange={onStartEDateChange}
-                                        value={formatDateToBR(
-                                            form.enrollmentStart,
-                                        )}
-                                    />
-                                </div>
-
-                                <div>
-                                    <p className='field-label'>
-                                        Data Final Inscrições{' '}
-                                        <span className='required'>*</span>
-                                    </p>
-                                    <Input
-                                        placeholder='dd/mm/aaaa'
-                                        onChange={onEndEDateChange}
-                                        value={formatDateToBR(
-                                            form.enrollmentEnd,
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <ButtonComponent variant='secondary' onClick={onClose}>
-                        Fechar
-                    </ButtonComponent>
-                </DialogActions>
-            </Dialog>
-        </>
     );
 }
