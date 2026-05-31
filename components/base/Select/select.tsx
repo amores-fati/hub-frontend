@@ -12,7 +12,7 @@ export type SelectProps = {
     disabled?: boolean;
     placeholder: string;
     defaultValue?: Option;
-    value?: Option;
+    value?: Option | null;
     options?: Option[];
     isClearable?: boolean;
     isSearchable?: boolean;

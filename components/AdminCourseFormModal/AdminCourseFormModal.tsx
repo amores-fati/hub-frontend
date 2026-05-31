@@ -8,12 +8,17 @@ import {
     AdminCourseShift,
     CreateAdminCourseDto,
 } from '@/dtos/AdminCourseDto';
-import { createAdminCourseMock } from '@/services/api/admin/courses/mock';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import { Dialog, DialogContent, DialogTitle, TextField } from '@mui/material';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './index.scss';
+import {
+    useCreateCourseMutation,
+    useUpdateCourseMutation,
+} from '../../services/api/courses/mutations';
+import { dateRegex } from '../../utils/regex';
+import { formatDate } from '../../utils/shared-functions/date';
 
 const MODALITY_OPTIONS: Option[] = [
     { value: AdminCourseModality.PRESENTIAL, label: 'Presencial' },
@@ -29,37 +34,58 @@ const SHIFT_OPTIONS: Option[] = [
 type Props = {
     open: boolean;
     onClose: () => void;
-    onSuccess: (course: AdminCourseDto) => void;
+    course?: AdminCourseDto;
 };
 
-export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [address, setAddress] = useState('');
-    const [vacancyCount, setVacancyCount] = useState('');
-    const [modality, setModality] = useState<Option | null>(null);
-    const [shift, setShift] = useState<Option | null>(null);
-    const [workloadHours, setWorkloadHours] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [enrollmentStart, setEnrollmentStart] = useState('');
-    const [enrollmentEnd, setEnrollmentEnd] = useState('');
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+export function AdminCourseFormModal({ open, onClose, course }: Props) {
+    const [name, setName] = useState(course ? course.title : '');
+    const [description, setDescription] = useState(
+        course ? course.description : '',
+    );
+    const [address, setAddress] = useState(course ? course.location : '');
+    const [vacancyCount, setVacancyCount] = useState(
+        course ? course.vacancyCount.toString() : '',
+    );
+    const [modality, setModality] = useState<Option | null>(
+        course
+            ? MODALITY_OPTIONS.find(
+                  (opt) =>
+                      `${opt.value}`.toLowerCase() ===
+                      `${course.modality}`.toLowerCase(),
+              ) || null
+            : null,
+    );
+    const [shift, setShift] = useState<Option | null>(
+        course
+            ? SHIFT_OPTIONS.find(
+                  (opt) =>
+                      `${opt.value}`.toLowerCase() ===
+                      `${course.shift}`.toLowerCase(),
+              ) || null
+            : null,
+    );
+    const [workloadHours, setWorkloadHours] = useState(
+        course ? course.workloadHours : '',
+    );
+    const [startDate, setStartDate] = useState(course?.startDate ?? '');
+    const [endDate, setEndDate] = useState(course?.endDate ?? '');
+    const [enrollmentStart, setEnrollmentStart] = useState(
+        course?.enrollmentStart ?? '',
+    );
+    const [enrollmentEnd, setEnrollmentEnd] = useState(
+        course?.enrollmentEnd ?? '',
+    );
+    const [imagePreview, setImagePreview] = useState<string | null>(
+        course?.imageUrl ?? null,
+    );
     const [isDragging, setIsDragging] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [submitAttempted, setSubmitAttempted] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const isValidDate = (val: string): boolean => {
-        if (!val) return true;
-        const [year, month, day] = val.split('-').map(Number);
-        const date = new Date(year, month - 1, day);
-        return (
-            date.getFullYear() === year &&
-            date.getMonth() + 1 === month &&
-            date.getDate() === day
-        );
-    };
+    const { mutate: createCourse, isPending: isCreating } =
+        useCreateCourseMutation();
+    const { mutate: updateCourse, isPending: isUpdating } =
+        useUpdateCourseMutation(course?.id!);
 
     const nameError = submitAttempted && !name.trim();
     const descriptionError = submitAttempted && !description.trim();
@@ -80,7 +106,6 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
         setEnrollmentEnd('');
         setImagePreview(null);
         setIsDragging(false);
-        setIsLoading(false);
         setSubmitAttempted(false);
         onClose();
     };
@@ -96,28 +121,33 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
         setSubmitAttempted(true);
         if (!name.trim() || !description.trim() || !modality || !shift) return;
 
-        setIsLoading(true);
         await new Promise((resolve) => setTimeout(resolve, 800));
 
         const payload: CreateAdminCourseDto = {
             name: name.trim(),
             description: description.trim(),
-            imageUrl: null,
+            banner: imagePreview || null,
             address: address.trim() || null,
             vacancyCount: vacancyCount ? Number(vacancyCount) : null,
             modality: modality.value as AdminCourseModality,
             shift: shift.value as AdminCourseShift,
-            workloadHours: workloadHours ? Number(workloadHours) : null,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            enrollmentStart: enrollmentStart || null,
-            enrollmentEnd: enrollmentEnd || null,
+            courseLoad: workloadHours ? `${workloadHours}` : null,
+            startDate: startDate ? formatDate(startDate) + 'T00:00:00Z' : null,
+            endDate: endDate ? formatDate(endDate) + 'T00:00:00Z' : null,
+            startRegistrations: enrollmentStart
+                ? formatDate(enrollmentStart) + 'T00:00:00Z'
+                : null,
+            endRegistrations: enrollmentEnd
+                ? formatDate(enrollmentEnd) + 'T00:00:00Z'
+                : null,
         };
 
-        const created = createAdminCourseMock(payload);
-        setIsLoading(false);
+        if (course?.id!) {
+            updateCourse({ form: payload });
+        } else {
+            createCourse(payload);
+        }
         handleClose();
-        onSuccess(created);
     };
 
     return (
@@ -216,15 +246,14 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                             </>
                         )}
                     </div>
-                    <input
-                        ref={fileInputRef}
-                        type='file'
-                        accept='image/*'
-                        style={{ display: 'none' }}
+
+                    <Input
+                        value={imagePreview || ''}
                         onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleImageFile(file);
+                            const val = e.target.value;
+                            setImagePreview(val);
                         }}
+                        placeholder='Ex: 200'
                     />
                 </div>
 
@@ -318,16 +347,14 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                         <label className='admin-course-form-modal__label'>
                             Data Início - Curso
                         </label>
-                        <input
-                            type='date'
-                            className='admin-course-form-modal__date-input'
-                            value={startDate}
-                            min='2000-01-01'
-                            max='2100-12-31'
+                        <Input
+                            placeholder='dd/mm/aaaa'
                             onChange={(e) => {
-                                const val = e.target.value;
-                                if (isValidDate(val)) setStartDate(val);
+                                setStartDate(
+                                    dateRegex(e?.target?.value ?? null) ?? '',
+                                );
                             }}
+                            value={startDate}
                         />
                     </div>
 
@@ -335,16 +362,14 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                         <label className='admin-course-form-modal__label'>
                             Data Final - Curso
                         </label>
-                        <input
-                            type='date'
-                            className='admin-course-form-modal__date-input'
-                            value={endDate}
-                            min='2000-01-01'
-                            max='2100-12-31'
+                        <Input
+                            placeholder='dd/mm/aaaa'
                             onChange={(e) => {
-                                const val = e.target.value;
-                                if (isValidDate(val)) setEndDate(val);
+                                setEndDate(
+                                    dateRegex(e?.target?.value ?? null) ?? '',
+                                );
                             }}
+                            value={endDate}
                         />
                     </div>
                 </div>
@@ -354,16 +379,14 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                         <label className='admin-course-form-modal__label'>
                             Data Início - Inscrições
                         </label>
-                        <input
-                            type='date'
-                            className='admin-course-form-modal__date-input'
-                            value={enrollmentStart}
-                            min='2000-01-01'
-                            max='2100-12-31'
+                        <Input
+                            placeholder='dd/mm/aaaa'
                             onChange={(e) => {
-                                const val = e.target.value;
-                                if (isValidDate(val)) setEnrollmentStart(val);
+                                setEnrollmentStart(
+                                    dateRegex(e?.target?.value ?? null) ?? '',
+                                );
                             }}
+                            value={enrollmentStart}
                         />
                     </div>
 
@@ -371,16 +394,14 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                         <label className='admin-course-form-modal__label'>
                             Data Final - Inscrições
                         </label>
-                        <input
-                            type='date'
-                            className='admin-course-form-modal__date-input'
-                            value={enrollmentEnd}
-                            min='2000-01-01'
-                            max='2100-12-31'
+                        <Input
+                            placeholder='dd/mm/aaaa'
                             onChange={(e) => {
-                                const val = e.target.value;
-                                if (isValidDate(val)) setEnrollmentEnd(val);
+                                setEndDate(
+                                    dateRegex(e?.target?.value ?? null) ?? '',
+                                );
                             }}
+                            value={enrollmentEnd}
                         />
                     </div>
                 </div>
@@ -391,7 +412,7 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                     type='button'
                     className='admin-course-form-modal__btn-cancel'
                     onClick={handleClose}
-                    disabled={isLoading}
+                    disabled={isCreating || isUpdating}
                 >
                     Cancelar
                 </button>
@@ -401,9 +422,13 @@ export function AdminCourseFormModal({ open, onClose, onSuccess }: Props) {
                     onClick={() => {
                         void handleSubmit();
                     }}
-                    disabled={isLoading}
+                    disabled={isCreating || isUpdating}
                 >
-                    {isLoading ? 'Cadastrando...' : 'Cadastrar Curso'}
+                    {isCreating || isUpdating
+                        ? 'Cadastrando...'
+                        : course?.id
+                          ? 'Salvar Alterações'
+                          : 'Cadastrar Curso'}
                 </button>
             </div>
         </Dialog>

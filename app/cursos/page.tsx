@@ -1,6 +1,6 @@
 'use client';
 
-import { AdminCourses } from '@/components/AdminCourses';
+import AdminCourses from './AdminCourses';
 
 export default function CoursesPage() {
     return <AdminCourses />;

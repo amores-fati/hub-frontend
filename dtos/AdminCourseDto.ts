@@ -1,6 +1,9 @@
+import { SortDirection } from '../stores/TableStoreProvider';
+
 export enum AdminCourseModality {
-    PRESENTIAL = 'presential',
-    ONLINE = 'online',
+    PRESENTIAL = 'PRESENCIAL',
+    ONLINE = 'ONLINE',
+    HIBRIDO = 'HIBRIDO',
 }
 
 export enum AdminCourseShift {
@@ -11,11 +14,20 @@ export enum AdminCourseShift {
 
 export type AdminCourseDto = {
     id: string;
-    name: string;
+    title: string;
+    description: string;
     modality: AdminCourseModality;
-    address: string | null;
+    location: string;
     startDate: string;
     endDate: string;
+    workloadHours: string;
+    status: string;
+    vacancyCount: number;
+    enrollmentStart: string;
+    enrollmentEnd: string;
+    imageUrl: string;
+    externalLink: string;
+    shift: AdminCourseShift;
 };
 
 export type AdminCoursesResponse = {
@@ -26,22 +38,27 @@ export type AdminCoursesResponse = {
 };
 
 export type AdminCoursesQueryParams = {
-    page: number;
-    limit: number;
+    modality?: AdminCourseModality;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
     search?: string;
+    sortBy?: string;
+    sortOrder?: SortDirection;
 };
 
 export type CreateAdminCourseDto = {
     name: string;
     description: string;
-    imageUrl: string | null;
+    banner: string | null;
     address: string | null;
     vacancyCount: number | null;
     modality: AdminCourseModality;
     shift: AdminCourseShift;
-    workloadHours: number | null;
+    courseLoad: string | null;
     startDate: string | null;
     endDate: string | null;
-    enrollmentStart: string | null;
-    enrollmentEnd: string | null;
+    startRegistrations: string | null;
+    endRegistrations: string | null;
 };
