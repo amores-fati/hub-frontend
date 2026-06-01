@@ -52,6 +52,17 @@ const modalityLabels: Record<AdminCurriculumModality, string> = {
     [AdminCurriculumModality.HIBRIDO]: 'Híbrido',
 };
 
+const normalizeModality = (value?: string | null): AdminCurriculumModality => {
+    const lowered = (value ?? '').toLowerCase();
+    if (lowered === 'presencial') return AdminCurriculumModality.PRESENCIAL;
+    if (lowered === 'remoto' || lowered === 'online')
+        return AdminCurriculumModality.ONLINE;
+    return AdminCurriculumModality.HIBRIDO;
+};
+
+const getModalityLabel = (preference?: string | null): string =>
+    modalityLabels[normalizeModality(preference)];
+
 const statusLabels: Record<AdminCurriculumStatus, string> = {
     [AdminCurriculumStatus.ATIVO]: 'Ativo',
     [AdminCurriculumStatus.INATIVO]: 'Inativo',
@@ -107,7 +118,8 @@ const statusOptions: Option[] = [
 const getAreaBadgeClass = (area: string) =>
     `admin-curriculos__badge admin-curriculos__badge--area admin-curriculos__badge--area-${(area ?? '').toLowerCase()}`;
 
-const getModalityBadgeClass = (modality: AdminCurriculumModality) => {
+const getModalityBadgeClass = (preference?: string | null) => {
+    const modality = normalizeModality(preference);
     if (modality === AdminCurriculumModality.PRESENCIAL)
         return 'admin-curriculos__badge admin-curriculos__badge--presencial';
     if (modality === AdminCurriculumModality.ONLINE)
@@ -154,7 +166,7 @@ const exportCurriculaToPdf = (
                 <td>${escapeHtml(c.fullName)}</td>
                 <td>${escapeHtml(c.cpf)}</td>
                 <td>${escapeHtml(areaLabels[c.activityArea] ?? c.activityArea ?? 'Não informado')}</td>
-                <td>${escapeHtml(modalityLabels[c.preference] ?? c.preference)}</td>
+                <td>${escapeHtml(getModalityLabel(c.preference))}</td>
                 <td>${escapeHtml(c.isAvailable ? 'Ativo' : 'Inativo')}</td>
             </tr>`,
         )
@@ -339,8 +351,8 @@ function AdminCurriculo() {
         setSearchInput('');
         setDraftLocations([]);
         setDraftAreas([]);
-        setDraftModalities('remoto');
-        setDraftStatuses('available');
+        setDraftModalities(null);
+        setDraftStatuses(null);
         setPaginator({ page: 1 });
         setFilters(initialFiltersState);
     };
@@ -405,7 +417,7 @@ function AdminCurriculo() {
             sortable: false,
             render: (c) => (
                 <Chip
-                    label={modalityLabels[c.preference] ?? c.preference}
+                    label={getModalityLabel(c.preference)}
                     className={getModalityBadgeClass(c.preference)}
                 />
             ),

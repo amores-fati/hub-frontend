@@ -79,10 +79,18 @@ export default function HomePage() {
         );
     }
 
+    const isAnyDashboardQueryLoading =
+        isDashboardLoading ||
+        isDisabilityLoading ||
+        isStudentCountLoading ||
+        isCountByMonthLoading;
+    const isAnyDashboardDataMissing =
+        !dashboardData || !disabilityData || !countByCityData;
+
     if (
         shouldRenderAdminHome &&
-        (isDashboardLoading || isDisabilityLoading || isStudentCountLoading || isCountByMonthLoading) &&
-        !dashboardData
+        isAnyDashboardQueryLoading &&
+        isAnyDashboardDataMissing
     ) {
         return (
             <section className='home-page home-page--centered'>
@@ -104,15 +112,20 @@ export default function HomePage() {
         );
     }
 
-    if (shouldRenderAdminHome && dashboardData) {
+    if (
+        shouldRenderAdminHome &&
+        dashboardData &&
+        disabilityData &&
+        countByCityData
+    ) {
         return (
             <section className='home-page'>
                 <AdminDashboard
                     data={{
-                        stats: dashboardData!,
-                        disabilityDistribution: disabilityData!,
-                        studentsByCity: countByCityData!,
-                        enrollmentsByMonth: countByMonthData || [],
+                        stats: dashboardData,
+                        disabilityDistribution: disabilityData,
+                        studentsByCity: countByCityData,
+                        enrollmentsByMonth: countByMonthData ?? [],
                         impactTimeline: [],
                     }}
                 />

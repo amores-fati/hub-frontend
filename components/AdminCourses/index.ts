@@ -1,1 +1,0 @@
-export { AdminCourses } from './AdminCourses';

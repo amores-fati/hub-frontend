@@ -19,6 +19,11 @@ import {
 } from '../../services/api/courses/mutations';
 import { dateRegex } from '../../utils/regex';
 import { formatDate } from '../../utils/shared-functions/date';
+import {
+    readFileAsBase64,
+    resolveImageUrl,
+} from '../../utils/shared-functions/image';
+import { toast } from 'react-toastify';
 
 const MODALITY_OPTIONS: Option[] = [
     { value: AdminCourseModality.PRESENTIAL, label: 'Presencial' },
@@ -76,8 +81,14 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
         course?.enrollmentEnd ?? '',
     );
     const [imagePreview, setImagePreview] = useState<string | null>(
-        course?.imageUrl ?? null,
+        resolveImageUrl(course?.imageUrl ?? null),
     );
+    const [bannerImageBase64, setBannerImageBase64] = useState<string | null>(
+        null,
+    );
+    const [bannerImageMimeType, setBannerImageMimeType] = useState<
+        string | null
+    >(null);
     const [isDragging, setIsDragging] = useState(false);
     const [submitAttempted, setSubmitAttempted] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -85,12 +96,19 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
     const { mutate: createCourse, isPending: isCreating } =
         useCreateCourseMutation();
     const { mutate: updateCourse, isPending: isUpdating } =
-        useUpdateCourseMutation(course?.id!);
+        useUpdateCourseMutation(course?.id ?? '');
 
     const nameError = submitAttempted && !name.trim();
     const descriptionError = submitAttempted && !description.trim();
     const modalityError = submitAttempted && !modality;
     const shiftError = submitAttempted && !shift;
+    const bannerError = submitAttempted && !imagePreview;
+    const vacancyCountError = submitAttempted && !vacancyCount;
+    const workloadHoursError = submitAttempted && !workloadHours;
+    const startDateError = submitAttempted && !startDate;
+    const endDateError = submitAttempted && !endDate;
+    const enrollmentStartError = submitAttempted && !enrollmentStart;
+    const enrollmentEndError = submitAttempted && !enrollmentEnd;
 
     const handleClose = () => {
         setName('');
@@ -104,29 +122,61 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
         setEndDate('');
         setEnrollmentStart('');
         setEnrollmentEnd('');
+        if (imagePreview?.startsWith('blob:')) {
+            URL.revokeObjectURL(imagePreview);
+        }
         setImagePreview(null);
+        setBannerImageBase64(null);
+        setBannerImageMimeType(null);
         setIsDragging(false);
         setSubmitAttempted(false);
         onClose();
     };
 
-    const handleImageFile = (file: File) => {
-        if (!file.type.startsWith('image/')) return;
-        const url = URL.createObjectURL(file);
-        if (imagePreview) URL.revokeObjectURL(imagePreview);
-        setImagePreview(url);
+    const handleImageFile = async (file: File) => {
+        if (!file.type.startsWith('image/')) {
+            toast.error('Selecione um arquivo de imagem (JPG, PNG ou WebP).');
+            return;
+        }
+        try {
+            const { data, mimeType } = await readFileAsBase64(file);
+            setBannerImageBase64(data);
+            setBannerImageMimeType(mimeType);
+            const previewUrl = URL.createObjectURL(file);
+            if (imagePreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(imagePreview);
+            }
+            setImagePreview(previewUrl);
+        } catch {
+            toast.error('Não foi possível ler o arquivo da imagem.');
+        }
     };
 
     const handleSubmit = async () => {
         setSubmitAttempted(true);
-        if (!name.trim() || !description.trim() || !modality || !shift) return;
+        if (
+            !name.trim() ||
+            !description.trim() ||
+            !modality ||
+            !shift ||
+            !imagePreview ||
+            !vacancyCount ||
+            !workloadHours ||
+            !startDate ||
+            !endDate ||
+            !enrollmentStart ||
+            !enrollmentEnd
+        )
+            return;
 
         await new Promise((resolve) => setTimeout(resolve, 800));
 
         const payload: CreateAdminCourseDto = {
             name: name.trim(),
             description: description.trim(),
-            banner: imagePreview || null,
+            banner: null,
+            bannerImage: bannerImageBase64,
+            bannerImageMimeType: bannerImageMimeType,
             address: address.trim() || null,
             vacancyCount: vacancyCount ? Number(vacancyCount) : null,
             modality: modality.value as AdminCourseModality,
@@ -142,7 +192,7 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                 : null,
         };
 
-        if (course?.id!) {
+        if (course?.id) {
             updateCourse({ form: payload });
         } else {
             createCourse(payload);
@@ -213,10 +263,13 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
 
                 <div className='admin-course-form-modal__field'>
                     <label className='admin-course-form-modal__label'>
-                        Imagem do Curso
+                        Imagem do Curso{' '}
+                        <span className='admin-course-form-modal__required'>
+                            *
+                        </span>
                     </label>
                     <div
-                        className={`admin-course-form-modal__dropzone${isDragging ? ' admin-course-form-modal__dropzone--dragging' : ''}`}
+                        className={`admin-course-form-modal__dropzone${isDragging ? ' admin-course-form-modal__dropzone--dragging' : ''}${bannerError ? ' admin-course-form-modal__dropzone--error' : ''}`}
                         onClick={() => fileInputRef.current?.click()}
                         onDragOver={(e) => {
                             e.preventDefault();
@@ -227,7 +280,7 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                             e.preventDefault();
                             setIsDragging(false);
                             const file = e.dataTransfer.files[0];
-                            if (file) handleImageFile(file);
+                            if (file) void handleImageFile(file);
                         }}
                     >
                         {imagePreview ? (
@@ -246,15 +299,21 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                             </>
                         )}
                     </div>
-
-                    <Input
-                        value={imagePreview || ''}
+                    <input
+                        ref={fileInputRef}
+                        type='file'
+                        accept='image/*'
+                        hidden
                         onChange={(e) => {
-                            const val = e.target.value;
-                            setImagePreview(val);
+                            const file = e.target.files?.[0];
+                            if (file) void handleImageFile(file);
                         }}
-                        placeholder='Ex: 200'
                     />
+                    {bannerError && (
+                        <span className='admin-course-form-modal__error'>
+                            Campo obrigatório
+                        </span>
+                    )}
                 </div>
 
                 <div className='admin-course-form-modal__field'>
@@ -271,7 +330,10 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                 <div className='admin-course-form-modal__grid-4'>
                     <div className='admin-course-form-modal__field'>
                         <label className='admin-course-form-modal__label'>
-                            Vagas
+                            Vagas{' '}
+                            <span className='admin-course-form-modal__required'>
+                                *
+                            </span>
                         </label>
                         <Input
                             value={vacancyCount}
@@ -280,7 +342,13 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                                 setVacancyCount(val);
                             }}
                             placeholder='Ex: 200'
+                            error={vacancyCountError}
                         />
+                        {vacancyCountError && (
+                            <span className='admin-course-form-modal__error'>
+                                Campo obrigatório
+                            </span>
+                        )}
                     </div>
 
                     <div className='admin-course-form-modal__field'>
@@ -329,7 +397,10 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
 
                     <div className='admin-course-form-modal__field'>
                         <label className='admin-course-form-modal__label'>
-                            Carga Horária
+                            Carga Horária{' '}
+                            <span className='admin-course-form-modal__required'>
+                                *
+                            </span>
                         </label>
                         <Input
                             value={workloadHours}
@@ -338,14 +409,23 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                                 setWorkloadHours(val);
                             }}
                             placeholder='Ex: 40 horas'
+                            error={workloadHoursError}
                         />
+                        {workloadHoursError && (
+                            <span className='admin-course-form-modal__error'>
+                                Campo obrigatório
+                            </span>
+                        )}
                     </div>
                 </div>
 
                 <div className='admin-course-form-modal__grid-2'>
                     <div className='admin-course-form-modal__field'>
                         <label className='admin-course-form-modal__label'>
-                            Data Início - Curso
+                            Data Início - Curso{' '}
+                            <span className='admin-course-form-modal__required'>
+                                *
+                            </span>
                         </label>
                         <Input
                             placeholder='dd/mm/aaaa'
@@ -355,12 +435,21 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                                 );
                             }}
                             value={startDate}
+                            error={startDateError}
                         />
+                        {startDateError && (
+                            <span className='admin-course-form-modal__error'>
+                                Campo obrigatório
+                            </span>
+                        )}
                     </div>
 
                     <div className='admin-course-form-modal__field'>
                         <label className='admin-course-form-modal__label'>
-                            Data Final - Curso
+                            Data Final - Curso{' '}
+                            <span className='admin-course-form-modal__required'>
+                                *
+                            </span>
                         </label>
                         <Input
                             placeholder='dd/mm/aaaa'
@@ -370,14 +459,23 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                                 );
                             }}
                             value={endDate}
+                            error={endDateError}
                         />
+                        {endDateError && (
+                            <span className='admin-course-form-modal__error'>
+                                Campo obrigatório
+                            </span>
+                        )}
                     </div>
                 </div>
 
                 <div className='admin-course-form-modal__grid-2'>
                     <div className='admin-course-form-modal__field'>
                         <label className='admin-course-form-modal__label'>
-                            Data Início - Inscrições
+                            Data Início - Inscrições{' '}
+                            <span className='admin-course-form-modal__required'>
+                                *
+                            </span>
                         </label>
                         <Input
                             placeholder='dd/mm/aaaa'
@@ -387,12 +485,21 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                                 );
                             }}
                             value={enrollmentStart}
+                            error={enrollmentStartError}
                         />
+                        {enrollmentStartError && (
+                            <span className='admin-course-form-modal__error'>
+                                Campo obrigatório
+                            </span>
+                        )}
                     </div>
 
                     <div className='admin-course-form-modal__field'>
                         <label className='admin-course-form-modal__label'>
-                            Data Final - Inscrições
+                            Data Final - Inscrições{' '}
+                            <span className='admin-course-form-modal__required'>
+                                *
+                            </span>
                         </label>
                         <Input
                             placeholder='dd/mm/aaaa'
@@ -402,7 +509,13 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                                 );
                             }}
                             value={enrollmentEnd}
+                            error={enrollmentEndError}
                         />
+                        {enrollmentEndError && (
+                            <span className='admin-course-form-modal__error'>
+                                Campo obrigatório
+                            </span>
+                        )}
                     </div>
                 </div>
             </DialogContent>

@@ -16,7 +16,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardDto }) {
         {
             key: 'totalStudents',
             label: 'Total de alunos',
-            value: data.stats?.totalStudents!,
+            value: data.stats.totalStudents,
             icon: <PersonRoundedIcon />,
             accentClassName: 'admin-stat-card--primary',
             helperText: 'Base cadastrada',
@@ -24,7 +24,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardDto }) {
         {
             key: 'totalPcd',
             label: 'Alunos PCD',
-            value: data.stats?.totalPcd!,
+            value: data.stats.totalPcd,
             icon: <Diversity3RoundedIcon />,
             accentClassName: 'admin-stat-card--tertiary',
             helperText: 'Inclusão ativa',
@@ -32,7 +32,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardDto }) {
         {
             key: 'totalActiveVacancies',
             label: 'Vagas ativas',
-            value: data.stats?.totalActiveVacancies!,
+            value: data.stats.totalActiveVacancies,
             icon: <WorkOutlineRoundedIcon />,
             accentClassName: 'admin-stat-card--neutral',
             helperText: 'Oportunidades abertas',

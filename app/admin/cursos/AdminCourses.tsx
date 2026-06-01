@@ -37,43 +37,31 @@ import {
     TableStoreProvider,
     useTableStore,
 } from '@/stores/TableStoreProvider';
-import { Cells, CellType } from '../../components/base/Table2/types';
-import BasicTable from '../../components/base/Table2/table';
+import { Cells, CellType } from '@/components/base/Table2/types';
+import BasicTable from '@/components/base/Table2/table';
 import { deleteConfirmation } from './Swal';
 import {
     AdminCourseDto,
     AdminCourseModality,
     AdminCoursesQueryParams,
-} from '../../dtos/AdminCourseDto';
+} from '@/dtos/AdminCourseDto';
 import {
     useGetAdminCourseById,
     useGetAdminCourses,
-} from '../../services/api/admin/courses/queries';
-import { formatDate, formatDateToBR } from '../../utils/shared-functions/date';
-import { AdminStudentCourseType } from '../../dtos/AdminStudentDto';
-import { useDeleteAdminStudents } from '../../services/api/admin/students/mutations';
-import { dateRegex } from '../../utils/regex';
-import LoadingModal from '../../components/Modal';
-import { AdminCourseFormModal } from '../../components/AdminCourseFormModal';
-import { useDeleteCourseMutation } from '../../services/api/courses/mutations';
+} from '@/services/api/admin/courses/queries';
+import { formatDate, formatDateToBR } from '@/utils/shared-functions/date';
+import { AdminStudentCourseType } from '@/dtos/AdminStudentDto';
+import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
+import { dateRegex } from '@/utils/regex';
+import LoadingModal from '@/components/Modal';
+import { AdminCourseFormModal } from '@/components/AdminCourseFormModal';
+import { useDeleteCourseMutation } from '@/services/api/courses/mutations';
 
 const PAGE_SIZE = 20;
 
-const courseTypeLabels: Record<AdminStudentCourseType, string> = {
-    [AdminStudentCourseType.PRESENTIAL]: 'Presencial',
-    [AdminStudentCourseType.ONLINE]: 'Online',
-    [AdminStudentCourseType.NOT_ENROLLED]: 'Não inscrito',
-};
-
-const courseTypeOptions: Option[] = [
-    {
-        value: AdminStudentCourseType.PRESENTIAL,
-        label: courseTypeLabels[AdminStudentCourseType.PRESENTIAL],
-    },
-    {
-        value: AdminStudentCourseType.ONLINE,
-        label: courseTypeLabels[AdminStudentCourseType.ONLINE],
-    }
+const modalityFilterOptions: Option[] = [
+    { value: AdminCourseModality.PRESENTIAL, label: 'Presencial' },
+    { value: AdminCourseModality.ONLINE, label: 'Online' },
 ];
 
 type AppliedFiltersState = {
@@ -178,32 +166,6 @@ const exportCoursesToPdf = (
     printWindow.print();
 };
 
-async function getCoursesToExport(filters: AppliedFiltersState) {
-    const firstPage = await getAdminStudents({
-        ...filters,
-        page: 1,
-        limit: 100,
-    });
-
-    const totalPages = Math.ceil(firstPage.total / firstPage.limit);
-
-    if (totalPages <= 1) {
-        return firstPage.data;
-    }
-
-    const pages = await Promise.all(
-        Array.from({ length: totalPages - 1 }, (_, index) =>
-            getAdminStudents({
-                ...filters,
-                page: index + 2,
-                limit: firstPage.limit,
-            }),
-        ),
-    );
-
-    return [firstPage, ...pages].flatMap((page) => page.data);
-}
-
 const handleExportSelected = (selectedCourses: AdminCourseDto[]) => {
     if (selectedCourses.length === 0) {
         toast.info('Selecione pelo menos um curso para exportar.');
@@ -296,25 +258,6 @@ function AdminStudents() {
         Object.keys(selectedCourses).length === 1 ? '' : 's'
     } selecionado${Object.keys(selectedCourses).length === 1 ? '' : 's'}`;
 
-    const handleExportAll = async () => {
-        const printWindow = window.open('', '_blank', 'width=1120,height=840');
-        setIsExporting(true);
-        try {
-            const courses = await getCoursesToExport(filters);
-            if (courses.length === 0) {
-                printWindow?.close();
-                toast.info('Nenhum curso encontrado para exportar.');
-                return;
-            }
-            exportCoursesToPdf(printWindow, courses, 'Gestão de Cursos');
-        } catch {
-            printWindow?.close();
-            toast.error('Não foi possível exportar a lista de cursos.');
-        } finally {
-            setIsExporting(false);
-        }
-    };
-
     const handleApplyAllFilters = () => {
         setPaginator({ page: 1 });
         setFilters({
@@ -327,7 +270,7 @@ function AdminStudents() {
 
     const handleClearFilters = () => {
         setSearchInput('');
-        setModality([]);
+        setModality(null);
         setPaginator({ page: 1 });
         setFilters(initialFiltersState);
     };
@@ -363,7 +306,8 @@ function AdminStudents() {
             header: 'Status',
             sortable: false,
             render: (course: AdminCourseDto) => {
-                const isActive = new Date(course.endDate) > new Date();
+                const isActive =
+                    `${course.status}`.toUpperCase() === 'ATIVO';
                 return (
                     <Chip
                         label={isActive ? 'Ativo' : 'Inativo'}
@@ -453,9 +397,12 @@ function AdminStudents() {
                     component='a'
                     target='_blank'
                     rel='noreferrer'
-                    onClick={() =>
-                        deleteConfirmation(deleteCourseMutation, course.id)
-                    }
+                    onClick={() => {
+                        void deleteConfirmation(
+                            deleteCourseMutation,
+                            course.id,
+                        );
+                    }}
                 >
                     <DeleteOutlineRounded fontSize='small' />
                 </IconButton>
@@ -580,7 +527,7 @@ function AdminStudents() {
                             </label>
                             <Select
                                 placeholder='Selecione as modalidades'
-                                options={courseTypeOptions}
+                                options={modalityFilterOptions}
                                 value={modality}
                                 onChange={(option) => setModality(option)}
                                 isSearchable
@@ -690,10 +637,10 @@ function CourseModalWrapper({
             onClose={onClose}
             course={{
                 ...course,
-                startDate: formatDateToBR(course?.startDate!)!,
-                endDate: formatDateToBR(course?.endDate!)!,
-                enrollmentStart: formatDateToBR(course?.enrollmentStart!)!,
-                enrollmentEnd: formatDateToBR(course?.enrollmentEnd!)!,
+                startDate: formatDateToBR(course.startDate) ?? '',
+                endDate: formatDateToBR(course.endDate) ?? '',
+                enrollmentStart: formatDateToBR(course.enrollmentStart) ?? '',
+                enrollmentEnd: formatDateToBR(course.enrollmentEnd) ?? '',
             }}
         />
     );

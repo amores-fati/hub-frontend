@@ -1,5 +1,6 @@
 'use client';
 import { CourseDto } from '@/dtos/CourseDto';
+import { resolveImageUrl } from '@/utils/shared-functions/image';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CheckIcon from '@mui/icons-material/Check';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -45,9 +46,10 @@ export function CourseCard({
     onAction,
     disabled,
 }: CourseCardProps) {
-    const headerBg = course.imageUrl
+    const resolvedImageUrl = resolveImageUrl(course.imageUrl);
+    const headerBg = resolvedImageUrl
         ? {
-              backgroundImage: `url(${course.imageUrl})`,
+              backgroundImage: `url(${resolvedImageUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
           }

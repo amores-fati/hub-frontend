@@ -123,7 +123,7 @@ export default function AdminReportTestsPage() {
             </div>
 
             <p className='admin-report-tests__note'>
-                Alunos ja deve ser testado na pagina /alunos pelo endpoint{' '}
+                Alunos ja deve ser testado na pagina /admin/alunos pelo endpoint{' '}
                 <code>POST /api/admin/reports/students</code>.
             </p>
         </section>

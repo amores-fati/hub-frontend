@@ -56,8 +56,8 @@ import {
     TableStoreProvider,
     useTableStore,
 } from '@/stores/TableStoreProvider';
-import { Cells, CellType } from '../../components/base/Table2/types';
-import BasicTable from '../../components/base/Table2/table';
+import { Cells, CellType } from '@/components/base/Table2/types';
+import BasicTable from '@/components/base/Table2/table';
 import { deleteConfirmation } from './Swal';
 
 const PAGE_SIZE = 20;
@@ -398,7 +398,7 @@ function AdminStudents() {
     }, [data, isLoading, isFetching]);
 
     const { mutate: deleteStudentsMutation, isPending } =
-        useDeleteAdminStudents(Object.keys(selectedStudents));
+        useDeleteAdminStudents();
 
     useEffect(() => {
         setSelectedStudents({});

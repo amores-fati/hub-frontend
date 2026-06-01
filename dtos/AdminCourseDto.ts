@@ -25,7 +25,7 @@ export type AdminCourseDto = {
     vacancyCount: number;
     enrollmentStart: string;
     enrollmentEnd: string;
-    imageUrl: string;
+    imageUrl: string | null;
     externalLink: string;
     shift: AdminCourseShift;
 };
@@ -52,6 +52,8 @@ export type CreateAdminCourseDto = {
     name: string;
     description: string;
     banner: string | null;
+    bannerImage: string | null;
+    bannerImageMimeType: string | null;
     address: string | null;
     vacancyCount: number | null;
     modality: AdminCourseModality;
