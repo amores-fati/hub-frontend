@@ -159,7 +159,7 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
             PaperProps={{ sx: { maxWidth: 729, borderRadius: '24px' } }}
         >
             <DialogTitle className='admin-course-form-modal__title'>
-                Cadastrar Novo Curso
+                {course?.id ? 'Editar Curso' : 'Cadastrar Novo Curso'}
             </DialogTitle>
 
             <DialogContent
@@ -397,7 +397,7 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                         <Input
                             placeholder='dd/mm/aaaa'
                             onChange={(e) => {
-                                setEndDate(
+                                setEnrollmentEnd(
                                     dateRegex(e?.target?.value ?? null) ?? '',
                                 );
                             }}

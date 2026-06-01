@@ -527,7 +527,7 @@ function AdminCurriculo() {
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') handleApplyAllFilters();
                             }}
-                            placeholder='Buscar por nome, CPF, email...'
+                            placeholder='Buscar por nome ou CPF'
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
                     </div>

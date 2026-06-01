@@ -73,11 +73,7 @@ const courseTypeOptions: Option[] = [
     {
         value: AdminStudentCourseType.ONLINE,
         label: courseTypeLabels[AdminStudentCourseType.ONLINE],
-    },
-    {
-        value: AdminStudentCourseType.NOT_ENROLLED,
-        label: courseTypeLabels[AdminStudentCourseType.NOT_ENROLLED],
-    },
+    }
 ];
 
 type AppliedFiltersState = {
@@ -530,7 +526,7 @@ function AdminStudents() {
                                     handleApplyAllFilters();
                                 }
                             }}
-                            placeholder='Buscar por nome, CPF, email...'
+                            placeholder='Buscar por nome'
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
                     </div>
