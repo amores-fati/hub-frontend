@@ -11,6 +11,7 @@ import {
     useGetDashboardStats,
     useGetDisabilityStats,
     useGetStudentCountByCity,
+    useGetStudentCountByMonth,
 } from '../services/api/admin/dashboard/queries';
 
 type HomeFallbackProps = {
@@ -55,8 +56,13 @@ export default function HomePage() {
         isLoading: isStudentCountLoading,
         isError: isStudentCountError,
     } = useGetStudentCountByCity();
+    const {
+        data: countByMonthData,
+        isLoading: isCountByMonthLoading,
+        isError: isCountByMonthError,
+    } = useGetStudentCountByMonth();
 
-    if (isDashboardLoading || isDisabilityLoading || isStudentCountLoading)
+    if (isDashboardLoading || isDisabilityLoading || isStudentCountLoading || isCountByMonthLoading)
         <Loading />;
 
     useEffect(() => {
@@ -75,7 +81,7 @@ export default function HomePage() {
 
     if (
         shouldRenderAdminHome &&
-        (isDashboardLoading || isDisabilityLoading || isStudentCountLoading) &&
+        (isDashboardLoading || isDisabilityLoading || isStudentCountLoading || isCountByMonthLoading) &&
         !dashboardData
     ) {
         return (
@@ -87,7 +93,7 @@ export default function HomePage() {
 
     if (
         shouldRenderAdminHome &&
-        (isDashboardError || isDisabilityError || isStudentCountError)
+        (isDashboardError || isDisabilityError || isStudentCountError || isCountByMonthError)
     ) {
         return (
             <HomeFallback
@@ -106,8 +112,7 @@ export default function HomePage() {
                         stats: dashboardData!,
                         disabilityDistribution: disabilityData!,
                         studentsByCity: countByCityData!,
-                        // TODO
-                        enrollmentsByMonth: [],
+                        enrollmentsByMonth: countByMonthData || [],
                         impactTimeline: [],
                     }}
                 />

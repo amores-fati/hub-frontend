@@ -59,7 +59,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardDto }) {
             </section>{' '}
             <section className='admin-dashboard__grid admin-dashboard__grid'>
                 {' '}
-                {/* <EnrollmentChart data={data.enrollmentsByMonth} />{' '} */}
+                <EnrollmentChart data={data.enrollmentsByMonth} />{' '}
                 <StatusDonutChart data={data.disabilityDistribution} />{' '}
             </section>{' '}
             <section className='admin-dashboard__grid admin-dashboard__grid'>

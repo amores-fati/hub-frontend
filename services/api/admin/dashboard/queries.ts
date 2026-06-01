@@ -90,3 +90,19 @@ export const useGetStudentCountByCity = (enabled = true) =>
                     return handledResponse as StudentsByCityDto[];
                 }),
     });
+
+type StudentCountByMonth = {
+    month: string;
+    count: number;
+}[];
+
+// Busca quantidade de alunos por mês
+export const useGetStudentCountByMonth = (enabled = true) =>
+    useQuery({
+        enabled,
+        queryKey: [QUERY_KEYS.ADMIN_DASHBOARD, 'students-by-month'],
+        queryFn: () =>
+            adminDashboardApi
+                .get<StudentCountByMonth>('/students/count-by-month')
+                .then((res) => res.data),
+    });
