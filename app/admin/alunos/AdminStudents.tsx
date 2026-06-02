@@ -239,12 +239,7 @@ const buildWhatsAppLink = (phone: string) => {
 const getBooleanLabel = (value?: boolean) =>
     value === undefined ? 'Não informado' : value ? 'Sim' : 'Não';
 
-const getCourseType = (student: AdminStudentDto) =>
-    student.enrolledCourse?.modality ?? AdminStudentCourseType.NOT_ENROLLED;
-
-const getCourseBadgeClassName = (student: AdminStudentDto) => {
-    const courseType = getCourseType(student);
-
+const getCourseBadgeClassName = (courseType: AdminStudentCourseType) => {
     if (courseType === AdminStudentCourseType.PRESENTIAL) {
         return 'admin-students__badge admin-students__badge--presential';
     }
@@ -548,10 +543,15 @@ function AdminStudents() {
             header: 'Curso',
             sortable: true,
             render: (student: AdminStudentDto) => (
-                <Chip
-                    label={courseTypeLabels[getCourseType(student)]}
-                    className={getCourseBadgeClassName(student)}
-                />
+                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                    {(student.enrollmentStatus ?? [AdminStudentCourseType.NOT_ENROLLED]).map((status) => (
+                        <Chip
+                            key={status}
+                            label={courseTypeLabels[status]}
+                            className={getCourseBadgeClassName(status)}
+                        />
+                    ))}
+                </div>
             ),
         },
         {

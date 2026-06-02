@@ -50,7 +50,7 @@ export type AdminStudentDto = {
     neighbourhood?: string | null;
     isPcd: boolean;
     disabilityType: AdminStudentDisabilityType;
-    enrolledCourse: AdminStudentCourseDto | null;
+    enrollmentStatus: AdminStudentCourseType[];
     scholarship?: Scholarship | null;
     institution?: string | null;
     whyJoinFatiLab?: string | null;
