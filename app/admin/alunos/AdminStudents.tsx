@@ -876,18 +876,13 @@ function AdminStudents() {
                                     <h3>{selectedStudent.fullName}</h3>
                                     <p>{selectedStudent.email}</p>
                                     <div className='admin-students__details-badges'>
-                                        <Chip
-                                            label={
-                                                courseTypeLabels[
-                                                    getCourseType(
-                                                        selectedStudent,
-                                                    )
-                                                ]
-                                            }
-                                            className={getCourseBadgeClassName(
-                                                selectedStudent,
-                                            )}
-                                        />
+                                        {(selectedStudent.enrollmentStatus ?? [AdminStudentCourseType.NOT_ENROLLED]).map((status) => (
+                                            <Chip
+                                                key={status}
+                                                label={courseTypeLabels[status]}
+                                                className={getCourseBadgeClassName(status)}
+                                            />
+                                        ))}
                                         <Chip
                                             label={
                                                 disabilityLabels[
@@ -1029,8 +1024,7 @@ function AdminStudents() {
                                     <div>
                                         <strong>Curso atual</strong>
                                         <span>
-                                            {selectedStudent.enrolledCourse
-                                                ?.name || 'Não inscrito'}
+                                            {selectedStudent.course || 'Não inscrito'}
                                         </span>
                                     </div>
                                 </div>
