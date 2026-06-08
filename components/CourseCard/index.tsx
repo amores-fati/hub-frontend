@@ -4,6 +4,7 @@ import { resolveImageUrl } from '@/utils/shared-functions/image';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CheckIcon from '@mui/icons-material/Check';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import './index.scss';
 
 const MODALITY_LABELS: Record<CourseDto['modality'], string> = {
@@ -91,9 +92,13 @@ export function CourseCard({
                             Saiba mais →
                         </button>
                         {action === 'inscrito' && (
-                            <button className='course-card__btn'>
+                            <button 
+                                className='course-card__btn'
+                                onClick={onAction}
+                                disabled={disabled}
+                            >
                                 <CheckIcon sx={{ fontSize: 14 }} />
-                                Inscrito
+                                Remover Inscrição
                             </button>
                         )}
                         {action === 'inscrever' && (
@@ -118,10 +123,11 @@ export function CourseCard({
                         {action === 'interessado' && (
                             <button
                                 className='course-card__btn course-card__btn--yellow'
-                                disabled
+                                onClick={onAction}
+                                disabled={disabled}
                             >
                                 <FavoriteIcon sx={{ fontSize: 14 }} />
-                                Interesse manifestado
+                                Remover Interesse
                             </button>
                         )}
                     </div>

@@ -36,6 +36,9 @@ export const useEnrollInCourse = () => {
             void queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.ENROLLMENTS],
             });
+            void queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.COURSES],
+            });
         },
         onError: handleEnrollmentError,
     });
@@ -53,8 +56,47 @@ export const useRegisterInterest = () => {
             void queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.ENROLLMENTS],
             });
+            void queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.COURSES],
+            });
         },
         onError: handleEnrollmentError,
+    });
+};
+
+export const useUnenrollFromCourse = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (courseId: string) =>
+            coursesApi.delete(`/${courseId}/enroll`).then((res) => res.data),
+        onSuccess: () => {
+            toast.success('Inscrição removida com sucesso');
+            void queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.ENROLLMENTS],
+            });
+            void queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.COURSES],
+            });
+        },
+        onError: () => toast.error('Erro ao remover inscrição'),
+    });
+};
+
+export const useRemoveInterest = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (courseId: string) =>
+            coursesApi.delete(`/${courseId}/interest`).then((res) => res.data),
+        onSuccess: () => {
+            toast.success('Interesse removido com sucesso');
+            void queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.ENROLLMENTS],
+            });
+            void queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.COURSES],
+            });
+        },
+        onError: () => toast.error('Erro ao remover interesse'),
     });
 };
 
