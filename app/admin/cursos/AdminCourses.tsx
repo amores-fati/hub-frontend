@@ -254,9 +254,8 @@ function AdminStudents() {
     }, [isPending]);
 
     const courses = data?.data ?? [];
-    const selectedCountLabel = `${Object.keys(selectedCourses).length} curso${
-        Object.keys(selectedCourses).length === 1 ? '' : 's'
-    } selecionado${Object.keys(selectedCourses).length === 1 ? '' : 's'}`;
+    const selectedCountLabel = `${Object.keys(selectedCourses).length} curso${Object.keys(selectedCourses).length === 1 ? '' : 's'
+        } selecionado${Object.keys(selectedCourses).length === 1 ? '' : 's'}`;
 
     const handleApplyAllFilters = () => {
         setPaginator({ page: 1 });
@@ -324,13 +323,13 @@ function AdminStudents() {
                 <Chip
                     label={
                         `${course.modality}`.toLowerCase() ===
-                        `${AdminCourseModality.PRESENTIAL}`.toLowerCase()
+                            `${AdminCourseModality.PRESENTIAL}`.toLowerCase()
                             ? 'PRESENCIAL'
                             : 'ONLINE'
                     }
                     className={
                         `${course.modality}`.toLowerCase() ===
-                        `${AdminCourseModality.PRESENTIAL}`.toLowerCase()
+                            `${AdminCourseModality.PRESENTIAL}`.toLowerCase()
                             ? 'admin-courses__badge admin-courses__badge--presential'
                             : 'admin-courses__badge admin-courses__badge--online'
                     }
