@@ -39,9 +39,7 @@ export const useUpdateVacancy = () =>
             id: string;
             payload: CreateOrUpdateVacancyDto;
         }) =>
-            companyVacanciesApi
-                .put(`/${id}`, payload)
-                .then((res) => res.data),
+            companyVacanciesApi.put(`/${id}`, payload).then((res) => res.data),
         onSuccess: async () => {
             toast.success('Vaga atualizada com sucesso.');
             await queryClient.invalidateQueries({

@@ -18,7 +18,10 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useCreateVacancy, useUpdateVacancy } from '@/services/api/companies/vacancies/mutations';
+import {
+    useCreateVacancy,
+    useUpdateVacancy,
+} from '@/services/api/companies/vacancies/mutations';
 import './vacancy-modal.scss';
 
 export type VacancyModalMode = 'create' | 'edit' | 'view';
@@ -96,9 +99,16 @@ const vacancyToForm = (vacancy: VacancyDto): FormState => ({
     skills: vacancy.skills ?? [],
 });
 
-export function VacancyModal({ open, mode, vacancy, onClose }: VacancyModalProps) {
+export function VacancyModal({
+    open,
+    mode,
+    vacancy,
+    onClose,
+}: VacancyModalProps) {
     const [form, setForm] = useState<FormState>(emptyForm);
-    const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+    const [errors, setErrors] = useState<
+        Partial<Record<keyof FormState, string>>
+    >({});
 
     const createMutation = useCreateVacancy();
     const updateMutation = useUpdateVacancy();
@@ -115,7 +125,10 @@ export function VacancyModal({ open, mode, vacancy, onClose }: VacancyModalProps
         setErrors({});
     }, [open, mode, vacancy]);
 
-    const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    const setField = <K extends keyof FormState>(
+        key: K,
+        value: FormState[K],
+    ) => {
         setForm((prev) => ({ ...prev, [key]: value }));
         setErrors((prev) => ({ ...prev, [key]: undefined }));
     };
@@ -136,10 +149,16 @@ export function VacancyModal({ open, mode, vacancy, onClose }: VacancyModalProps
         if (!form.link.trim()) {
             next.link = 'Campo obrigatório';
         } else if (!/^https?:\/\//i.test(form.link.trim())) {
-            next.link = 'Informe uma URL válida (deve começar com http:// ou https://)';
+            next.link =
+                'Informe uma URL válida (deve começar com http:// ou https://)';
         }
         const count = Number(form.vacancyCount);
-        if (!form.vacancyCount || count < 1 || !Number.isInteger(count) || count > 9999)
+        if (
+            !form.vacancyCount ||
+            count < 1 ||
+            !Number.isInteger(count) ||
+            count > 9999
+        )
             next.vacancyCount = 'Informe um número inteiro entre 1 e 9999';
         if (!form.isPcd) next.isPcd = 'Selecione uma opção';
         if (!form.workplaceType) next.workplaceType = 'Selecione uma opção';
@@ -198,7 +217,9 @@ export function VacancyModal({ open, mode, vacancy, onClose }: VacancyModalProps
 
                 {!isReadOnly && (
                     <ButtonComponent
-                        onClick={() => { void handleSubmit(); }}
+                        onClick={() => {
+                            void handleSubmit();
+                        }}
                         disabled={isPending}
                     >
                         <span className='vacancy-modal__button-content'>
@@ -278,7 +299,9 @@ function FormContent({
                     <Input
                         type='number'
                         value={form.vacancyCount}
-                        onChange={(e) => onField('vacancyCount', e.target.value)}
+                        onChange={(e) =>
+                            onField('vacancyCount', e.target.value)
+                        }
                         placeholder='Ex: 2'
                         error={!!errors.vacancyCount}
                     />
@@ -314,7 +337,10 @@ function FormContent({
                 <RadioGroup
                     value={form.workplaceType}
                     options={[
-                        { value: WorkplaceType.PRESENTIAL, label: 'Presencial' },
+                        {
+                            value: WorkplaceType.PRESENTIAL,
+                            label: 'Presencial',
+                        },
                         { value: WorkplaceType.ONLINE, label: 'Online' },
                         { value: WorkplaceType.HYBRID, label: 'Híbrido' },
                     ]}
@@ -406,7 +432,9 @@ function ViewContent({ vacancy }: { vacancy?: VacancyDto }) {
                             const d = new Date(vacancy.announcementDate);
                             return Number.isNaN(d.getTime())
                                 ? vacancy.announcementDate
-                                : new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(d);
+                                : new Intl.DateTimeFormat('pt-BR', {
+                                      timeZone: 'UTC',
+                                  }).format(d);
                         })()}
                     </span>
                 </div>

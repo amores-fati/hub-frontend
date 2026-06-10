@@ -62,7 +62,12 @@ export default function HomePage() {
         isError: isCountByMonthError,
     } = useGetStudentCountByMonth();
 
-    if (isDashboardLoading || isDisabilityLoading || isStudentCountLoading || isCountByMonthLoading)
+    if (
+        isDashboardLoading ||
+        isDisabilityLoading ||
+        isStudentCountLoading ||
+        isCountByMonthLoading
+    )
         <Loading />;
 
     useEffect(() => {
@@ -101,7 +106,10 @@ export default function HomePage() {
 
     if (
         shouldRenderAdminHome &&
-        (isDashboardError || isDisabilityError || isStudentCountError || isCountByMonthError)
+        (isDashboardError ||
+            isDisabilityError ||
+            isStudentCountError ||
+            isCountByMonthError)
     ) {
         return (
             <HomeFallback

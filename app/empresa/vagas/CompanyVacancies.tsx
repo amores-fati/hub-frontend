@@ -1,7 +1,11 @@
 'use client';
 
 import { Input, MultSelect } from '@/components/base';
-import { VacanciesQueryParams, VacancyDto, WorkplaceType } from '@/dtos/VacancyDto';
+import {
+    VacanciesQueryParams,
+    VacancyDto,
+    WorkplaceType,
+} from '@/dtos/VacancyDto';
 import { Option } from '@/components/base/Select/select';
 import {
     Chip,
@@ -47,9 +51,18 @@ const workplaceTypeLabels: Record<WorkplaceType, string> = {
 };
 
 const workplaceTypeOptions: Option[] = [
-    { value: WorkplaceType.PRESENTIAL, label: workplaceTypeLabels[WorkplaceType.PRESENTIAL] },
-    { value: WorkplaceType.ONLINE, label: workplaceTypeLabels[WorkplaceType.ONLINE] },
-    { value: WorkplaceType.HYBRID, label: workplaceTypeLabels[WorkplaceType.HYBRID] },
+    {
+        value: WorkplaceType.PRESENTIAL,
+        label: workplaceTypeLabels[WorkplaceType.PRESENTIAL],
+    },
+    {
+        value: WorkplaceType.ONLINE,
+        label: workplaceTypeLabels[WorkplaceType.ONLINE],
+    },
+    {
+        value: WorkplaceType.HYBRID,
+        label: workplaceTypeLabels[WorkplaceType.HYBRID],
+    },
 ];
 
 const pcdOptions: Option[] = [
@@ -86,7 +99,9 @@ export function CompanyVacancies() {
 function CompanyVacanciesContent() {
     const [searchInput, setSearchInput] = useState('');
     const [draftPcd, setDraftPcd] = useState<Option[]>([]);
-    const [draftWorkplaceTypes, setDraftWorkplaceTypes] = useState<Option[]>([]);
+    const [draftWorkplaceTypes, setDraftWorkplaceTypes] = useState<Option[]>(
+        [],
+    );
     const [filters, setFilters] = useState<FiltersState>(initialFilters);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [vacancyPendingDelete, setVacancyPendingDelete] =
@@ -109,8 +124,11 @@ function CompanyVacanciesContent() {
     const selectedRows = useTableStore((s) => s.selectedRows);
     const setSelectedRows = useTableStore((s) => s.setSelectedRows);
 
-    const openModal = useCallback((mode: VacancyModalMode, vacancy?: VacancyDto) =>
-        setModalState({ open: true, mode, vacancy }), []);
+    const openModal = useCallback(
+        (mode: VacancyModalMode, vacancy?: VacancyDto) =>
+            setModalState({ open: true, mode, vacancy }),
+        [],
+    );
     const closeModal = () =>
         setModalState((prev) => ({ ...prev, open: false }));
 
@@ -215,7 +233,7 @@ function CompanyVacanciesContent() {
                     className={`company-vacancies__badge company-vacancies__badge--${v.isPcd ? 'success' : 'danger'}`}
                 />
             ),
-        },       
+        },
         {
             key: 'announcementDate',
             header: 'Data de Anúncio',
@@ -227,7 +245,7 @@ function CompanyVacanciesContent() {
                 />
             ),
         },
-         {
+        {
             key: 'workplaceType',
             header: 'Tipo',
             sortable: false,
@@ -285,7 +303,10 @@ function CompanyVacanciesContent() {
                     <h1>Gestão de Vagas</h1>
                     <p>
                         Administração centralizada de{' '}
-                        <a href='#' className='company-vacancies__subtitle-link'>
+                        <a
+                            href='#'
+                            className='company-vacancies__subtitle-link'
+                        >
                             vagas
                         </a>
                         .
@@ -418,7 +439,9 @@ function CompanyVacanciesContent() {
                         type='button'
                         className='company-vacancies__bulk-export-btn'
                         onClick={() =>
-                            toast.info('Funcionalidade de exportação em desenvolvimento.')
+                            toast.info(
+                                'Funcionalidade de exportação em desenvolvimento.',
+                            )
                         }
                     >
                         <FileDownloadOutlinedIcon fontSize='small' />
@@ -459,9 +482,7 @@ function CompanyVacanciesContent() {
                     ) : (
                         <div className='company-vacancies__empty-state'>
                             <h2>Nenhuma vaga cadastrada</h2>
-                            <p>
-                                Nenhuma vaga foi encontrada na plataforma.
-                            </p>
+                            <p>Nenhuma vaga foi encontrada na plataforma.</p>
                         </div>
                     )
                 ) : (
