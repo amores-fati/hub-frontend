@@ -14,6 +14,8 @@ const buildApiParams = (params: VacanciesQueryParams) => {
     if (params.vacancyCount !== undefined)
         apiParams.vacancyCount = params.vacancyCount;
     if (params.isPcd !== undefined) apiParams.isPcd = params.isPcd;
+    if (params.workplaceTypes && params.workplaceTypes.length > 0)
+        apiParams.workplaceTypes = params.workplaceTypes;
 
     return apiParams;
 };
@@ -26,6 +28,7 @@ export const useGetCompanyVacancies = (params: VacanciesQueryParams) =>
             params.limit,
             params.search,
             params.isPcd,
+            params.vacancyCount,
             params.workplaceTypes,
         ],
         queryFn: () =>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Loading, MultSelect, Table } from '@/components/base';
+import { Input, MultSelect } from '@/components/base';
 import { VacanciesQueryParams, VacancyDto, WorkplaceType } from '@/dtos/VacancyDto';
 import { Option } from '@/components/base/Select/select';
 import {
@@ -11,6 +11,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    IconButton,
 } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
@@ -18,20 +19,26 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
 import AddIcon from '@mui/icons-material/Add';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined';
-import SystemUpdateAltOutlinedIcon from '@mui/icons-material/SystemUpdateAltOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
-import CloseIcon from '@mui/icons-material/Close';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import { ButtonComponent } from '@/components/base/Button/button';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useGetCompanyVacancies } from '@/services/api/companies/vacancies/queries';
 import { useDeleteVacancy } from '@/services/api/companies/vacancies/mutations';
 import { VacancyModal, VacancyModalMode } from './VacancyModal';
+import {
+    Action,
+    State,
+    TableStoreProvider,
+    useTableStore,
+} from '@/stores/TableStoreProvider';
+import { Cells, CellType } from '@/components/base/Table2/types';
+import BasicTable from '@/components/base/Table2/table';
 import './index.scss';
-
-const PAGE_SIZE = 5;
 
 const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.PRESENTIAL]: 'Presencial',
@@ -40,18 +47,9 @@ const workplaceTypeLabels: Record<WorkplaceType, string> = {
 };
 
 const workplaceTypeOptions: Option[] = [
-    {
-        value: WorkplaceType.PRESENTIAL,
-        label: workplaceTypeLabels[WorkplaceType.PRESENTIAL],
-    },
-    {
-        value: WorkplaceType.ONLINE,
-        label: workplaceTypeLabels[WorkplaceType.ONLINE],
-    },
-    {
-        value: WorkplaceType.HYBRID,
-        label: workplaceTypeLabels[WorkplaceType.HYBRID],
-    },
+    { value: WorkplaceType.PRESENTIAL, label: workplaceTypeLabels[WorkplaceType.PRESENTIAL] },
+    { value: WorkplaceType.ONLINE, label: workplaceTypeLabels[WorkplaceType.ONLINE] },
+    { value: WorkplaceType.HYBRID, label: workplaceTypeLabels[WorkplaceType.HYBRID] },
 ];
 
 const pcdOptions: Option[] = [
@@ -60,9 +58,9 @@ const pcdOptions: Option[] = [
 ];
 
 const formatAnnouncementDate = (dateStr: string) => {
-    const date = new Date(`${dateStr}T00:00:00`);
+    const date = new Date(dateStr);
     if (Number.isNaN(date.getTime())) return dateStr;
-    return new Intl.DateTimeFormat('pt-BR').format(date);
+    return new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(date);
 };
 
 type FiltersState = {
@@ -78,12 +76,18 @@ const initialFilters: FiltersState = {
 };
 
 export function CompanyVacancies() {
-    const [page, setPage] = useState(1);
+    return (
+        <TableStoreProvider>
+            <CompanyVacanciesContent />
+        </TableStoreProvider>
+    );
+}
+
+function CompanyVacanciesContent() {
     const [searchInput, setSearchInput] = useState('');
     const [draftPcd, setDraftPcd] = useState<Option[]>([]);
     const [draftWorkplaceTypes, setDraftWorkplaceTypes] = useState<Option[]>([]);
     const [filters, setFilters] = useState<FiltersState>(initialFilters);
-    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [vacancyPendingDelete, setVacancyPendingDelete] =
         useState<VacancyDto | null>(null);
@@ -93,15 +97,34 @@ export function CompanyVacancies() {
         vacancy?: VacancyDto;
     }>({ open: false, mode: 'create' });
 
-    const openModal = (mode: VacancyModalMode, vacancy?: VacancyDto) =>
-        setModalState({ open: true, mode, vacancy });
+    const paginator = useTableStore((s) => ({ ...s.paginator }));
+    const setPaginator = useTableStore((s) => s.setPaginator);
+    const setIsLoading = useTableStore((s) => s.setIsLoading);
+    const setCells = useTableStore(
+        (s: State<VacancyDto> & Action<VacancyDto>) => s.setCells,
+    );
+    const setContent = useTableStore(
+        (s: State<VacancyDto> & Action<VacancyDto>) => s.setContent,
+    );
+    const selectedRows = useTableStore((s) => s.selectedRows);
+    const setSelectedRows = useTableStore((s) => s.setSelectedRows);
+
+    const openModal = useCallback((mode: VacancyModalMode, vacancy?: VacancyDto) =>
+        setModalState({ open: true, mode, vacancy }), []);
     const closeModal = () =>
         setModalState((prev) => ({ ...prev, open: false }));
 
+    const hasFilters = Boolean(
+        filters.search || filters.isPcd.length || filters.workplaceTypes.length,
+    );
+
+    const selectedCount = Object.keys(selectedRows).length;
+    const selectedCountLabel = `${selectedCount} vaga${selectedCount === 1 ? '' : 's'} selecionada${selectedCount === 1 ? '' : 's'}`;
+
     const queryParams = useMemo<VacanciesQueryParams>(
         () => ({
-            page,
-            limit: PAGE_SIZE,
+            page: paginator.page,
+            limit: paginator.rowsPerPage,
             search: filters.search || undefined,
             isPcd:
                 filters.isPcd.length === 1
@@ -112,32 +135,32 @@ export function CompanyVacancies() {
                     ? filters.workplaceTypes
                     : undefined,
         }),
-        [filters, page],
+        [filters, paginator.page, paginator.rowsPerPage],
     );
 
     const { data, isLoading, isFetching, isError } =
         useGetCompanyVacancies(queryParams);
     const deleteVacancyMutation = useDeleteVacancy();
 
-    const vacancies = data?.data ?? [];
-    const total = data?.total ?? 0;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-    const visibleIds = vacancies.map((v) => v.id);
-    const selectedVisibleCount = visibleIds.filter((id) =>
-        selectedIds.includes(id),
-    ).length;
-    const allVisibleSelected =
-        visibleIds.length > 0 &&
-        selectedVisibleCount === visibleIds.length;
-    const someVisibleSelected =
-        selectedVisibleCount > 0 &&
-        selectedVisibleCount < visibleIds.length;
-    const rangeStart = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-    const rangeEnd = Math.min(page * PAGE_SIZE, total);
-    const selectedCountLabel = `${selectedIds.length} vaga${selectedIds.length === 1 ? '' : 's'} selecionada${selectedIds.length === 1 ? '' : 's'}`;
+    useEffect(() => {
+        if (isLoading || isFetching) {
+            setIsLoading(true);
+            return;
+        }
+        if (data) {
+            setContent(data.data);
+            setPaginator({ itemsCount: data.total });
+        }
+        setIsLoading(false);
+    }, [data, isLoading, isFetching]);
+
+    useEffect(() => {
+        setSelectedRows({});
+    }, [filters, paginator.page]);
 
     const handleApplyFilters = () => {
-        setPage(1);
+        setPaginator({ page: 1 });
+        setSelectedRows({});
         setFilters({
             search: searchInput.trim(),
             isPcd: draftPcd.map((o) => String(o.value)),
@@ -146,91 +169,114 @@ export function CompanyVacancies() {
     };
 
     const handleClearFilters = () => {
-        setPage(1);
         setSearchInput('');
         setDraftPcd([]);
         setDraftWorkplaceTypes([]);
+        setPaginator({ page: 1 });
         setFilters(initialFilters);
-        setSelectedIds([]);
-    };
-
-    const toggleSelection = (id: string) => {
-        setSelectedIds((prev) =>
-            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-        );
-    };
-
-    const toggleAllVisible = () => {
-        if (allVisibleSelected) {
-            setSelectedIds((prev) =>
-                prev.filter((id) => !visibleIds.includes(id)),
-            );
-            return;
-        }
-        setSelectedIds((prev) => [...new Set([...prev, ...visibleIds])]);
+        setSelectedRows({});
     };
 
     const handleDelete = async () => {
         if (!vacancyPendingDelete) return;
-        await deleteVacancyMutation.mutateAsync(vacancyPendingDelete.id);
-        setSelectedIds((prev) =>
-            prev.filter((id) => id !== vacancyPendingDelete.id),
-        );
-        setVacancyPendingDelete(null);
+        try {
+            await deleteVacancyMutation.mutateAsync(vacancyPendingDelete.id);
+            setVacancyPendingDelete(null);
+        } catch {
+            toast.error('Não foi possível excluir a vaga. Tente novamente.');
+        }
     };
 
-    const columns = useMemo(
-        () => [
-            {
-                key: 'title',
-                header: 'Nome',
-                render: (vacancy: VacancyDto) => (
-                    <span className='company-vacancies__vacancy-name'>
-                        {vacancy.title}
-                    </span>
-                ),
-            },
-            {
-                key: 'vacancyCount',
-                header: 'Número de Vagas',
-                render: (vacancy: VacancyDto) => vacancy.vacancyCount,
-            },
-            {
-                key: 'isPcd',
-                header: 'Exclusivo PCD',
-                render: (vacancy: VacancyDto) => (
+    const cells: Cells<VacancyDto>[] = [
+        { key: 'id', header: '', type: CellType.CHECKBOX, sortable: false },
+        {
+            key: 'title',
+            header: 'Nome',
+            sortable: false,
+            render: (v) => (
+                <span className='company-vacancies__vacancy-name'>
+                    {v.title}
+                </span>
+            ),
+        },
+        {
+            key: 'vacancyCount',
+            header: 'Número de Vagas',
+            sortable: false,
+            render: (v) => v.vacancyCount,
+        },
+        {
+            key: 'isPcd',
+            header: 'Exclusivo PCD',
+            sortable: false,
+            render: (v) => (
+                <Chip
+                    label={v.isPcd ? 'SIM' : 'NÃO'}
+                    className={`company-vacancies__badge company-vacancies__badge--${v.isPcd ? 'success' : 'danger'}`}
+                />
+            ),
+        },       
+        {
+            key: 'announcementDate',
+            header: 'Data de Anúncio',
+            sortable: false,
+            render: (v) => (
+                <Chip
+                    label={formatAnnouncementDate(v.announcementDate)}
+                    className='company-vacancies__badge company-vacancies__badge--date'
+                />
+            ),
+        },
+         {
+            key: 'workplaceType',
+            header: 'Tipo',
+            sortable: false,
+            render: (v) =>
+                v.workplaceType ? (
                     <Chip
-                        label={vacancy.isPcd ? 'SIM' : 'NÃO'}
-                        className={`company-vacancies__badge company-vacancies__badge--${vacancy.isPcd ? 'success' : 'danger'}`}
+                        label={workplaceTypeLabels[v.workplaceType]}
+                        className={`company-vacancies__badge company-vacancies__badge--workplace-${v.workplaceType}`}
                     />
+                ) : (
+                    <span className='company-vacancies__empty-cell'>—</span>
                 ),
-            },
-            {
-                key: 'workplaceType',
-                header: 'Modalidade',
-                render: (vacancy: VacancyDto) =>
-                    vacancy.workplaceType ? (
-                        <Chip
-                            label={workplaceTypeLabels[vacancy.workplaceType]}
-                            className={`company-vacancies__badge company-vacancies__badge--workplace-${vacancy.workplaceType}`}
-                        />
-                    ) : (
-                        <span className='company-vacancies__empty-cell'>—</span>
-                    ),
-            },
-            {
-                key: 'announcementDate',
-                header: 'Data de Anúncio',
-                render: (vacancy: VacancyDto) => (
-                    <Chip
-                        label={formatAnnouncementDate(vacancy.announcementDate)}
-                        className='company-vacancies__badge company-vacancies__badge--date'
-                    />
-                ),
-            },
-        ],
-        [],
-    );
+        },
+        {
+            key: 'actions',
+            header: 'Ações',
+            sortable: false,
+            render: (v) => (
+                <div className='custom-table__actions'>
+                    <IconButton
+                        className='custom-table__action-button'
+                        onClick={() => openModal('view', v)}
+                    >
+                        <VisibilityOutlinedIcon fontSize='small' />
+                    </IconButton>
+                    <IconButton
+                        className='custom-table__action-button'
+                        onClick={() => openModal('edit', v)}
+                    >
+                        <EditOutlinedIcon fontSize='small' />
+                    </IconButton>
+                    <IconButton
+                        className='custom-table__action-button custom-table__action-button--danger'
+                        onClick={() => setVacancyPendingDelete(v)}
+                    >
+                        <DeleteOutlineRoundedIcon fontSize='small' />
+                    </IconButton>
+                </div>
+            ),
+        },
+    ];
+
+    useEffect(() => {
+        setCells(cells);
+    }, []);
+
+    const isBusy = isLoading || isFetching;
+    const vacancies = data?.data ?? [];
+    const isEmpty = !isBusy && vacancies.length === 0;
 
     return (
         <section className='company-vacancies'>
@@ -279,14 +325,14 @@ export function CompanyVacancies() {
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') handleApplyFilters();
                             }}
-                            placeholder='Buscar por nome, número de vagas, exclusividade para PCD...'
+                            placeholder='Buscar por nome'
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
                     </div>
 
                     <ButtonComponent
                         onClick={handleApplyFilters}
-                        disabled={isLoading}
+                        disabled={isBusy}
                     >
                         <span className='company-vacancies__button-content'>
                             <SearchRoundedIcon fontSize='small' />
@@ -304,6 +350,10 @@ export function CompanyVacancies() {
                         </span>
                     </ButtonComponent>
                 </div>
+
+                <small className='company-vacancies__search-helper'>
+                    A busca funciona com qualquer quantidade de caracteres.
+                </small>
 
                 <button
                     className='company-vacancies__advanced-toggle'
@@ -356,100 +406,66 @@ export function CompanyVacancies() {
                 </Collapse>
             </div>
 
-            {selectedIds.length > 0 && (
+            {selectedCount > 0 && (
                 <div className='company-vacancies__bulk-bar'>
-                    <strong>{selectedCountLabel}</strong>
+                    <strong className='company-vacancies__bulk-count'>
+                        {selectedCountLabel}
+                    </strong>
 
-                    <div className='company-vacancies__bulk-actions'>
-                        <button
-                            type='button'
-                            onClick={() =>
-                                toast.info('Funcionalidade em desenvolvimento.')
-                            }
-                        >
-                            <MessageOutlinedIcon fontSize='small' />
-                            Enviar mensagem
-                        </button>
+                    <span className='company-vacancies__bulk-divider' />
 
-                        <button
-                            type='button'
-                            onClick={() =>
-                                toast.info('Funcionalidade em desenvolvimento.')
-                            }
-                        >
-                            <SystemUpdateAltOutlinedIcon fontSize='small' />
-                            Atualizar status
-                        </button>
+                    <button
+                        type='button'
+                        className='company-vacancies__bulk-export-btn'
+                        onClick={() =>
+                            toast.info('Funcionalidade de exportação em desenvolvimento.')
+                        }
+                    >
+                        <FileDownloadOutlinedIcon fontSize='small' />
+                        Exportar selecionados
+                    </button>
 
-                        <button
-                            type='button'
-                            onClick={() =>
-                                toast.info('Funcionalidade em desenvolvimento.')
-                            }
-                        >
-                            <FileDownloadOutlinedIcon fontSize='small' />
-                            Exportar selecionados
-                        </button>
-
-                        <button
-                            type='button'
-                            className='company-vacancies__bulk-clear'
-                            onClick={() => setSelectedIds([])}
-                            aria-label='Limpar seleção'
-                        >
-                            <CloseIcon fontSize='small' />
-                        </button>
-                    </div>
+                    <button
+                        type='button'
+                        className='company-vacancies__bulk-close'
+                        onClick={() => setSelectedRows({})}
+                        aria-label='Limpar seleção'
+                    >
+                        ×
+                    </button>
                 </div>
             )}
 
             <div className='company-vacancies__table-card'>
-                {isLoading && !data ? (
-                    <div className='company-vacancies__loading-state'>
-                        <Loading />
-                    </div>
-                ) : isError ? (
+                {isError ? (
                     <div className='company-vacancies__empty-state'>
-                        <span className='company-vacancies__eyebrow'>
-                            Erro ao carregar
-                        </span>
                         <h2>Não foi possível carregar as vagas.</h2>
                     </div>
-                ) : vacancies.length === 0 ? (
-                    <div className='company-vacancies__empty-state'>
-                        <h2>
-                            Nenhuma vaga encontrada com os filtros aplicados.
-                        </h2>
-                        <p>Tente ajustar a busca ou limpar os filtros.</p>
-                    </div>
+                ) : isEmpty ? (
+                    hasFilters ? (
+                        <div className='company-vacancies__empty-state'>
+                            <h2>
+                                Nenhuma vaga encontrada com os filtros
+                                aplicados.
+                            </h2>
+                            <p>Tente ajustar a busca ou limpar os filtros.</p>
+                            <ButtonComponent
+                                variant='secondary'
+                                onClick={handleClearFilters}
+                            >
+                                Limpar filtros
+                            </ButtonComponent>
+                        </div>
+                    ) : (
+                        <div className='company-vacancies__empty-state'>
+                            <h2>Nenhuma vaga cadastrada</h2>
+                            <p>
+                                Nenhuma vaga foi encontrada na plataforma.
+                            </p>
+                        </div>
+                    )
                 ) : (
-                    <Table
-                        values={vacancies}
-                        columns={columns}
-                        getRowId={(v) => v.id}
-                        selectable
-                        selectedIds={selectedIds}
-                        allVisibleSelected={allVisibleSelected}
-                        someVisibleSelected={someVisibleSelected}
-                        onToggleSelect={toggleSelection}
-                        onToggleSelectAll={toggleAllVisible}
-                        actionColumnConfig={{
-                            showView: true,
-                            onView: (vacancy) => openModal('view', vacancy),
-                            showEdit: true,
-                            onEdit: (vacancy) => openModal('edit', vacancy),
-                            showDelete: true,
-                            onDelete: (vacancy) =>
-                                setVacancyPendingDelete(vacancy),
-                        }}
-                        pagination={{
-                            page,
-                            count: totalPages,
-                            onChange: setPage,
-                            isFetching,
-                            summaryText: `Exibindo ${rangeStart} a ${rangeEnd} de ${total} vagas`,
-                        }}
-                    />
+                    <BasicTable />
                 )}
             </div>
 

@@ -17,6 +17,7 @@ import {
     TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useCreateVacancy, useUpdateVacancy } from '@/services/api/companies/vacancies/mutations';
 import './vacancy-modal.scss';
 
@@ -50,7 +51,7 @@ const SKILLS_OPTIONS = [
 const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.PRESENTIAL]: 'Presencial',
     [WorkplaceType.ONLINE]: 'Online',
-    [WorkplaceType.HYBRID]: 'Híbrida',
+    [WorkplaceType.HYBRID]: 'Híbrido',
 };
 
 const titleMap: Record<VacancyModalMode, string> = {
@@ -132,9 +133,14 @@ export function VacancyModal({ open, mode, vacancy, onClose }: VacancyModalProps
         const next: Partial<Record<keyof FormState, string>> = {};
         if (!form.title.trim()) next.title = 'Campo obrigatório';
         if (!form.description.trim()) next.description = 'Campo obrigatório';
-        if (!form.link.trim()) next.link = 'Campo obrigatório';
-        if (!form.vacancyCount || Number(form.vacancyCount) < 1)
-            next.vacancyCount = 'Mínimo 1 vaga';
+        if (!form.link.trim()) {
+            next.link = 'Campo obrigatório';
+        } else if (!/^https?:\/\//i.test(form.link.trim())) {
+            next.link = 'Informe uma URL válida (deve começar com http:// ou https://)';
+        }
+        const count = Number(form.vacancyCount);
+        if (!form.vacancyCount || count < 1 || !Number.isInteger(count) || count > 9999)
+            next.vacancyCount = 'Informe um número inteiro entre 1 e 9999';
         if (!form.isPcd) next.isPcd = 'Selecione uma opção';
         if (!form.workplaceType) next.workplaceType = 'Selecione uma opção';
         setErrors(next);
@@ -154,14 +160,16 @@ export function VacancyModal({ open, mode, vacancy, onClose }: VacancyModalProps
     const handleSubmit = async () => {
         if (!validate()) return;
         const payload = buildPayload();
-
-        if (mode === 'create') {
-            await createMutation.mutateAsync(payload);
-        } else if (mode === 'edit' && vacancy) {
-            await updateMutation.mutateAsync({ id: vacancy.id, payload });
+        try {
+            if (mode === 'create') {
+                await createMutation.mutateAsync(payload);
+            } else if (mode === 'edit' && vacancy) {
+                await updateMutation.mutateAsync({ id: vacancy.id, payload });
+            }
+            onClose();
+        } catch {
+            toast.error('Não foi possível salvar a vaga. Tente novamente.');
         }
-
-        onClose();
     };
 
     return (
@@ -308,7 +316,7 @@ function FormContent({
                     options={[
                         { value: WorkplaceType.PRESENTIAL, label: 'Presencial' },
                         { value: WorkplaceType.ONLINE, label: 'Online' },
-                        { value: WorkplaceType.HYBRID, label: 'Híbrida' },
+                        { value: WorkplaceType.HYBRID, label: 'Híbrido' },
                     ]}
                     onChange={(_, value) =>
                         onField('workplaceType', value as WorkplaceType)
@@ -363,7 +371,7 @@ function ViewContent({ vacancy }: { vacancy?: VacancyDto }) {
                 <div className='vacancy-modal__view-item vacancy-modal__view-item--full'>
                     <strong>Link da Vaga</strong>
                     <a
-                        href={vacancy.link}
+                        href={vacancy.link ?? undefined}
                         target='_blank'
                         rel='noreferrer'
                         className='vacancy-modal__link'
@@ -394,9 +402,12 @@ function ViewContent({ vacancy }: { vacancy?: VacancyDto }) {
                 <div className='vacancy-modal__view-item'>
                     <strong>Data de Anúncio</strong>
                     <span>
-                        {new Intl.DateTimeFormat('pt-BR').format(
-                            new Date(`${vacancy.announcementDate}T00:00:00`),
-                        )}
+                        {(() => {
+                            const d = new Date(vacancy.announcementDate);
+                            return Number.isNaN(d.getTime())
+                                ? vacancy.announcementDate
+                                : new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(d);
+                        })()}
                     </span>
                 </div>
 

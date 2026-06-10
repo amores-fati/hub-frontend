@@ -102,6 +102,13 @@
     }
 }
 
+.company-vacancies__search-helper {
+    display: block;
+    margin-top: 0.45rem;
+    color: var(--text-muted);
+    font: var(--footnote);
+}
+
 .company-vacancies__advanced-toggle {
     display: flex;
     justify-content: space-between;
@@ -134,51 +141,57 @@
 .company-vacancies__bulk-bar {
     padding: var(--spacing-md) var(--spacing-lg);
     display: flex;
-    justify-content: space-between;
     align-items: center;
     gap: var(--spacing-md);
-
-    strong {
-        color: var(--tertiary-color);
-        font: var(--callout-bold);
-        white-space: nowrap;
-    }
 }
 
-.company-vacancies__bulk-actions {
-    display: flex;
-    gap: var(--spacing-sm);
+.company-vacancies__bulk-count {
+    color: var(--tertiary-color);
+    font: var(--callout-bold);
+    white-space: nowrap;
+}
+
+.company-vacancies__bulk-divider {
+    flex: 1;
+}
+
+.company-vacancies__bulk-export-btn {
+    display: inline-flex;
     align-items: center;
-    flex-wrap: wrap;
+    gap: 0.4rem;
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius);
+    font: var(--callout);
+    transition: background-color var(--transition-fast);
 
-    button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        color: var(--text-primary);
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--border-radius);
-        transition: background-color var(--transition-fast);
-        font: var(--callout);
-    }
-
-    button:hover {
+    &:hover {
         background: var(--surface-alt);
     }
-
-    button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
 }
 
-.company-vacancies__bulk-clear {
-    border: 1px solid var(--border-color) !important;
-    padding: 0.4rem !important;
+.company-vacancies__bulk-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+        background: var(--surface-alt);
+        color: var(--text-primary);
+    }
 }
 
 .company-vacancies__table-card {
     overflow: hidden;
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 .company-vacancies__loading-state,
