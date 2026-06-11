@@ -43,6 +43,7 @@ import { useRouter } from 'next/navigation';
 import { useGetAdminCurriculum } from '@/services/api/admin/curriculum/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import { cityStateToLocation } from '../../../utils/shared-functions/formatter';
+import { resolveImageUrl } from '@/utils/shared-functions/image';
 
 // ─── Labels & options ────────────────────────────────────────────────────────
 
@@ -385,7 +386,7 @@ function AdminCurriculo() {
             render: (c) => (
                 <div className='admin-curriculos__student-cell'>
                     <Avatar
-                        src={c.photoUrl || undefined}
+                        src={resolveImageUrl(c.photoUrl) || undefined}
                         className='admin-curriculos__avatar'
                     >
                         {c.fullName

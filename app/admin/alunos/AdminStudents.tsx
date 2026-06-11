@@ -59,6 +59,7 @@ import {
 import { Cells, CellType } from '@/components/base/Table2/types';
 import BasicTable from '@/components/base/Table2/table';
 import { deleteConfirmation } from './Swal';
+import { resolveImageUrl } from '@/utils/shared-functions/image';
 
 const PAGE_SIZE = 20;
 
@@ -515,7 +516,7 @@ function AdminStudents() {
             render: (student: AdminStudentDto) => (
                 <div className='admin-students__student-cell'>
                     <Avatar
-                        src={student.photoUrl || undefined}
+                        src={resolveImageUrl(student.photoUrl) || undefined}
                         className='admin-students__avatar'
                     >
                         {student.fullName
@@ -862,7 +863,7 @@ function AdminStudents() {
                         <div className='admin-students__details'>
                             <div className='admin-students__details-header'>
                                 <Avatar
-                                    src={selectedStudent.photoUrl || undefined}
+                                    src={resolveImageUrl(selectedStudent.photoUrl) || undefined}
                                     className='admin-students__avatar admin-students__avatar--large'
                                 >
                                     {selectedStudent.fullName
