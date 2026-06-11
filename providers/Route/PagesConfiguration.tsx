@@ -37,6 +37,13 @@ export const PAGES: Page[] = [
         name: 'Login',
     },
     {
+        path: '/redefinir-senha',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Redefinir Senha',
+    },
+    {
         path: '/teste',
         navbarEnabled: false,
         requireRoles: [],
@@ -125,7 +132,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
     [UserRole.ADMIN]: [
         { title: 'Dashboard', icon: <DashboardIcon />, expectedPath: '/' },
         { title: 'Alunos', icon: <GroupIcon />, expectedPath: '/admin/alunos' },
-        { title: 'Cursos', icon: <MenuBookIcon />, expectedPath: '/admin/cursos' },
+        {
+            title: 'Cursos',
+            icon: <MenuBookIcon />,
+            expectedPath: '/admin/cursos',
+        },
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,

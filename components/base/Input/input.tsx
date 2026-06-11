@@ -2,6 +2,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import React, {
     ChangeEventHandler,
+    FocusEventHandler,
     KeyboardEventHandler,
     useState,
 } from 'react';
@@ -9,6 +10,7 @@ import './index.scss';
 
 export type InputProps = {
     onChange?: ChangeEventHandler<HTMLInputElement> | undefined;
+    onBlur?: FocusEventHandler<HTMLInputElement> | undefined;
     onKeyDown?: KeyboardEventHandler<HTMLInputElement> | undefined;
     disabled?: boolean;
     placeholder?: string;
@@ -31,6 +33,7 @@ export function InputComponent({
     placeholder,
     disabled = false,
     onChange,
+    onBlur,
     onKeyDown,
     icon,
     value,
@@ -66,6 +69,7 @@ export function InputComponent({
                 },
             }}
             disabled={disabled}
+            onBlur={onBlur}
             onChange={onChange}
             onKeyDown={onKeyDown}
             type={isPassword && showPassword ? 'text' : type}
