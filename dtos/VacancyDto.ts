@@ -1,19 +1,23 @@
+import { Skill } from '../services/api/skills/types';
+
 export enum WorkplaceType {
-    PRESENTIAL = 'presential',
+    PRESENTIAL = 'presencial',
     ONLINE = 'online',
-    HYBRID = 'hybrid',
+    HYBRID = 'hibrido',
 }
 
 export type VacancyDto = {
     id: string;
-    title: string;
     vacancyCount: number;
     isPcd: boolean;
     announcementDate: string;
     workplaceType?: WorkplaceType | null;
     description?: string | null;
-    link?: string | null;
-    skills?: string[];
+    skills: Skill[];
+    companyId: string;
+    name: string;
+    openingsCount: number;
+    applicationLink?: string | null;
 };
 
 export type VacanciesResponseDto = {
@@ -33,10 +37,10 @@ export type VacanciesQueryParams = {
 };
 
 export type CreateOrUpdateVacancyDto = {
-    title: string;
+    name: string;
     description: string;
-    link: string;
-    vacancyCount: number;
+    applicationLink: string;
+    openingsCount: number;
     isPcd: boolean;
     workplaceType: WorkplaceType;
     skills?: string[];

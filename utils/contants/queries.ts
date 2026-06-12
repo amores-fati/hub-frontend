@@ -14,6 +14,7 @@ const QUERY_KEYS = {
     STUDENT_RESUME: 'student-resume',
     STUDENT: 'student',
     ADMIN_LOCATIONS: 'admin-locations',
+    SKILLS: 'skills',
 };
 
 export default QUERY_KEYS;

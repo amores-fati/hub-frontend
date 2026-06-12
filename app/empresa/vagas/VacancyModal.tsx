@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, RadioGroup } from '@/components/base';
+import { Input, Loading, RadioGroup } from '@/components/base';
 import Checkbox from '@/components/base/Checkbox/checkbox';
 import { ButtonComponent } from '@/components/base/Button/button';
 import {
@@ -17,44 +17,27 @@ import {
     TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import {
     useCreateVacancy,
     useUpdateVacancy,
 } from '@/services/api/companies/vacancies/mutations';
 import './vacancy-modal.scss';
+import { formatDateToBR } from '../../../utils/shared-functions/date';
+import { useGetSkills } from '../../../services/api/skills/queries';
 
 export type VacancyModalMode = 'create' | 'edit' | 'view';
 
 type VacancyModalProps = {
     open: boolean;
     mode: VacancyModalMode;
-    vacancy?: VacancyDto;
+    vacancy: VacancyDto | null;
     onClose: () => void;
 };
-
-const SKILLS_OPTIONS = [
-    'Java',
-    'Python',
-    'FastAPI',
-    'React',
-    'Node.js',
-    'TypeScript',
-    'HTML',
-    'CSS',
-    'SQL',
-    'Docker',
-    'Figma',
-    'UX Research',
-    'Spring Boot',
-    'Kubernetes',
-    'Scrum',
-];
 
 const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.PRESENTIAL]: 'Presencial',
     [WorkplaceType.ONLINE]: 'Online',
-    [WorkplaceType.HYBRID]: 'Híbrido',
+    [WorkplaceType.HYBRID]: 'Híbrida',
 };
 
 const titleMap: Record<VacancyModalMode, string> = {
@@ -70,33 +53,36 @@ const submitLabelMap: Record<VacancyModalMode, string> = {
 };
 
 type FormState = {
-    title: string;
+    name: string;
     description: string;
-    link: string;
-    vacancyCount: string;
+    applicationLink: string;
+    openingsCount: number;
     isPcd: 'true' | 'false' | '';
     workplaceType: WorkplaceType | '';
     skills: string[];
 };
 
 const emptyForm: FormState = {
-    title: '',
+    name: '',
     description: '',
-    link: '',
-    vacancyCount: '',
+    applicationLink: '',
+    openingsCount: 0,
     isPcd: '',
     workplaceType: '',
     skills: [],
 };
 
 const vacancyToForm = (vacancy: VacancyDto): FormState => ({
-    title: vacancy.title,
+    name: vacancy.name,
     description: vacancy.description ?? '',
-    link: vacancy.link ?? '',
-    vacancyCount: String(vacancy.vacancyCount),
+    applicationLink: vacancy.applicationLink ?? '',
+    openingsCount: vacancy.openingsCount,
     isPcd: vacancy.isPcd ? 'true' : 'false',
     workplaceType: vacancy.workplaceType ?? '',
-    skills: vacancy.skills ?? [],
+    skills:
+        vacancy && vacancy.skills
+            ? vacancy.skills.map((skill) => skill.id)
+            : [],
 });
 
 export function VacancyModal({
@@ -109,21 +95,25 @@ export function VacancyModal({
     const [errors, setErrors] = useState<
         Partial<Record<keyof FormState, string>>
     >({});
+    const [isHydrated, setIsHydrated] = useState<boolean>(false);
 
-    const createMutation = useCreateVacancy();
-    const updateMutation = useUpdateVacancy();
-    const isPending = createMutation.isPending || updateMutation.isPending;
+    const { mutate: createMutation, isPending: isCreatePending } =
+        useCreateVacancy();
+    const { mutate: updateMutation, isPending: isUpdatePending } =
+        useUpdateVacancy();
+    const isPending = isCreatePending || isUpdatePending;
     const isReadOnly = mode === 'view';
 
     useEffect(() => {
         if (!open) return;
-        if (mode === 'create') {
-            setForm(emptyForm);
-        } else if (vacancy) {
+        if (vacancy) {
             setForm(vacancyToForm(vacancy));
         }
         setErrors({});
+        setIsHydrated(true);
     }, [open, mode, vacancy]);
+
+    if (!isHydrated) return <Loading />;
 
     const setField = <K extends keyof FormState>(
         key: K,
@@ -144,22 +134,10 @@ export function VacancyModal({
 
     const validate = (): boolean => {
         const next: Partial<Record<keyof FormState, string>> = {};
-        if (!form.title.trim()) next.title = 'Campo obrigatório';
+        if (!form.name.trim()) next.name = 'Campo obrigatório';
         if (!form.description.trim()) next.description = 'Campo obrigatório';
-        if (!form.link.trim()) {
-            next.link = 'Campo obrigatório';
-        } else if (!/^https?:\/\//i.test(form.link.trim())) {
-            next.link =
-                'Informe uma URL válida (deve começar com http:// ou https://)';
-        }
-        const count = Number(form.vacancyCount);
-        if (
-            !form.vacancyCount ||
-            count < 1 ||
-            !Number.isInteger(count) ||
-            count > 9999
-        )
-            next.vacancyCount = 'Informe um número inteiro entre 1 e 9999';
+        if (!form.openingsCount || Number(form.openingsCount) < 1)
+            next.openingsCount = 'Mínimo 1 vaga';
         if (!form.isPcd) next.isPcd = 'Selecione uma opção';
         if (!form.workplaceType) next.workplaceType = 'Selecione uma opção';
         setErrors(next);
@@ -167,10 +145,10 @@ export function VacancyModal({
     };
 
     const buildPayload = (): CreateOrUpdateVacancyDto => ({
-        title: form.title.trim(),
+        name: form.name.trim(),
         description: form.description.trim(),
-        link: form.link.trim(),
-        vacancyCount: Number(form.vacancyCount),
+        applicationLink: form.applicationLink.trim(),
+        openingsCount: form.openingsCount,
         isPcd: form.isPcd === 'true',
         workplaceType: form.workplaceType as WorkplaceType,
         skills: form.skills,
@@ -179,16 +157,14 @@ export function VacancyModal({
     const handleSubmit = async () => {
         if (!validate()) return;
         const payload = buildPayload();
-        try {
-            if (mode === 'create') {
-                await createMutation.mutateAsync(payload);
-            } else if (mode === 'edit' && vacancy) {
-                await updateMutation.mutateAsync({ id: vacancy.id, payload });
-            }
-            onClose();
-        } catch {
-            toast.error('Não foi possível salvar a vaga. Tente novamente.');
+
+        if (mode === 'create') {
+            createMutation(payload);
+        } else if (mode === 'edit' && vacancy) {
+            updateMutation({ id: vacancy.id, payload });
         }
+
+        onClose();
     };
 
     return (
@@ -199,7 +175,7 @@ export function VacancyModal({
 
             <DialogContent dividers className='vacancy-modal__content'>
                 {isReadOnly ? (
-                    <ViewContent vacancy={vacancy} />
+                    <ViewContent vacancy={vacancy!} />
                 ) : (
                     <FormContent
                         form={form}
@@ -244,18 +220,20 @@ function FormContent({
     onField: <K extends keyof FormState>(key: K, value: FormState[K]) => void;
     onToggleSkill: (skill: string) => void;
 }) {
+    const { data: skills, isLoading: isLoadingSkills } = useGetSkills();
+
     return (
         <div className='vacancy-modal__form'>
             <div className='vacancy-modal__field'>
                 <label className='vacancy-modal__label'>Nome da Vaga</label>
                 <Input
-                    value={form.title}
-                    onChange={(e) => onField('title', e.target.value)}
+                    value={form.name}
+                    onChange={(e) => onField('name', e.target.value)}
                     placeholder='Ex: Desenvolvedor Web Full Stack'
-                    error={!!errors.title}
+                    error={!!errors.name}
                 />
-                {errors.title && (
-                    <span className='vacancy-modal__error'>{errors.title}</span>
+                {errors.name && (
+                    <span className='vacancy-modal__error'>{errors.name}</span>
                 )}
             </div>
 
@@ -281,13 +259,15 @@ function FormContent({
             <div className='vacancy-modal__field'>
                 <label className='vacancy-modal__label'>Link da Vaga</label>
                 <Input
-                    value={form.link}
-                    onChange={(e) => onField('link', e.target.value)}
+                    value={form.applicationLink}
+                    onChange={(e) => onField('applicationLink', e.target.value)}
                     placeholder='Ex: https://candidatar-vaga-dev.com.br'
-                    error={!!errors.link}
+                    error={!!errors.applicationLink}
                 />
-                {errors.link && (
-                    <span className='vacancy-modal__error'>{errors.link}</span>
+                {errors.applicationLink && (
+                    <span className='vacancy-modal__error'>
+                        {errors.applicationLink}
+                    </span>
                 )}
             </div>
 
@@ -298,16 +278,16 @@ function FormContent({
                     </label>
                     <Input
                         type='number'
-                        value={form.vacancyCount}
+                        value={`${form.openingsCount}`}
                         onChange={(e) =>
-                            onField('vacancyCount', e.target.value)
+                            onField('openingsCount', Number(e.target.value))
                         }
                         placeholder='Ex: 2'
-                        error={!!errors.vacancyCount}
+                        error={!!errors.openingsCount}
                     />
-                    {errors.vacancyCount && (
+                    {errors.openingsCount && (
                         <span className='vacancy-modal__error'>
-                            {errors.vacancyCount}
+                            {errors.openingsCount}
                         </span>
                     )}
                 </div>
@@ -342,7 +322,7 @@ function FormContent({
                             label: 'Presencial',
                         },
                         { value: WorkplaceType.ONLINE, label: 'Online' },
-                        { value: WorkplaceType.HYBRID, label: 'Híbrido' },
+                        { value: WorkplaceType.HYBRID, label: 'Híbrida' },
                     ]}
                     onChange={(_, value) =>
                         onField('workplaceType', value as WorkplaceType)
@@ -360,18 +340,22 @@ function FormContent({
                     Seleciona as Skills desejadas
                 </label>
                 <div className='vacancy-modal__skills-grid'>
-                    {SKILLS_OPTIONS.map((skill) => (
-                        <label
-                            key={skill}
-                            className='vacancy-modal__skill-option'
-                        >
-                            <Checkbox
-                                checked={form.skills.includes(skill)}
-                                onChange={() => onToggleSkill(skill)}
-                            />
-                            {skill}
-                        </label>
-                    ))}
+                    {isLoadingSkills ? (
+                        <Loading />
+                    ) : (
+                        skills?.map((skill) => (
+                            <label
+                                key={skill.id}
+                                className='vacancy-modal__skill-option'
+                            >
+                                <Checkbox
+                                    checked={form.skills.includes(skill.id)}
+                                    onChange={() => onToggleSkill(skill.id)}
+                                />
+                                {skill.name}
+                            </label>
+                        ))
+                    )}
                 </div>
             </div>
         </div>
@@ -386,7 +370,7 @@ function ViewContent({ vacancy }: { vacancy?: VacancyDto }) {
             <div className='vacancy-modal__view-grid'>
                 <div className='vacancy-modal__view-item vacancy-modal__view-item--full'>
                     <strong>Nome da Vaga</strong>
-                    <span>{vacancy.title}</span>
+                    <span>{vacancy.name}</span>
                 </div>
 
                 <div className='vacancy-modal__view-item vacancy-modal__view-item--full'>
@@ -397,18 +381,18 @@ function ViewContent({ vacancy }: { vacancy?: VacancyDto }) {
                 <div className='vacancy-modal__view-item vacancy-modal__view-item--full'>
                     <strong>Link da Vaga</strong>
                     <a
-                        href={vacancy.link ?? undefined}
+                        href={vacancy.applicationLink ?? '#'}
                         target='_blank'
                         rel='noreferrer'
                         className='vacancy-modal__link'
                     >
-                        {vacancy.link || 'Não informado'}
+                        {vacancy.applicationLink || 'Não informado'}
                     </a>
                 </div>
 
                 <div className='vacancy-modal__view-item'>
                     <strong>Número de Vagas</strong>
-                    <span>{vacancy.vacancyCount}</span>
+                    <span>{vacancy.openingsCount}</span>
                 </div>
 
                 <div className='vacancy-modal__view-item'>
@@ -428,27 +412,21 @@ function ViewContent({ vacancy }: { vacancy?: VacancyDto }) {
                 <div className='vacancy-modal__view-item'>
                     <strong>Data de Anúncio</strong>
                     <span>
-                        {(() => {
-                            const d = new Date(vacancy.announcementDate);
-                            return Number.isNaN(d.getTime())
-                                ? vacancy.announcementDate
-                                : new Intl.DateTimeFormat('pt-BR', {
-                                      timeZone: 'UTC',
-                                  }).format(d);
-                        })()}
+                        {formatDateToBR(vacancy.announcementDate) ||
+                            'Não informado'}
                     </span>
                 </div>
 
                 <div className='vacancy-modal__view-item vacancy-modal__view-item--full'>
                     <strong>Skills</strong>
-                    {vacancy.skills && vacancy.skills.length > 0 ? (
+                    {vacancy && vacancy.skills && vacancy.skills.length > 0 ? (
                         <div className='vacancy-modal__skills-tags'>
                             {vacancy.skills.map((skill) => (
                                 <span
-                                    key={skill}
+                                    key={skill.id}
                                     className='vacancy-modal__skill-tag'
                                 >
-                                    {skill}
+                                    {skill.name}
                                 </span>
                             ))}
                         </div>

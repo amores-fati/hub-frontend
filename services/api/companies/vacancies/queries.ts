@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { VacanciesQueryParams, VacanciesResponseDto } from '@/dtos/VacancyDto';
+import {
+    VacanciesQueryParams,
+    VacanciesResponseDto,
+    VacancyDto,
+} from '@/dtos/VacancyDto';
 import QUERY_KEYS from '@/utils/contants/queries';
 import { companyVacanciesApi } from '.';
 
@@ -36,6 +40,16 @@ export const useGetCompanyVacancies = (params: VacanciesQueryParams) =>
                 .get<VacanciesResponseDto>('', {
                     params: buildApiParams(params),
                 })
+                .then((res) => res.data),
+    });
+
+export const useGetCompanyJobOpening = (jobOpeningId?: string) =>
+    useQuery({
+        enabled: !!jobOpeningId,
+        queryKey: [QUERY_KEYS.COMPANY_VACANCIES, jobOpeningId],
+        queryFn: () =>
+            companyVacanciesApi
+                .get<VacancyDto>(`/${jobOpeningId}`, {})
                 .then((res) => res.data),
     });
 

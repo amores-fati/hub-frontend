@@ -7,16 +7,7 @@ import {
     WorkplaceType,
 } from '@/dtos/VacancyDto';
 import { Option } from '@/components/base/Select/select';
-import {
-    Chip,
-    CircularProgress,
-    Collapse,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-} from '@mui/material';
+import { Chip, Collapse, IconButton } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
@@ -29,11 +20,14 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import { ButtonComponent } from '@/components/base/Button/button';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useGetCompanyVacancies } from '@/services/api/companies/vacancies/queries';
+import {
+    useGetCompanyJobOpening,
+    useGetCompanyVacancies,
+} from '@/services/api/companies/vacancies/queries';
 import { useDeleteVacancy } from '@/services/api/companies/vacancies/mutations';
-import { VacancyModal, VacancyModalMode } from './VacancyModal';
+import { VacancyModal } from './VacancyModal';
 import {
     Action,
     State,
@@ -43,6 +37,8 @@ import {
 import { Cells, CellType } from '@/components/base/Table2/types';
 import BasicTable from '@/components/base/Table2/table';
 import './index.scss';
+import LoadingModal from '../../../components/Modal';
+import { deleteConfirmation } from './Swal';
 
 const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.PRESENTIAL]: 'Presencial',
@@ -106,11 +102,12 @@ function CompanyVacanciesContent() {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [vacancyPendingDelete, setVacancyPendingDelete] =
         useState<VacancyDto | null>(null);
-    const [modalState, setModalState] = useState<{
-        open: boolean;
-        mode: VacancyModalMode;
-        vacancy?: VacancyDto;
-    }>({ open: false, mode: 'create' });
+
+    const [selectedVacancy, setSelectedVacancy] = useState<{
+        vacancy: VacancyDto | null;
+        mode: 'view' | 'edit';
+    }>({ vacancy: null, mode: 'view' });
+    const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
     const paginator = useTableStore((s) => ({ ...s.paginator }));
     const setPaginator = useTableStore((s) => s.setPaginator);
@@ -123,14 +120,6 @@ function CompanyVacanciesContent() {
     );
     const selectedRows = useTableStore((s) => s.selectedRows);
     const setSelectedRows = useTableStore((s) => s.setSelectedRows);
-
-    const openModal = useCallback(
-        (mode: VacancyModalMode, vacancy?: VacancyDto) =>
-            setModalState({ open: true, mode, vacancy }),
-        [],
-    );
-    const closeModal = () =>
-        setModalState((prev) => ({ ...prev, open: false }));
 
     const hasFilters = Boolean(
         filters.search || filters.isPcd.length || filters.workplaceTypes.length,
@@ -158,7 +147,7 @@ function CompanyVacanciesContent() {
 
     const { data, isLoading, isFetching, isError } =
         useGetCompanyVacancies(queryParams);
-    const deleteVacancyMutation = useDeleteVacancy();
+    const { mutate: deleteVacancyMutation } = useDeleteVacancy();
 
     useEffect(() => {
         if (isLoading || isFetching) {
@@ -208,20 +197,30 @@ function CompanyVacanciesContent() {
     const cells: Cells<VacancyDto>[] = [
         { key: 'id', header: '', type: CellType.CHECKBOX, sortable: false },
         {
-            key: 'title',
+            key: 'name',
             header: 'Nome',
             sortable: false,
             render: (v) => (
                 <span className='company-vacancies__vacancy-name'>
-                    {v.title}
+                    {v.name}
                 </span>
             ),
         },
         {
-            key: 'vacancyCount',
+            key: 'description',
+            header: 'Descrição',
+            sortable: false,
+            render: (v) => (
+                <span className='company-vacancies__vacancy-name'>
+                    {v.description}
+                </span>
+            ),
+        },
+        {
+            key: 'openingsCount',
             header: 'Número de Vagas',
             sortable: false,
-            render: (v) => v.vacancyCount,
+            render: (v) => v.openingsCount,
         },
         {
             key: 'isPcd',
@@ -267,19 +266,25 @@ function CompanyVacanciesContent() {
                 <div className='custom-table__actions'>
                     <IconButton
                         className='custom-table__action-button'
-                        onClick={() => openModal('view', v)}
+                        onClick={() =>
+                            setSelectedVacancy({ vacancy: v, mode: 'view' })
+                        }
                     >
                         <VisibilityOutlinedIcon fontSize='small' />
                     </IconButton>
                     <IconButton
                         className='custom-table__action-button'
-                        onClick={() => openModal('edit', v)}
+                        onClick={() =>
+                            setSelectedVacancy({ vacancy: v, mode: 'edit' })
+                        }
                     >
                         <EditOutlinedIcon fontSize='small' />
                     </IconButton>
                     <IconButton
                         className='custom-table__action-button custom-table__action-button--danger'
-                        onClick={() => setVacancyPendingDelete(v)}
+                        onClick={() =>
+                            deleteConfirmation(deleteVacancyMutation, v.id)
+                        }
                     >
                         <DeleteOutlineRoundedIcon fontSize='small' />
                     </IconButton>
@@ -328,7 +333,7 @@ function CompanyVacanciesContent() {
                         </ButtonComponent>
                     </div>
 
-                    <ButtonComponent onClick={() => openModal('create')}>
+                    <ButtonComponent onClick={() => setShowCreateModal(true)}>
                         <span className='company-vacancies__button-content'>
                             <AddIcon fontSize='small' />
                             Nova Vaga
@@ -490,48 +495,80 @@ function CompanyVacanciesContent() {
                 )}
             </div>
 
-            <VacancyModal
-                open={modalState.open}
-                mode={modalState.mode}
-                vacancy={modalState.vacancy}
-                onClose={closeModal}
-            />
+            {((!!selectedVacancy.vacancy && selectedVacancy.mode === 'edit') ||
+                showCreateModal) && (
+                <JobOpeningModalWrapper
+                    open={!!selectedVacancy.vacancy || showCreateModal}
+                    jobOpeningId={selectedVacancy.vacancy?.id}
+                    onClose={() => {
+                        setSelectedVacancy({ vacancy: null, mode: 'view' });
+                        setShowCreateModal(false);
+                    }}
+                />
+            )}
 
-            <Dialog
-                open={!!vacancyPendingDelete}
-                onClose={() => setVacancyPendingDelete(null)}
-                fullWidth
-                maxWidth='xs'
-            >
-                <DialogTitle>Excluir vaga</DialogTitle>
-                <DialogContent dividers>
-                    <p>
-                        Deseja realmente excluir a vaga{' '}
-                        <strong>{vacancyPendingDelete?.title}</strong>?
-                    </p>
-                </DialogContent>
-                <DialogActions>
-                    <ButtonComponent
-                        variant='secondary'
-                        onClick={() => setVacancyPendingDelete(null)}
-                    >
-                        Cancelar
-                    </ButtonComponent>
-                    <ButtonComponent
-                        onClick={() => {
-                            void handleDelete();
-                        }}
-                        disabled={deleteVacancyMutation.isPending}
-                    >
-                        <span className='company-vacancies__button-content'>
-                            {deleteVacancyMutation.isPending ? (
-                                <CircularProgress size={16} />
-                            ) : null}
-                            Confirmar exclusão
-                        </span>
-                    </ButtonComponent>
-                </DialogActions>
-            </Dialog>
+            {!!selectedVacancy.vacancy && selectedVacancy.mode === 'view' && (
+                <ViewJobOpeningModalWrapper
+                    open={!!selectedVacancy.vacancy}
+                    jobOpeningId={selectedVacancy.vacancy?.id}
+                    onClose={() => {
+                        setSelectedVacancy({ vacancy: null, mode: 'view' });
+                        setShowCreateModal(false);
+                    }}
+                />
+            )}
         </section>
+    );
+}
+
+function ViewJobOpeningModalWrapper({
+    open,
+    jobOpeningId,
+    onClose,
+}: {
+    open: boolean;
+    jobOpeningId?: string;
+    onClose: () => void;
+}) {
+    const { data: jobOpening, isLoading } =
+        useGetCompanyJobOpening(jobOpeningId);
+
+    if (isLoading) return <LoadingModal isOpen={!!isLoading} />;
+    if (!jobOpening && !!jobOpeningId)
+        return <LoadingModal isOpen={!!isLoading} />;
+
+    return (
+        <VacancyModal
+            open={open}
+            mode={'view'}
+            vacancy={jobOpening ?? null}
+            onClose={onClose}
+        />
+    );
+}
+
+function JobOpeningModalWrapper({
+    open,
+    jobOpeningId,
+    onClose,
+}: {
+    open: boolean;
+    jobOpeningId?: string;
+    onClose: () => void;
+}) {
+    const { data: jobOpening, isLoading } =
+        useGetCompanyJobOpening(jobOpeningId);
+
+    if (isLoading) return <LoadingModal isOpen={!!isLoading} />;
+    if (!jobOpening && !!jobOpeningId)
+        return <LoadingModal isOpen={!!isLoading} />;
+
+    return (
+        <VacancyModal
+            open={open}
+            mode={jobOpeningId ? 'edit' : 'create'}
+            vacancy={jobOpening ?? null}
+            onClose={onClose}
+        />
     );
 }
