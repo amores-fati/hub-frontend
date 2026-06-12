@@ -27,10 +27,12 @@ export function readFileAsBase64(
                 return;
             }
             const commaIndex = result.indexOf(',');
-            const data = commaIndex >= 0 ? result.slice(commaIndex + 1) : result;
+            const data =
+                commaIndex >= 0 ? result.slice(commaIndex + 1) : result;
             resolve({ data, mimeType: file.type });
         };
-        reader.onerror = () => reject(reader.error ?? new Error('Erro de leitura.'));
+        reader.onerror = () =>
+            reject(reader.error ?? new Error('Erro de leitura.'));
         reader.readAsDataURL(file);
     });
 }

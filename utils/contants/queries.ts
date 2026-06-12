@@ -5,6 +5,7 @@ const QUERY_KEYS = {
     ADMIN_STUDENT_RESUME: 'admin-student-resume',
     CEP: 'cep',
     CNPJ: 'cnpj',
+    COMPANY_VACANCIES: 'company-vacancies',
     COURSES: 'courses',
     ENROLLMENTS: 'enrollments',
     EXAMPLES: 'examples',
@@ -13,6 +14,7 @@ const QUERY_KEYS = {
     STUDENT_RESUME: 'student-resume',
     STUDENT: 'student',
     ADMIN_LOCATIONS: 'admin-locations',
+    SKILLS: 'skills',
 };
 
 export default QUERY_KEYS;

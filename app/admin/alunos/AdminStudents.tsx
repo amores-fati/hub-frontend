@@ -545,7 +545,11 @@ function AdminStudents() {
             sortable: true,
             render: (student: AdminStudentDto) => (
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                    {(student.enrollmentStatus ?? [AdminStudentCourseType.NOT_ENROLLED]).map((status) => (
+                    {(
+                        student.enrollmentStatus ?? [
+                            AdminStudentCourseType.NOT_ENROLLED,
+                        ]
+                    ).map((status) => (
                         <Chip
                             key={status}
                             label={courseTypeLabels[status]}
