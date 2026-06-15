@@ -7,7 +7,8 @@ import {
     MenuBook as MenuBookIcon,
     Person as PersonIcon,
     Work as WorkIcon,
-    Business as BusinessIcon
+    Business as BusinessIcon,
+    Settings as SettingsIcon
 } from '@mui/icons-material';
 import React, { JSX } from 'react';
 
@@ -83,6 +84,14 @@ export const PAGES: Page[] = [
         icon: <WorkIcon className='sidebar-icon' />,
     },
     {
+        path: '/empresa/perfil',
+        navbarEnabled: true,
+        requireAuth: false,
+        requireRoles: [],
+        name: 'Vagas',
+        icon: <WorkIcon className='sidebar-icon' />,
+    },
+    {
         path: '/aluno/curriculo',
         navbarEnabled: true,
         requireAuth: true,
@@ -138,6 +147,14 @@ export const PAGES: Page[] = [
     name: 'Gestão de Vagas',
     icon: <WorkIcon className='sidebar-icon' />,
     },
+    {
+    path: '/admin/configuracoes',
+    navbarEnabled: true,
+    requireAuth: true,
+    requireRoles: [UserRole.ADMIN],
+    name: 'Configurações',
+    icon: <WorkIcon className='sidebar-icon' />,
+    },
 ];
 
 export type NavItem = {
@@ -162,6 +179,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         },
         { title: 'Empresas', icon: <BusinessIcon />, expectedPath: '/admin/empresas' },
         { title: 'Vagas', icon: <WorkIcon />, expectedPath: '/admin/vagas' },
+        { title: 'Configurações', icon: <SettingsIcon />, expectedPath: '/admin/configuracoes' },
     ],
     [UserRole.STUDENT]: [
         {
@@ -187,6 +205,10 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             icon: <WorkIcon />,
             expectedPath: '/empresa/vagas',
         },
-        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
+        { 
+            title: 'Perfil', 
+            icon: <PersonIcon />, 
+            expectedPath: '/empresa/perfil' 
+        },
     ],
 };
