@@ -33,7 +33,7 @@ export type VacanciesQueryParams = {
     search?: string;
     vacancyCount?: number;
     isPcd?: boolean;
-    workplaceTypes?: string[];
+    workplaceType?: string | null;
 };
 
 export type CreateOrUpdateVacancyDto = {

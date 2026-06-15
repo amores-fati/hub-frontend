@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, MultSelect } from '@/components/base';
+import { Input, MultSelect, Select } from '@/components/base';
 import {
     VacanciesQueryParams,
     VacancyDto,
@@ -74,14 +74,14 @@ const formatAnnouncementDate = (dateStr: string) => {
 
 type FiltersState = {
     search: string;
-    isPcd: string[];
-    workplaceTypes: string[];
+    isPcd: string | null;
+    workplaceType: string | null;
 };
 
 const initialFilters: FiltersState = {
     search: '',
-    isPcd: [],
-    workplaceTypes: [],
+    isPcd: null,
+    workplaceType: null,
 };
 
 export function CompanyVacancies() {
@@ -94,14 +94,12 @@ export function CompanyVacancies() {
 
 function CompanyVacanciesContent() {
     const [searchInput, setSearchInput] = useState('');
-    const [draftPcd, setDraftPcd] = useState<Option[]>([]);
-    const [draftWorkplaceTypes, setDraftWorkplaceTypes] = useState<Option[]>(
-        [],
+    const [draftPcd, setDraftPcd] = useState<Option | null>(null);
+    const [draftWorkplaceType, setDraftWorkplaceType] = useState<Option | null>(
+        null,
     );
     const [filters, setFilters] = useState<FiltersState>(initialFilters);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-    const [vacancyPendingDelete, setVacancyPendingDelete] =
-        useState<VacancyDto | null>(null);
 
     const [selectedVacancy, setSelectedVacancy] = useState<{
         vacancy: VacancyDto | null;
@@ -122,7 +120,7 @@ function CompanyVacanciesContent() {
     const setSelectedRows = useTableStore((s) => s.setSelectedRows);
 
     const hasFilters = Boolean(
-        filters.search || filters.isPcd.length || filters.workplaceTypes.length,
+        filters.search || filters.isPcd || filters.workplaceType,
     );
 
     const selectedCount = Object.keys(selectedRows).length;
@@ -133,20 +131,15 @@ function CompanyVacanciesContent() {
             page: paginator.page,
             limit: paginator.rowsPerPage,
             search: filters.search || undefined,
-            isPcd:
-                filters.isPcd.length === 1
-                    ? filters.isPcd[0] === 'true'
-                    : undefined,
-            workplaceTypes:
-                filters.workplaceTypes.length > 0
-                    ? filters.workplaceTypes
-                    : undefined,
+            isPcd: filters.isPcd === 'true' ? true : filters.isPcd === 'false' ? false : undefined,
+            workplaceType: filters.workplaceType ?? null,
         }),
         [filters, paginator.page, paginator.rowsPerPage],
     );
 
     const { data, isLoading, isFetching, isError } =
         useGetCompanyVacancies(queryParams);
+
     const { mutate: deleteVacancyMutation } = useDeleteVacancy();
 
     useEffect(() => {
@@ -170,28 +163,18 @@ function CompanyVacanciesContent() {
         setSelectedRows({});
         setFilters({
             search: searchInput.trim(),
-            isPcd: draftPcd.map((o) => String(o.value)),
-            workplaceTypes: draftWorkplaceTypes.map((o) => String(o.value)),
+            isPcd: draftPcd ? String(draftPcd.value) : null,
+            workplaceType: draftWorkplaceType ? String(draftWorkplaceType.value) : null,
         });
     };
 
     const handleClearFilters = () => {
         setSearchInput('');
-        setDraftPcd([]);
-        setDraftWorkplaceTypes([]);
+        setDraftPcd(null);
+        setDraftWorkplaceType(null);
         setPaginator({ page: 1 });
         setFilters(initialFilters);
         setSelectedRows({});
-    };
-
-    const handleDelete = async () => {
-        if (!vacancyPendingDelete) return;
-        try {
-            await deleteVacancyMutation.mutateAsync(vacancyPendingDelete.id);
-            setVacancyPendingDelete(null);
-        } catch {
-            toast.error('Não foi possível excluir a vaga. Tente novamente.');
-        }
     };
 
     const cells: Cells<VacancyDto>[] = [
@@ -403,14 +386,14 @@ function CompanyVacanciesContent() {
                             <label className='company-vacancies__field-label'>
                                 Exclusivo PCD
                             </label>
-                            <MultSelect
+                            <Select
                                 placeholder='Selecione'
                                 options={pcdOptions}
-                                value={draftPcd}
-                                onChange={(opts) =>
-                                    setDraftPcd([...(opts ?? [])])
+                                onChange={(e) =>
+                                    setDraftPcd(e ?? null)
                                 }
                                 isSearchable
+                                isClearable
                             />
                         </div>
 
@@ -418,14 +401,14 @@ function CompanyVacanciesContent() {
                             <label className='company-vacancies__field-label'>
                                 Modalidade
                             </label>
-                            <MultSelect
+                            <Select
                                 placeholder='Selecione as modalidades'
                                 options={workplaceTypeOptions}
-                                value={draftWorkplaceTypes}
-                                onChange={(opts) =>
-                                    setDraftWorkplaceTypes([...(opts ?? [])])
+                                onChange={(e) =>
+                                    setDraftWorkplaceType(e ?? null)
                                 }
                                 isSearchable
+                                isClearable
                             />
                         </div>
                     </div>
@@ -497,15 +480,15 @@ function CompanyVacanciesContent() {
 
             {((!!selectedVacancy.vacancy && selectedVacancy.mode === 'edit') ||
                 showCreateModal) && (
-                <JobOpeningModalWrapper
-                    open={!!selectedVacancy.vacancy || showCreateModal}
-                    jobOpeningId={selectedVacancy.vacancy?.id}
-                    onClose={() => {
-                        setSelectedVacancy({ vacancy: null, mode: 'view' });
-                        setShowCreateModal(false);
-                    }}
-                />
-            )}
+                    <JobOpeningModalWrapper
+                        open={!!selectedVacancy.vacancy || showCreateModal}
+                        jobOpeningId={selectedVacancy.vacancy?.id}
+                        onClose={() => {
+                            setSelectedVacancy({ vacancy: null, mode: 'view' });
+                            setShowCreateModal(false);
+                        }}
+                    />
+                )}
 
             {!!selectedVacancy.vacancy && selectedVacancy.mode === 'view' && (
                 <ViewJobOpeningModalWrapper
