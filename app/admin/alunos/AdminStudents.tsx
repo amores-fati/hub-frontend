@@ -885,13 +885,15 @@ function AdminStudents() {
                                         <Chip
                                             label={
                                                 courseTypeLabels[
-                                                    getCourseType(
-                                                        selectedStudent,
-                                                    )
+                                                    selectedStudent
+                                                        .enrollmentStatus[0] ??
+                                                        AdminStudentCourseType.NOT_ENROLLED
                                                 ]
                                             }
                                             className={getCourseBadgeClassName(
-                                                selectedStudent,
+                                                selectedStudent
+                                                    .enrollmentStatus[0] ??
+                                                    AdminStudentCourseType.NOT_ENROLLED,
                                             )}
                                         />
                                         <Chip
