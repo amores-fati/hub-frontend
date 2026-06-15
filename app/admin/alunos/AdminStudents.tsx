@@ -1046,8 +1046,8 @@ function AdminStudents() {
                                     <div>
                                         <strong>Curso atual</strong>
                                         <span>
-                                            {selectedStudent.enrolledCourse
-                                                ?.name || 'Não inscrito'}
+                                            {selectedStudent.course ||
+                                                'Não inscrito'}
                                         </span>
                                     </div>
                                 </div>
