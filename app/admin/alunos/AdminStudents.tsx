@@ -22,8 +22,10 @@ import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import {
     downloadStudentsReport,
     ExportStudentsReportPayload,
+    ReportFormat,
     StudentReportStatus,
 } from '@/services/api/admin/reports';
+import { ExportFormatModal } from '@/components/ExportFormatModal/ExportFormatModal';
 import { Option } from '@/components/base/Select/select';
 import {
     Avatar,
@@ -353,6 +355,7 @@ function AdminStudents() {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isExportingSelected, setIsExportingSelected] = useState(false);
+    const [exportModalOpen, setExportModalOpen] = useState<'all' | 'selected' | null>(null);
 
     const { data: locationsData } = useGetAdminLocations({ scope: 'STUDENT' });
 
@@ -405,7 +408,7 @@ function AdminStudents() {
         Object.keys(selectedStudents).length === 1 ? '' : 's'
     } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
 
-    const handleExportAll = async () => {
+    const handleExportAll = async (format: ReportFormat) => {
         const unsupportedFilterMessage =
             getUnsupportedStudentReportFilterMessage(filters);
 
@@ -423,10 +426,11 @@ function AdminStudents() {
 
         setIsExporting(true);
         try {
-            await downloadStudentsReport({
-                mode: 'all',
-                filters: buildStudentReportFilters(filters),
-            });
+            await downloadStudentsReport(
+                { mode: 'all', filters: buildStudentReportFilters(filters) },
+                format,
+            );
+            setExportModalOpen(null);
         } catch (error) {
             toast.error(
                 getErrorMessage(
@@ -439,7 +443,7 @@ function AdminStudents() {
         }
     };
 
-    const handleExportSelected = async () => {
+    const handleExportSelected = async (format: ReportFormat) => {
         const selectedIds = Object.keys(selectedStudents);
 
         if (selectedIds.length === 0) {
@@ -456,10 +460,11 @@ function AdminStudents() {
 
         setIsExportingSelected(true);
         try {
-            await downloadStudentsReport({
-                mode: 'selected',
-                ids: selectedIds,
-            });
+            await downloadStudentsReport(
+                { mode: 'selected', ids: selectedIds },
+                format,
+            );
+            setExportModalOpen(null);
         } catch (error) {
             toast.error(
                 getErrorMessage(
@@ -470,6 +475,11 @@ function AdminStudents() {
         } finally {
             setIsExportingSelected(false);
         }
+    };
+
+    const handleExportWithFormat = (format: ReportFormat) => {
+        if (exportModalOpen === 'all') void handleExportAll(format);
+        else if (exportModalOpen === 'selected') void handleExportSelected(format);
     };
 
     const handleApplyAllFilters = () => {
@@ -544,7 +554,7 @@ function AdminStudents() {
             sortable: true,
             render: (student: AdminStudentDto) => (
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                    {(student.enrollmentStatus ?? [AdminStudentCourseType.NOT_ENROLLED]).map((status) => (
+                    {(Array.isArray(student.enrollmentStatus) ? student.enrollmentStatus : [student.enrollmentStatus ?? AdminStudentCourseType.NOT_ENROLLED]).map((status) => (
                         <Chip
                             key={status}
                             label={courseTypeLabels[status]}
@@ -648,9 +658,7 @@ function AdminStudents() {
                 <div className='admin-students__header-action'>
                     <ButtonComponent
                         variant='secondary'
-                        onClick={() => {
-                            void handleExportAll();
-                        }}
+                        onClick={() => setExportModalOpen('all')}
                         disabled={isExporting || isLoading}
                     >
                         <span className='admin-students__button-content'>
@@ -790,9 +798,7 @@ function AdminStudents() {
                     <div className='admin-students__bulk-actions'>
                         <button
                             type='button'
-                            onClick={() => {
-                                void handleExportSelected();
-                            }}
+                            onClick={() => setExportModalOpen('selected')}
                             disabled={isExportingSelected}
                         >
                             {isExportingSelected ? (
@@ -1210,6 +1216,13 @@ function AdminStudents() {
                     </ButtonComponent>
                 </DialogActions>
             </Dialog>
+
+            <ExportFormatModal
+                open={exportModalOpen !== null}
+                loading={isExporting || isExportingSelected}
+                onClose={() => setExportModalOpen(null)}
+                onExport={handleExportWithFormat}
+            />
         </section>
     );
 }

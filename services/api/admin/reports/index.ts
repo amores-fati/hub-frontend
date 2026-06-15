@@ -111,8 +111,15 @@ const getReportTimestamp = () => {
     return `${date}_${time}`;
 };
 
-const getFallbackFilename = (endpoint: AdminReportEndpoint) =>
-    `${fallbackFilenamePrefixes[endpoint]}_${getReportTimestamp()}.pdf`;
+export type ReportFormat = 'pdf' | 'csv';
+
+const formatMimeType: Record<ReportFormat, string> = {
+    pdf: 'application/pdf',
+    csv: 'text/csv',
+};
+
+const getFallbackFilename = (endpoint: AdminReportEndpoint, format: ReportFormat = 'pdf') =>
+    `${fallbackFilenamePrefixes[endpoint]}_${getReportTimestamp()}.${format}`;
 
 const downloadBlob = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob);
@@ -169,14 +176,18 @@ const getReportErrorMessage = async (error: unknown) => {
 
 export async function downloadAdminReport<
     TEndpoint extends AdminReportEndpoint,
->(endpoint: TEndpoint, payload: AdminReportPayloadByEndpoint[TEndpoint]) {
+>(
+    endpoint: TEndpoint,
+    payload: AdminReportPayloadByEndpoint[TEndpoint],
+    format: ReportFormat = 'pdf',
+) {
     try {
         const response = await adminReportsApi.post<Blob>(
             `/${endpoint}`,
             payload,
             {
                 headers: {
-                    Accept: 'application/pdf',
+                    Accept: formatMimeType[format],
                     'Content-Type': 'application/json',
                 },
                 responseType: 'blob',
@@ -186,7 +197,7 @@ export async function downloadAdminReport<
         const filename =
             getFilenameFromContentDisposition(
                 response.headers['content-disposition'],
-            ) ?? getFallbackFilename(endpoint);
+            ) ?? getFallbackFilename(endpoint, format);
 
         downloadBlob(response.data, filename);
     } catch (error) {
@@ -195,15 +206,14 @@ export async function downloadAdminReport<
     }
 }
 
-export const downloadCoursesReport = (payload: ExportCoursesReportPayload) =>
-    downloadAdminReport('courses', payload);
+export const downloadCoursesReport = (payload: ExportCoursesReportPayload, format: ReportFormat = 'pdf') =>
+    downloadAdminReport('courses', payload, format);
 
-export const downloadStudentsReport = (payload: ExportStudentsReportPayload) =>
-    downloadAdminReport('students', payload);
+export const downloadStudentsReport = (payload: ExportStudentsReportPayload, format: ReportFormat = 'pdf') =>
+    downloadAdminReport('students', payload, format);
 
-export const downloadVacanciesReport = (
-    payload: ExportVacanciesReportPayload,
-) => downloadAdminReport('vacancies', payload);
+export const downloadVacanciesReport = (payload: ExportVacanciesReportPayload, format: ReportFormat = 'pdf') =>
+    downloadAdminReport('vacancies', payload, format);
 
-export const downloadResumesReport = (payload: ExportResumesReportPayload) =>
-    downloadAdminReport('resumes', payload);
+export const downloadResumesReport = (payload: ExportResumesReportPayload, format: ReportFormat = 'pdf') =>
+    downloadAdminReport('resumes', payload, format);
