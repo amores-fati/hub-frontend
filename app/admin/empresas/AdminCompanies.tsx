@@ -152,6 +152,7 @@ export default function AdminCompanies() {
     const handleEstadoChange = (state: string) => { setFilterEstado(state); setFilterCidade(''); };
 
     const applyFilters = () => {
+        // eslint-disable-next-line no-console
         console.log('[Buscar]', { search, estado: filterEstado, cidade: filterCidade, status: filterStatus });
         setApplied({ search, estado: filterEstado, cidade: filterCidade, status: filterStatus });
         setSelected(new Set());
@@ -398,7 +399,7 @@ export default function AdminCompanies() {
                                         key={p}
                                         type='button'
                                         className={`ac__page-btn${p === currentPage ? ' ac__page-btn--active' : ' ac__page-btn--ghost'}`}
-                                        onClick={() => goToPage(p as number)}
+                                        onClick={() => goToPage(Number(p))}
                                     >
                                         {p}
                                     </button>

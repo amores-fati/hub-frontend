@@ -194,9 +194,10 @@ export async function downloadAdminReport<
             },
         );
 
+        const contentDisposition = response.headers['content-disposition'];
         const filename =
             getFilenameFromContentDisposition(
-                response.headers['content-disposition'],
+                typeof contentDisposition === 'string' ? contentDisposition : null,
             ) ?? getFallbackFilename(endpoint, format);
 
         downloadBlob(response.data, filename);
