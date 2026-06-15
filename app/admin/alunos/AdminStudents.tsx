@@ -355,7 +355,9 @@ function AdminStudents() {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isExportingSelected, setIsExportingSelected] = useState(false);
-    const [exportModalOpen, setExportModalOpen] = useState<'all' | 'selected' | null>(null);
+    const [exportModalOpen, setExportModalOpen] = useState<
+        'all' | 'selected' | null
+    >(null);
 
     const { data: locationsData } = useGetAdminLocations({ scope: 'STUDENT' });
 
@@ -479,7 +481,8 @@ function AdminStudents() {
 
     const handleExportWithFormat = (format: ReportFormat) => {
         if (exportModalOpen === 'all') void handleExportAll(format);
-        else if (exportModalOpen === 'selected') void handleExportSelected(format);
+        else if (exportModalOpen === 'selected')
+            void handleExportSelected(format);
     };
 
     const handleApplyAllFilters = () => {
@@ -554,7 +557,13 @@ function AdminStudents() {
             sortable: true,
             render: (student: AdminStudentDto) => (
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                    {(Array.isArray(student.enrollmentStatus) ? student.enrollmentStatus : [student.enrollmentStatus ?? AdminStudentCourseType.NOT_ENROLLED]).map((status) => (
+                    {(Array.isArray(student.enrollmentStatus)
+                        ? student.enrollmentStatus
+                        : [
+                              student.enrollmentStatus ??
+                                  AdminStudentCourseType.NOT_ENROLLED,
+                          ]
+                    ).map((status) => (
                         <Chip
                             key={status}
                             label={courseTypeLabels[status]}

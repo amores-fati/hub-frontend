@@ -33,22 +33,140 @@ type Company = {
 };
 
 const MOCK_COMPANIES: Company[] = [
-    { id: '1',  name: 'HP',           cnpj: '92.797.901/0001-74', email: 'hp@email.com',      phone: '(11) 98888-8888', city: 'Florianópolis', state: 'Santa Catarina',    status: 'ATIVO'   },
-    { id: '2',  name: 'DELL',         cnpj: '92.797.901/0001-74', email: 'dell@email.com',    phone: '(21) 97777-7777', city: 'Porto Alegre',  state: 'Rio Grande do Sul', status: 'ATIVO'   },
-    { id: '3',  name: 'DB Server',    cnpj: '92.797.901/0001-74', email: 'db@email.com',      phone: '(31) 96666-6666', city: 'Florianópolis', state: 'Santa Catarina',    status: 'ATIVO'   },
-    { id: '4',  name: 'ADP',          cnpj: '92.797.901/0001-74', email: 'adp@email.com',     phone: '(21) 97777-7777', city: 'Porto Alegre',  state: 'Rio Grande do Sul', status: 'ATIVO'   },
-    { id: '5',  name: 'TELUS',        cnpj: '92.797.901/0001-74', email: 'telus@email.com',   phone: '(11) 98888-8888', city: 'Porto Alegre',  state: 'Rio Grande do Sul', status: 'INATIVO' },
-    { id: '6',  name: 'IBM',          cnpj: '11.222.333/0001-44', email: 'ibm@email.com',     phone: '(11) 91111-1111', city: 'São Paulo',     state: 'São Paulo',         status: 'ATIVO'   },
-    { id: '7',  name: 'Microsoft',    cnpj: '22.333.444/0001-55', email: 'ms@email.com',      phone: '(11) 92222-2222', city: 'São Paulo',     state: 'São Paulo',         status: 'ATIVO'   },
-    { id: '8',  name: 'Oracle',       cnpj: '33.444.555/0001-66', email: 'oracle@email.com',  phone: '(21) 93333-3333', city: 'Rio de Janeiro', state: 'Rio de Janeiro',  status: 'ATIVO'   },
-    { id: '9',  name: 'SAP',          cnpj: '44.555.666/0001-77', email: 'sap@email.com',     phone: '(11) 94444-4444', city: 'Campinas',      state: 'São Paulo',         status: 'INATIVO' },
-    { id: '10', name: 'Totvs',        cnpj: '55.666.777/0001-88', email: 'totvs@email.com',   phone: '(11) 95555-5555', city: 'São Paulo',     state: 'São Paulo',         status: 'ATIVO'   },
-    { id: '11', name: 'Stefanini',    cnpj: '66.777.888/0001-99', email: 'stef@email.com',    phone: '(11) 96666-6666', city: 'São Paulo',     state: 'São Paulo',         status: 'ATIVO'   },
-    { id: '12', name: 'CI&T',         cnpj: '77.888.999/0001-00', email: 'cit@email.com',     phone: '(19) 97777-7777', city: 'Campinas',      state: 'São Paulo',         status: 'ATIVO'   },
+    {
+        id: '1',
+        name: 'HP',
+        cnpj: '92.797.901/0001-74',
+        email: 'hp@email.com',
+        phone: '(11) 98888-8888',
+        city: 'Florianópolis',
+        state: 'Santa Catarina',
+        status: 'ATIVO',
+    },
+    {
+        id: '2',
+        name: 'DELL',
+        cnpj: '92.797.901/0001-74',
+        email: 'dell@email.com',
+        phone: '(21) 97777-7777',
+        city: 'Porto Alegre',
+        state: 'Rio Grande do Sul',
+        status: 'ATIVO',
+    },
+    {
+        id: '3',
+        name: 'DB Server',
+        cnpj: '92.797.901/0001-74',
+        email: 'db@email.com',
+        phone: '(31) 96666-6666',
+        city: 'Florianópolis',
+        state: 'Santa Catarina',
+        status: 'ATIVO',
+    },
+    {
+        id: '4',
+        name: 'ADP',
+        cnpj: '92.797.901/0001-74',
+        email: 'adp@email.com',
+        phone: '(21) 97777-7777',
+        city: 'Porto Alegre',
+        state: 'Rio Grande do Sul',
+        status: 'ATIVO',
+    },
+    {
+        id: '5',
+        name: 'TELUS',
+        cnpj: '92.797.901/0001-74',
+        email: 'telus@email.com',
+        phone: '(11) 98888-8888',
+        city: 'Porto Alegre',
+        state: 'Rio Grande do Sul',
+        status: 'INATIVO',
+    },
+    {
+        id: '6',
+        name: 'IBM',
+        cnpj: '11.222.333/0001-44',
+        email: 'ibm@email.com',
+        phone: '(11) 91111-1111',
+        city: 'São Paulo',
+        state: 'São Paulo',
+        status: 'ATIVO',
+    },
+    {
+        id: '7',
+        name: 'Microsoft',
+        cnpj: '22.333.444/0001-55',
+        email: 'ms@email.com',
+        phone: '(11) 92222-2222',
+        city: 'São Paulo',
+        state: 'São Paulo',
+        status: 'ATIVO',
+    },
+    {
+        id: '8',
+        name: 'Oracle',
+        cnpj: '33.444.555/0001-66',
+        email: 'oracle@email.com',
+        phone: '(21) 93333-3333',
+        city: 'Rio de Janeiro',
+        state: 'Rio de Janeiro',
+        status: 'ATIVO',
+    },
+    {
+        id: '9',
+        name: 'SAP',
+        cnpj: '44.555.666/0001-77',
+        email: 'sap@email.com',
+        phone: '(11) 94444-4444',
+        city: 'Campinas',
+        state: 'São Paulo',
+        status: 'INATIVO',
+    },
+    {
+        id: '10',
+        name: 'Totvs',
+        cnpj: '55.666.777/0001-88',
+        email: 'totvs@email.com',
+        phone: '(11) 95555-5555',
+        city: 'São Paulo',
+        state: 'São Paulo',
+        status: 'ATIVO',
+    },
+    {
+        id: '11',
+        name: 'Stefanini',
+        cnpj: '66.777.888/0001-99',
+        email: 'stef@email.com',
+        phone: '(11) 96666-6666',
+        city: 'São Paulo',
+        state: 'São Paulo',
+        status: 'ATIVO',
+    },
+    {
+        id: '12',
+        name: 'CI&T',
+        cnpj: '77.888.999/0001-00',
+        email: 'cit@email.com',
+        phone: '(19) 97777-7777',
+        city: 'Campinas',
+        state: 'São Paulo',
+        status: 'ATIVO',
+    },
 ];
 
-type AppliedFilters = { search: string; estado: string; cidade: string; status: string };
-const initialFilters: AppliedFilters = { search: '', estado: '', cidade: '', status: '' };
+type AppliedFilters = {
+    search: string;
+    estado: string;
+    cidade: string;
+    status: string;
+};
+const initialFilters: AppliedFilters = {
+    search: '',
+    estado: '',
+    cidade: '',
+    status: '',
+};
 
 const getInitials = (name: string): string => {
     const words = name.trim().split(/\s+/);
@@ -60,7 +178,12 @@ const getPageNumbers = (current: number, total: number): (number | '...')[] => {
     if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
     const pages: (number | '...')[] = [1];
     if (current > 3) pages.push('...');
-    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) pages.push(i);
+    for (
+        let i = Math.max(2, current - 1);
+        i <= Math.min(total - 1, current + 1);
+        i++
+    )
+        pages.push(i);
     if (current < total - 2) pages.push('...');
     pages.push(total);
     return pages;
@@ -90,9 +213,27 @@ export default function AdminCompanies() {
     };
 
     const exportToCSV = (companies: Company[]) => {
-        const headers = ['Empresa', 'CNPJ', 'Email', 'Telefone', 'Cidade', 'Estado', 'Status'];
-        const rows = companies.map((c) => [c.name, c.cnpj, c.email, c.phone, c.city, c.state, c.status]);
-        const csv = [headers, ...rows].map((r) => r.map((v) => `"${v}"`).join(',')).join('\n');
+        const headers = [
+            'Empresa',
+            'CNPJ',
+            'Email',
+            'Telefone',
+            'Cidade',
+            'Estado',
+            'Status',
+        ];
+        const rows = companies.map((c) => [
+            c.name,
+            c.cnpj,
+            c.email,
+            c.phone,
+            c.city,
+            c.state,
+            c.status,
+        ]);
+        const csv = [headers, ...rows]
+            .map((r) => r.map((v) => `"${v}"`).join(','))
+            .join('\n');
         const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -104,8 +245,18 @@ export default function AdminCompanies() {
 
     const exportToPDF = (companies: Company[]) => {
         const win = window.open('', '_blank', 'width=1120,height=840');
-        if (!win) { toast.error('Não foi possível abrir a janela de exportação. Verifique o bloqueador de pop-up.'); return; }
-        const rows = companies.map((c) => `<tr><td>${c.name}</td><td>${c.cnpj}</td><td>${c.email}</td><td>${c.phone}</td><td>${c.city}, ${c.state}</td><td>${c.status}</td></tr>`).join('');
+        if (!win) {
+            toast.error(
+                'Não foi possível abrir a janela de exportação. Verifique o bloqueador de pop-up.',
+            );
+            return;
+        }
+        const rows = companies
+            .map(
+                (c) =>
+                    `<tr><td>${c.name}</td><td>${c.cnpj}</td><td>${c.email}</td><td>${c.phone}</td><td>${c.city}, ${c.state}</td><td>${c.status}</td></tr>`,
+            )
+            .join('');
         const html = `<html lang="pt-BR"><head><title>Relatório de Empresas</title><style>body{font-family:Arial,sans-serif;padding:32px;color:#1d1d1d}table{width:100%;border-collapse:collapse;margin-top:24px}th,td{border:1px solid #e0e0e0;padding:10px;text-align:left;font-size:12px}th{background:#f8f9fa}</style></head><body><h1>Gestão de Empresas</h1><p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p><p>Total: ${companies.length} empresa(s)</p><table><thead><tr><th>Empresa</th><th>CNPJ</th><th>Email</th><th>Telefone</th><th>Localização</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
         win.document.open();
         win.document.write(html);
@@ -115,46 +266,84 @@ export default function AdminCompanies() {
     };
 
     const handleExportWithFormat = (format: ReportFormat) => {
-        const list = selected.size > 0
-            ? companiesFiltered.filter((c) => selected.has(c.id))
-            : companiesFiltered;
+        const list =
+            selected.size > 0
+                ? companiesFiltered.filter((c) => selected.has(c.id))
+                : companiesFiltered;
         if (format === 'csv') exportToCSV(list);
         else exportToPDF(list);
         setExportModalOpen(false);
     };
 
-    const estadosDisponiveis = [...new Set(MOCK_COMPANIES.map((c) => c.state))].sort();
-    const cidadesDisponiveis = (filterEstado ? MOCK_COMPANIES.filter((c) => c.state === filterEstado) : MOCK_COMPANIES)
-        .reduce<string[]>((acc, c) => { if (!acc.includes(c.city)) acc.push(c.city); return acc; }, [])
+    const estadosDisponiveis = [
+        ...new Set(MOCK_COMPANIES.map((c) => c.state)),
+    ].sort();
+    const cidadesDisponiveis = (
+        filterEstado
+            ? MOCK_COMPANIES.filter((c) => c.state === filterEstado)
+            : MOCK_COMPANIES
+    )
+        .reduce<string[]>((acc, c) => {
+            if (!acc.includes(c.city)) acc.push(c.city);
+            return acc;
+        }, [])
         .sort();
 
     const companiesFiltered = MOCK_COMPANIES.filter((c) => {
         const term = applied.search.toLowerCase();
-        if (term && !c.name.toLowerCase().includes(term) && !c.cnpj.includes(term) && !c.email.toLowerCase().includes(term)) return false;
+        if (
+            term &&
+            !c.name.toLowerCase().includes(term) &&
+            !c.cnpj.includes(term) &&
+            !c.email.toLowerCase().includes(term)
+        )
+            return false;
         if (applied.estado && c.state !== applied.estado) return false;
         if (applied.cidade && c.city !== applied.cidade) return false;
         if (applied.status && c.status !== applied.status) return false;
         return true;
     });
 
-    const totalPages = Math.max(1, Math.ceil(companiesFiltered.length / PAGE_SIZE));
+    const totalPages = Math.max(
+        1,
+        Math.ceil(companiesFiltered.length / PAGE_SIZE),
+    );
     const pageStart = (currentPage - 1) * PAGE_SIZE;
-    const companiesPage = companiesFiltered.slice(pageStart, pageStart + PAGE_SIZE);
+    const companiesPage = companiesFiltered.slice(
+        pageStart,
+        pageStart + PAGE_SIZE,
+    );
 
     const selectedOnPage = companiesPage.filter((c) => selected.has(c.id));
-    const allPageSelected = companiesPage.length > 0 && selectedOnPage.length === companiesPage.length;
+    const allPageSelected =
+        companiesPage.length > 0 &&
+        selectedOnPage.length === companiesPage.length;
     const somePageSelected = selectedOnPage.length > 0 && !allPageSelected;
 
     useEffect(() => {
-        if (selectAllRef.current) selectAllRef.current.indeterminate = somePageSelected;
+        if (selectAllRef.current)
+            selectAllRef.current.indeterminate = somePageSelected;
     }, [somePageSelected]);
 
-    const handleEstadoChange = (state: string) => { setFilterEstado(state); setFilterCidade(''); };
+    const handleEstadoChange = (state: string) => {
+        setFilterEstado(state);
+        setFilterCidade('');
+    };
 
     const applyFilters = () => {
         // eslint-disable-next-line no-console
-        console.log('[Buscar]', { search, estado: filterEstado, cidade: filterCidade, status: filterStatus });
-        setApplied({ search, estado: filterEstado, cidade: filterCidade, status: filterStatus });
+        console.log('[Buscar]', {
+            search,
+            estado: filterEstado,
+            cidade: filterCidade,
+            status: filterStatus,
+        });
+        setApplied({
+            search,
+            estado: filterEstado,
+            cidade: filterCidade,
+            status: filterStatus,
+        });
         setSelected(new Set());
         setCurrentPage(1);
     };
@@ -174,20 +363,32 @@ export default function AdminCompanies() {
     const toggleSelect = (id: string) => {
         setSelected((prev) => {
             const next = new Set(prev);
-            if (next.has(id)) next.delete(id); else next.add(id);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
             return next;
         });
     };
 
     const toggleSelectAll = () => {
         if (allPageSelected) {
-            setSelected((prev) => { const next = new Set(prev); companiesPage.forEach((c) => next.delete(c.id)); return next; });
+            setSelected((prev) => {
+                const next = new Set(prev);
+                companiesPage.forEach((c) => next.delete(c.id));
+                return next;
+            });
         } else {
-            setSelected((prev) => { const next = new Set(prev); companiesPage.forEach((c) => next.add(c.id)); return next; });
+            setSelected((prev) => {
+                const next = new Set(prev);
+                companiesPage.forEach((c) => next.add(c.id));
+                return next;
+            });
         }
     };
 
-    const goToPage = (page: number) => { setCurrentPage(page); setSelected(new Set()); };
+    const goToPage = (page: number) => {
+        setCurrentPage(page);
+        setSelected(new Set());
+    };
 
     const displayFrom = companiesFiltered.length === 0 ? 0 : pageStart + 1;
     const displayTo = Math.min(pageStart + PAGE_SIZE, companiesFiltered.length);
@@ -200,7 +401,9 @@ export default function AdminCompanies() {
                     <h1 className='ac__title'>Gestão de Empresas</h1>
                     <p className='ac__subtitle'>
                         Administração centralizada das{' '}
-                        <span className='ac__subtitle--highlight'>empresas</span>{' '}
+                        <span className='ac__subtitle--highlight'>
+                            empresas
+                        </span>{' '}
                         parceiras do instituto.
                     </p>
                 </div>
@@ -209,7 +412,9 @@ export default function AdminCompanies() {
                         className='ac__btn ac__btn--outline'
                         onClick={() => setExportModalOpen(true)}
                     >
-                        <FileDownloadOutlinedIcon sx={{ fontSize: 16, color: '#1d1d1d' }} />
+                        <FileDownloadOutlinedIcon
+                            sx={{ fontSize: 16, color: '#1d1d1d' }}
+                        />
                         <span>Exportar Lista</span>
                     </div>
                 </div>
@@ -226,11 +431,19 @@ export default function AdminCompanies() {
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
                     </div>
-                    <div className='ac__btn ac__btn--filled' onClick={applyFilters}>
-                        <SearchRoundedIcon sx={{ fontSize: 16, color: '#fff' }} />
+                    <div
+                        className='ac__btn ac__btn--filled'
+                        onClick={applyFilters}
+                    >
+                        <SearchRoundedIcon
+                            sx={{ fontSize: 16, color: '#fff' }}
+                        />
                         <span>Buscar</span>
                     </div>
-                    <div className='ac__btn ac__btn--outline' onClick={clearFilters}>
+                    <div
+                        className='ac__btn ac__btn--outline'
+                        onClick={clearFilters}
+                    >
                         <span>Limpar</span>
                     </div>
                 </div>
@@ -241,11 +454,17 @@ export default function AdminCompanies() {
                     onClick={() => setAdvancedOpen((v) => !v)}
                 >
                     <span className='ac__advanced-toggle-label'>
-                        <FilterListRoundedIcon sx={{ fontSize: 18, color: '#673ab7' }} />
+                        <FilterListRoundedIcon
+                            sx={{ fontSize: 18, color: '#673ab7' }}
+                        />
                         Filtros Avançados
                     </span>
-                    <span className={`ac__chevron${advancedOpen ? ' ac__chevron--open' : ''}`}>
-                        <KeyboardArrowDownRoundedIcon sx={{ fontSize: 16, color: '#673ab7' }} />
+                    <span
+                        className={`ac__chevron${advancedOpen ? ' ac__chevron--open' : ''}`}
+                    >
+                        <KeyboardArrowDownRoundedIcon
+                            sx={{ fontSize: 16, color: '#673ab7' }}
+                        />
                     </span>
                 </button>
 
@@ -253,25 +472,65 @@ export default function AdminCompanies() {
                     <div className='ac__advanced-grid'>
                         <div>
                             <label className='ac__field-label'>Estado</label>
-                            <select className='ac__field-select' value={filterEstado} onChange={(e) => handleEstadoChange(e.target.value)}>
+                            <select
+                                className='ac__field-select'
+                                value={filterEstado}
+                                onChange={(e) =>
+                                    handleEstadoChange(e.target.value)
+                                }
+                            >
                                 <option value=''>Todos os estados</option>
-                                {estadosDisponiveis.map((s) => <option key={s} value={s}>{s}</option>)}
+                                {estadosDisponiveis.map((s) => (
+                                    <option key={s} value={s}>
+                                        {s}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div>
                             <label className='ac__field-label'>Cidade</label>
-                            <select className='ac__field-select' value={filterCidade} onChange={(e) => setFilterCidade(e.target.value)} disabled={!filterEstado}>
-                                <option value=''>{filterEstado ? 'Todas as cidades' : 'Selecione um estado primeiro'}</option>
-                                {cidadesDisponiveis.map((c) => <option key={c} value={c}>{c}</option>)}
+                            <select
+                                className='ac__field-select'
+                                value={filterCidade}
+                                onChange={(e) =>
+                                    setFilterCidade(e.target.value)
+                                }
+                                disabled={!filterEstado}
+                            >
+                                <option value=''>
+                                    {filterEstado
+                                        ? 'Todas as cidades'
+                                        : 'Selecione um estado primeiro'}
+                                </option>
+                                {cidadesDisponiveis.map((c) => (
+                                    <option key={c} value={c}>
+                                        {c}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div>
-                            <label className='ac__field-label'>Data de cadastro</label>
-                            <input type='date' className='ac__field-input' value={filterData} onChange={(e) => setFilterData(e.target.value)} />
+                            <label className='ac__field-label'>
+                                Data de cadastro
+                            </label>
+                            <input
+                                type='date'
+                                className='ac__field-input'
+                                value={filterData}
+                                onChange={(e) => setFilterData(e.target.value)}
+                            />
                         </div>
                         <div>
-                            <label className='ac__field-label'>Status da empresa</label>
-                            <select className='ac__field-select' value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                            <label className='ac__field-label'>
+                                Status da empresa
+                            </label>
+                            <select
+                                className='ac__field-select'
+                                value={filterStatus}
+                                onChange={(e) =>
+                                    setFilterStatus(e.target.value)
+                                }
+                            >
                                 <option value=''>Todos</option>
                                 <option value='ATIVO'>Ativo</option>
                                 <option value='INATIVO'>Inativo</option>
@@ -286,16 +545,26 @@ export default function AdminCompanies() {
                 <div className='ac__bulk-bar'>
                     <div className='ac__bulk-left'>
                         <span className='ac__bulk-count'>
-                            {selected.size} empresa{selected.size !== 1 ? 's' : ''} selecionada{selected.size !== 1 ? 's' : ''}
+                            {selected.size} empresa
+                            {selected.size !== 1 ? 's' : ''} selecionada
+                            {selected.size !== 1 ? 's' : ''}
                         </span>
                         <div className='ac__bulk-divider' />
                         <button type='button' className='ac__bulk-action'>
-                            <FileDownloadOutlinedIcon sx={{ fontSize: 14, color: '#1d1d1d' }} />
+                            <FileDownloadOutlinedIcon
+                                sx={{ fontSize: 14, color: '#1d1d1d' }}
+                            />
                             <span>Exportar selecionados</span>
                         </button>
                     </div>
-                    <button type='button' className='ac__icon-btn' onClick={() => setSelected(new Set())}>
-                        <CloseRoundedIcon sx={{ fontSize: 16, color: '#0b1215' }} />
+                    <button
+                        type='button'
+                        className='ac__icon-btn'
+                        onClick={() => setSelected(new Set())}
+                    >
+                        <CloseRoundedIcon
+                            sx={{ fontSize: 16, color: '#0b1215' }}
+                        />
                     </button>
                 </div>
             )}
@@ -338,7 +607,9 @@ export default function AdminCompanies() {
                                     <div className='ac__avatar'>
                                         {getInitials(company.name)}
                                     </div>
-                                    <span className='ac__company-name'>{company.name}</span>
+                                    <span className='ac__company-name'>
+                                        {company.name}
+                                    </span>
                                 </div>
                             </div>
                             <div className='ac__col'>
@@ -346,15 +617,23 @@ export default function AdminCompanies() {
                             </div>
                             <div className='ac__col'>
                                 <div className='ac__contact'>
-                                    <span className='ac__contact-email'>{company.email}</span>
-                                    <span className='ac__contact-phone'>{company.phone}</span>
+                                    <span className='ac__contact-email'>
+                                        {company.email}
+                                    </span>
+                                    <span className='ac__contact-phone'>
+                                        {company.phone}
+                                    </span>
                                 </div>
                             </div>
                             <div className='ac__col'>
-                                <span className='ac__location'>{company.city}, {company.state}</span>
+                                <span className='ac__location'>
+                                    {company.city}, {company.state}
+                                </span>
                             </div>
                             <div className='ac__col'>
-                                <span className={`ac__status ac__status--${company.status === 'ATIVO' ? 'active' : 'inactive'}`}>
+                                <span
+                                    className={`ac__status ac__status--${company.status === 'ATIVO' ? 'active' : 'inactive'}`}
+                                >
                                     {company.status}
                                 </span>
                             </div>
@@ -367,8 +646,17 @@ export default function AdminCompanies() {
                                     >
                                         <WhatsAppIcon sx={{ fontSize: 18 }} />
                                     </button>
-                                    <button type='button' className='ac__icon-btn' onClick={handleEdit}>
-                                        <EditOutlinedIcon sx={{ fontSize: 16, color: '#1d1d1d' }} />
+                                    <button
+                                        type='button'
+                                        className='ac__icon-btn'
+                                        onClick={handleEdit}
+                                    >
+                                        <EditOutlinedIcon
+                                            sx={{
+                                                fontSize: 16,
+                                                color: '#1d1d1d',
+                                            }}
+                                        />
                                     </button>
                                 </div>
                             </div>
@@ -379,7 +667,9 @@ export default function AdminCompanies() {
                 {/* Footer / Paginação */}
                 <div className='ac__footer'>
                     <span className='ac__footer-count'>
-                        Exibindo {displayFrom} a {displayTo} de {companiesFiltered.length} empresa{companiesFiltered.length !== 1 ? 's' : ''}
+                        Exibindo {displayFrom} a {displayTo} de{' '}
+                        {companiesFiltered.length} empresa
+                        {companiesFiltered.length !== 1 ? 's' : ''}
                     </span>
                     <div className='ac__pagination'>
                         <button
@@ -392,18 +682,23 @@ export default function AdminCompanies() {
                         </button>
 
                         {getPageNumbers(currentPage, totalPages).map((p, i) =>
-                            p === '...'
-                                ? <span key={`ellipsis-${i}`} className='ac__page-ellipsis'>...</span>
-                                : (
-                                    <button
-                                        key={p}
-                                        type='button'
-                                        className={`ac__page-btn${p === currentPage ? ' ac__page-btn--active' : ' ac__page-btn--ghost'}`}
-                                        onClick={() => goToPage(Number(p))}
-                                    >
-                                        {p}
-                                    </button>
-                                ),
+                            p === '...' ? (
+                                <span
+                                    key={`ellipsis-${i}`}
+                                    className='ac__page-ellipsis'
+                                >
+                                    ...
+                                </span>
+                            ) : (
+                                <button
+                                    key={p}
+                                    type='button'
+                                    className={`ac__page-btn${p === currentPage ? ' ac__page-btn--active' : ' ac__page-btn--ghost'}`}
+                                    onClick={() => goToPage(Number(p))}
+                                >
+                                    {p}
+                                </button>
+                            ),
                         )}
 
                         <button

@@ -306,8 +306,7 @@ function AdminStudents() {
             header: 'Status',
             sortable: false,
             render: (course: AdminCourseDto) => {
-                const isActive =
-                    `${course.status}`.toUpperCase() === 'ATIVO';
+                const isActive = `${course.status}`.toUpperCase() === 'ATIVO';
                 return (
                     <Chip
                         label={isActive ? 'Ativo' : 'Inativo'}

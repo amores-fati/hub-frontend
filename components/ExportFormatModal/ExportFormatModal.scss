@@ -18,8 +18,13 @@
     border-radius: 6px;
     transition: background 150ms;
 
-    &:hover { background: #f8f9fa; }
-    &:disabled { opacity: 0.4; cursor: not-allowed; }
+    &:hover {
+        background: #f8f9fa;
+    }
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
 }
 
 .efm__content {
@@ -48,7 +53,9 @@
     border: 2px solid #e0e0e0;
     border-radius: 12px;
     cursor: pointer;
-    transition: border-color 150ms, background 150ms;
+    transition:
+        border-color 150ms,
+        background 150ms;
 
     &:hover:not(:disabled) {
         border-color: #673ab7;
