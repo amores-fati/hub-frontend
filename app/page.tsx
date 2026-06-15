@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import HomePage from './Home';
 
 export default function Index() {
-    redirect('/empresa/vagas');
+    return <HomePage />;
 }
