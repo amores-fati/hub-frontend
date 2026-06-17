@@ -1,217 +1,340 @@
-.admin-vagas {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 2rem;
-    width: 100%;
-    max-width: 100%;
-    flex: 1 1 auto;
-    align-self: stretch;
-    min-width: 0;
-    box-sizing: border-box;
+'use client';
 
-    &__header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 1rem;
+import { Chip, IconButton } from '@mui/material';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import { useEffect, useMemo, useState } from 'react';
+import {
+    Action,
+    State,
+    TableStoreProvider,
+    useTableStore,
+} from '@/stores/TableStoreProvider';
+import { Cells, CellType } from '@/components/base/Table2/types';
+import BasicTable from '@/components/base/Table2/table';
+import { VacancyDto, WorkplaceType } from '@/dtos/VacancyDto';
+import './index.scss';
 
-        h1 {
-            margin: 0;
-            font: var(--titulo-2);
-        }
+const EMPRESAS = ['HP', 'DELL', 'TECHLIFE', 'TechCorp', 'DataBrasil', 'Inova Sistemas', 'CloudBR', 'SecureNet'];
+const TITULOS = [
+    'Estagiário Frontend - Python',
+    'Desenvolvedor Backend - Java',
+    'Estágiario UX',
+    'Desenvolvimento FullStack',
+    'Estagiário QA',
+    'Analista de Dados',
+    'Desenvolvedor Frontend - React',
+    'Engenheiro DevOps',
+    'Analista de Suporte',
+    'Engenheiro de Machine Learning',
+];
+const WORKPLACE_TYPES = [WorkplaceType.PRESENTIAL, WorkplaceType.ONLINE, WorkplaceType.HYBRID];
+
+type MockVacancy = VacancyDto & { empresa: string };
+
+const generateMockVagas = (count: number): MockVacancy[] => {
+    return Array.from({ length: count }, (_, i) => {
+        const name = TITULOS[i % TITULOS.length];
+        const empresa = EMPRESAS[i % EMPRESAS.length];
+        const workplaceType = WORKPLACE_TYPES[i % WORKPLACE_TYPES.length];
+        const isPcd = i % 3 === 0;
+        const day = String((i % 28) + 1).padStart(2, '0');
+        const month = String((i % 12) + 1).padStart(2, '0');
+        const year = i % 2 === 0 ? '2026' : '2025';
+
+        return {
+            id: String(i + 1),
+            name,
+            empresa,
+            openingsCount: (i % 12) + 1,
+            vacancyCount: (i % 12) + 1,
+            workplaceType,
+            isPcd,
+            announcementDate: `${year}-${month}-${day}`,
+            description: `Vaga de ${name} na empresa ${empresa}, modalidade ${workplaceType}.`,
+            applicationLink: `https://${empresa.toLowerCase().replace(/\s+/g, '')}.com/vagas/${i + 1}`,
+            skills: [],
+            companyId: empresa,
+        };
+    });
+};
+
+const MOCK_VAGAS: MockVacancy[] = generateMockVagas(245);
+
+const PAGE_SIZE = 5;
+
+const workplaceTypeLabels: Record<WorkplaceType, string> = {
+    [WorkplaceType.PRESENTIAL]: 'Presencial',
+    [WorkplaceType.ONLINE]: 'Online',
+    [WorkplaceType.HYBRID]: 'Híbrido',
+};
+
+const formatDate = (value: string) => {
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat('pt-BR').format(date);
+};
+
+const getWorkplaceBadgeClassName = (workplaceType?: WorkplaceType | null) => {
+    switch (workplaceType) {
+        case WorkplaceType.PRESENTIAL:
+            return 'admin-vagas__badge admin-vagas__badge--presencial';
+        case WorkplaceType.ONLINE:
+            return 'admin-vagas__badge admin-vagas__badge--online';
+        case WorkplaceType.HYBRID:
+            return 'admin-vagas__badge admin-vagas__badge--hibrido';
+        default:
+            return 'admin-vagas__badge admin-vagas__badge--neutral';
     }
+};
 
-    &__eyebrow {
-        display: block;
-        font: var(--footnote-bold);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--tertiary-color);
-        margin-bottom: 0.25rem;
-    }
+type CustomPaginationProps = {
+    page: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+    summaryText: string;
+};
 
-    &__bulk-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: color-mix(in srgb, var(--tertiary-color) 12%, var(--surface));
-        border: 1px solid color-mix(in srgb, var(--tertiary-color) 35%, var(--surface));
-        border-radius: var(--border-radius);
-        padding: var(--spacing-sm) var(--spacing-lg);
-        gap: var(--spacing-md);
-    }
-
-    &__bulk-bar-left {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-md);
-
-        strong {
-            font: var(--subhead);
-            color: var(--tertiary-color);
+function CustomPagination({
+    page,
+    totalPages,
+    onPageChange,
+    summaryText,
+}: CustomPaginationProps) {
+    const visiblePages = useMemo(() => {
+        const maxVisible = 3;
+        if (totalPages <= maxVisible) {
+            return Array.from({ length: totalPages }, (_, i) => i + 1);
         }
-    }
+        let start = Math.max(1, page - 1);
+        const end = Math.min(totalPages, start + maxVisible - 1);
+        start = Math.max(1, end - maxVisible + 1);
+        return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    }, [page, totalPages]);
 
-    &__bulk-divider {
-        width: 1px;
-        height: 1.25rem;
-        background: var(--tertiary-color);
-        opacity: 0.4;
-    }
+    return (
+        <div className='admin-vagas__pagination'>
+            <span className='admin-vagas__pagination-info'>{summaryText}</span>
 
-    &__bulk-export {
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-        background: none;
-        border: none;
-        cursor: pointer;
-        font: var(--footnote-bold);
-        color: var(--tertiary-color);
-        padding: var(--spacing-xs) var(--spacing-sm);
-        border-radius: var(--border-radius-sm);
-        transition: background var(--transition-fast);
+            <div className='admin-vagas__pagination-controls'>
+                <button
+                    type='button'
+                    onClick={() => onPageChange(page - 1)}
+                    disabled={page === 1}
+                    className='admin-vagas__pagination-btn admin-vagas__pagination-btn--text'
+                >
+                    Anterior
+                </button>
 
-        &:hover {
-            background: color-mix(in srgb, var(--tertiary-color) 15%, transparent);
-        }
-    }
+                {visiblePages.map((p) => (
+                    <button
+                        key={p}
+                        type='button'
+                        onClick={() => onPageChange(p)}
+                        className={`admin-vagas__pagination-btn ${p === page ? 'admin-vagas__pagination-btn--active' : ''}`}
+                    >
+                        {p}
+                    </button>
+                ))}
 
-    &__bulk-close {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--tertiary-color);
-        padding: var(--spacing-xs);
-        border-radius: var(--border-radius-sm);
-        transition: background var(--transition-fast);
-
-        &:hover {
-            background: color-mix(in srgb, var(--tertiary-color) 15%, transparent);
-        }
-    }
-
-    &__table-card {
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        background: var(--surface);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-    }
-
-    &__empty-state {
-        padding: var(--spacing-3xl) var(--spacing-xl);
-        text-align: center;
-
-        h2 {
-            font: var(--heading);
-            color: var(--text-primary);
-            margin: 0;
-        }
-    }
-
-    &__title-cell {
-        font-weight: 500;
-        color: var(--text-primary);
-    }
-
-    &__badge {
-        font: var(--footnote-bold) !important;
-        height: 24px !important;
-        border-radius: var(--border-radius-sm) !important;
-
-        &--success {
-            background-color: var(--success) !important;
-            color: var(--preto-2) !important;
-        }
-
-        &--danger {
-            background-color: var(--error) !important;
-            color: var(--preto-2) !important;
-        }
-
-        &--info {
-            background-color: var(--info) !important;
-            color: var(--preto-2) !important;
-        }
-
-        &--presencial {
-            background-color: var(--secondary-color) !important;
-            color: var(--branco) !important;
-        }
-
-        &--online {
-            background-color: var(--warning) !important;
-            color: var(--preto-2) !important;
-        }
-
-        &--hibrido {
-            background-color: var(--tertiary-color) !important;
-            color: var(--branco) !important;
-        }
-    }
+                <button
+                    type='button'
+                    onClick={() => onPageChange(page + 1)}
+                    disabled={page === totalPages}
+                    className='admin-vagas__pagination-btn admin-vagas__pagination-btn--text'
+                >
+                    Próximo
+                </button>
+            </div>
+        </div>
+    );
 }
 
-.admin-vagas__table-card--no-default-pagination {
-    .sass-paginator {
-        display: none;
-    }
+export default function Index() {
+    return (
+        <TableStoreProvider>
+            <AdminVagas />
+        </TableStoreProvider>
+    );
 }
 
-.admin-vagas__pagination {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-top: 1px solid var(--border-color);
-}
+function AdminVagas() {
+    const setIsLoading = useTableStore((state) => state.setIsLoading);
+    const setPaginator = useTableStore((state) => state.setPaginator);
+    const setCells = useTableStore(
+        (s: State<MockVacancy> & Action<MockVacancy>) => s.setCells,
+    );
+    const setContent = useTableStore(
+        (s: State<MockVacancy> & Action<MockVacancy>) => s.setContent,
+    );
+    const selectedRows = useTableStore((state) => state.selectedRows);
+    const setSelectedRows = useTableStore((state) => state.setSelectedRows);
 
-.admin-vagas__pagination-info {
-    font: var(--footnote);
-    color: var(--text-muted);
-}
+    const [page, setPage] = useState(1);
 
-.admin-vagas__pagination-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
+    const totalPages = Math.max(1, Math.ceil(MOCK_VAGAS.length / PAGE_SIZE));
+    const startIndex = (page - 1) * PAGE_SIZE;
+    const paginated = MOCK_VAGAS.slice(startIndex, startIndex + PAGE_SIZE);
 
-.admin-vagas__pagination-btn {
-    background: none;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    padding: 0.375rem 0.625rem;
-    font: var(--footnote);
-    cursor: pointer;
-    color: var(--text-primary);
-    transition: all var(--transition-fast);
-    min-width: 36px;
+    useEffect(() => {
+        setContent(paginated);
+        setPaginator({
+            itemsCount: MOCK_VAGAS.length,
+            page,
+        });
+        setIsLoading(false);
+    }, [page]);
 
-    &:hover:not(:disabled) {
-        border-color: var(--tertiary-color);
-        color: var(--tertiary-color);
-    }
+    useEffect(() => {
+        setSelectedRows({});
+    }, [page]);
 
-    &:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
-}
+    const selectedCount = Object.keys(selectedRows).length;
+    const selectedCountLabel = `${selectedCount} vaga${selectedCount === 1 ? '' : 's'} selecionada${selectedCount === 1 ? '' : 's'}`;
 
-.admin-vagas__pagination-btn--active {
-    background: var(--tertiary-color);
-    border-color: var(--tertiary-color);
-    color: var(--branco);
-    font-weight: 600;
+    const handleClearSelection = () => setSelectedRows({});
+
+    const cells: Cells<MockVacancy>[] = [
+        {
+            key: 'id',
+            header: '',
+            type: CellType.CHECKBOX,
+            sortable: false,
+        },
+        {
+            key: 'name',
+            header: 'Título',
+            sortable: false,
+            render: (row) => (
+                <span className='admin-vagas__title-cell'>{row.name}</span>
+            ),
+        },
+        {
+            key: 'empresa',
+            header: 'Empresa',
+            sortable: false,
+            render: (row) => row.empresa,
+        },
+        {
+            key: 'openingsCount',
+            header: 'Número de Vagas',
+            sortable: false,
+            render: (row) => row.openingsCount,
+        },
+        {
+            key: 'workplaceType',
+            header: 'Modalidade',
+            sortable: false,
+            render: (row) =>
+                row.workplaceType ? (
+                    <Chip
+                        label={workplaceTypeLabels[row.workplaceType]}
+                        className={getWorkplaceBadgeClassName(row.workplaceType)}
+                    />
+                ) : (
+                    <span>—</span>
+                ),
+        },
+        {
+            key: 'isPcd',
+            header: 'Exclusivo PCD',
+            sortable: false,
+            render: (row) => (
+                <Chip
+                    label={row.isPcd ? 'SIM' : 'NÃO'}
+                    className={
+                        row.isPcd
+                            ? 'admin-vagas__badge admin-vagas__badge--success'
+                            : 'admin-vagas__badge admin-vagas__badge--danger'
+                    }
+                />
+            ),
+        },
+        {
+            key: 'announcementDate',
+            header: 'Data de Anúncio',
+            sortable: false,
+            render: (row) => (
+                <Chip
+                    label={formatDate(row.announcementDate)}
+                    className='admin-vagas__badge admin-vagas__badge--info'
+                />
+            ),
+        },
+        {
+            key: 'actions',
+            header: 'Ações',
+            sortable: false,
+            render: (row) => (
+                <IconButton
+                    className='custom-table__action-button'
+                    onClick={() => {
+                        // Modal real implementado na 18.1.4
+                        console.log('Visualizar vaga:', row.id);
+                    }}
+                >
+                    <VisibilityOutlinedIcon fontSize='small' />
+                </IconButton>
+            ),
+        },
+    ];
+
+    useEffect(() => {
+        setCells(cells);
+    }, []);
+
+    return (
+        <section className='admin-vagas'>
+            <div className='admin-vagas__header'>
+                <div>
+                    <span className='admin-vagas__eyebrow'>
+                        Área administrativa
+                    </span>
+                    <h1>Gestão de Vagas</h1>
+                </div>
+            </div>
+
+            {selectedCount > 0 && (
+                <div className='admin-vagas__bulk-bar'>
+                    <div className='admin-vagas__bulk-bar-left'>
+                        <strong>{selectedCountLabel}</strong>
+                        <span className='admin-vagas__bulk-divider' />
+                        <button type='button' className='admin-vagas__bulk-export'>
+                            <FileDownloadOutlinedIcon fontSize='small' />
+                            Exportar selecionados
+                        </button>
+                    </div>
+                    <button
+                        type='button'
+                        onClick={handleClearSelection}
+                        className='admin-vagas__bulk-close'
+                        aria-label='Limpar seleção'
+                    >
+                        ×
+                    </button>
+                </div>
+            )}
+
+            <div className='admin-vagas__table-card admin-vagas__table-card--no-default-pagination'>
+                {MOCK_VAGAS.length === 0 ? (
+                    <div className='admin-vagas__empty-state'>
+                        <h2>Nenhuma vaga encontrada</h2>
+                    </div>
+                ) : (
+                    <>
+                        <BasicTable />
+                        <CustomPagination
+                            page={page}
+                            totalPages={totalPages}
+                            onPageChange={setPage}
+                            summaryText={`Exibindo ${startIndex + 1} a ${Math.min(
+                                startIndex + PAGE_SIZE,
+                                MOCK_VAGAS.length,
+                            )} de ${MOCK_VAGAS.length} vagas`}
+                        />
+                    </>
+                )}
+            </div>
+        </section>
+    );
 }
