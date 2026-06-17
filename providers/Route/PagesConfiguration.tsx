@@ -6,6 +6,7 @@ import {
     HomeFilled,
     MenuBook as MenuBookIcon,
     Person as PersonIcon,
+    Settings as SettingsIcon,
     Work as WorkIcon,
 } from '@mui/icons-material';
 import React, { JSX } from 'react';
@@ -113,6 +114,14 @@ export const PAGES: Page[] = [
         name: 'Perfil',
         icon: <PersonIcon className='sidebar-icon' />,
     },
+    {
+        path: '/admin/configuracoes',
+        navbarEnabled: true,
+        requireRoles: [UserRole.ADMIN],
+        requireAuth: true,
+        name: 'Configurações',
+        icon: <SettingsIcon className='sidebar-icon' />,
+    },
 ];
 
 export type NavItem = {
@@ -130,6 +139,11 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,
             expectedPath: '/admin/curriculos',
+        },
+        {
+            title: 'Configurações',
+            icon: <SettingsIcon />,
+            expectedPath: '/admin/configuracoes',
         },
     ],
     [UserRole.STUDENT]: [
