@@ -106,6 +106,15 @@ export const PAGES: Page[] = [
         name: 'Gestão de Currículos',
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
+
+    {
+       path: '/admin/configuracoes',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Configurações',
+        icon: <SettingsIcon className='sidebar-icon' />,
+    },
     {
         path: '/aluno/perfil',
         navbarEnabled: true,
