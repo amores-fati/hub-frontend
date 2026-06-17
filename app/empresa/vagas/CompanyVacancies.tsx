@@ -147,7 +147,7 @@ function CompanyVacanciesContent() {
 
     const { data, isLoading, isFetching, isError } =
         useGetCompanyVacancies(queryParams);
-    const { mutate: deleteVacancyMutation } = useDeleteVacancy();
+    const { mutate: deleteVacancyMutation, mutateAsync: deleteVacancyMutationAsync } = useDeleteVacancy();
 
     useEffect(() => {
         if (isLoading || isFetching) {
@@ -187,7 +187,7 @@ function CompanyVacanciesContent() {
     const handleDelete = async () => {
         if (!vacancyPendingDelete) return;
         try {
-            await deleteVacancyMutation.mutateAsync(vacancyPendingDelete.id);
+            await deleteVacancyMutationAsync(vacancyPendingDelete.id);
             setVacancyPendingDelete(null);
         } catch {
             toast.error('Não foi possível excluir a vaga. Tente novamente.');
@@ -283,7 +283,7 @@ function CompanyVacanciesContent() {
                     <IconButton
                         className='custom-table__action-button custom-table__action-button--danger'
                         onClick={() =>
-                            deleteConfirmation(deleteVacancyMutation, v.id)
+                            void deleteConfirmation(deleteVacancyMutation, v.id)
                         }
                     >
                         <DeleteOutlineRoundedIcon fontSize='small' />
