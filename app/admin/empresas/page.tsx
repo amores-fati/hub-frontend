@@ -1,4 +1,4 @@
-import AdminCompanies from "./AdminCompany";
+import AdminCompanies from './AdminCompany';
 
 export default function Page() {
     return <AdminCompanies />;

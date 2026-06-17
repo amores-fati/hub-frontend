@@ -48,7 +48,9 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
         course ? course.description : '',
     );
     const [address, setAddress] = useState(course ? course.location : '');
-    const [accessLink, setAccessLink] = useState(course ? course.externalLink : '')
+    const [accessLink, setAccessLink] = useState(
+        course ? course.externalLink : '',
+    );
     const [vacancyCount, setVacancyCount] = useState(
         course ? course.vacancyCount.toString() : '',
     );

@@ -43,7 +43,11 @@ export default function CursosAluno() {
     const removeInterest = useRemoveInterest();
     const enroll = useEnrollInCourse();
     const unenroll = useUnenrollFromCourse();
-    const isMutating = interest.isPending || enroll.isPending || removeInterest.isPending || unenroll.isPending;
+    const isMutating =
+        interest.isPending ||
+        enroll.isPending ||
+        removeInterest.isPending ||
+        unenroll.isPending;
 
     const [modal, setModal] = useState<ModalState>(null);
     const [enrollConfirm, setEnrollConfirm] = useState<CourseDto | null>(null);
@@ -229,7 +233,9 @@ export default function CursosAluno() {
                                     onSaibaMais={() =>
                                         openModal(course, 'interessado')
                                     }
-                                    onAction={() => handleRemoveInterest(course)}
+                                    onAction={() =>
+                                        handleRemoveInterest(course)
+                                    }
                                 />
                             ))}
                         </div>
