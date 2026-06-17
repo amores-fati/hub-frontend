@@ -143,9 +143,7 @@ export default function HomePage() {
     }
 
     if (role === UserRole.COMPANY) {
-        return (
-            <CompanyVacancies />
-        );
+        return <CompanyVacancies />;
     }
 
     return (

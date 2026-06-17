@@ -92,7 +92,7 @@ export function CourseCard({
                             Saiba mais →
                         </button>
                         {action === 'inscrito' && (
-                            <button 
+                            <button
                                 className='course-card__btn'
                                 onClick={onAction}
                                 disabled={disabled}

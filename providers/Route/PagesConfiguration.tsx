@@ -8,7 +8,7 @@ import {
     Person as PersonIcon,
     Work as WorkIcon,
     Business as BusinessIcon,
-    Settings as SettingsIcon
+    Settings as SettingsIcon,
 } from '@mui/icons-material';
 import React, { JSX } from 'react';
 
@@ -177,9 +177,17 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
             icon: <AssignmentIndIcon />,
             expectedPath: '/admin/curriculos',
         },
-        { title: 'Empresas', icon: <BusinessIcon />, expectedPath: '/admin/empresas' },
+        {
+            title: 'Empresas',
+            icon: <BusinessIcon />,
+            expectedPath: '/admin/empresas',
+        },
         { title: 'Vagas', icon: <WorkIcon />, expectedPath: '/admin/vagas' },
-        { title: 'Configurações', icon: <SettingsIcon />, expectedPath: '/admin/configuracoes' },
+        {
+            title: 'Configurações',
+            icon: <SettingsIcon />,
+            expectedPath: '/admin/configuracoes',
+        },
     ],
     [UserRole.STUDENT]: [
         {
@@ -208,7 +216,7 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
         {
             title: 'Perfil',
             icon: <PersonIcon />,
-            expectedPath: '/empresa/perfil'
+            expectedPath: '/empresa/perfil',
         },
     ],
 };

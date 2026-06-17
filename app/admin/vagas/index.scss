@@ -36,8 +36,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: color-mix(in srgb, var(--tertiary-color) 12%, var(--surface));
-        border: 1px solid color-mix(in srgb, var(--tertiary-color) 35%, var(--surface));
+        background: color-mix(
+            in srgb,
+            var(--tertiary-color) 12%,
+            var(--surface)
+        );
+        border: 1px solid
+            color-mix(in srgb, var(--tertiary-color) 35%, var(--surface));
         border-radius: var(--border-radius);
         padding: var(--spacing-sm) var(--spacing-lg);
         gap: var(--spacing-md);
@@ -75,7 +80,11 @@
         transition: background var(--transition-fast);
 
         &:hover {
-            background: color-mix(in srgb, var(--tertiary-color) 15%, transparent);
+            background: color-mix(
+                in srgb,
+                var(--tertiary-color) 15%,
+                transparent
+            );
         }
     }
 
@@ -92,7 +101,11 @@
         transition: background var(--transition-fast);
 
         &:hover {
-            background: color-mix(in srgb, var(--tertiary-color) 15%, transparent);
+            background: color-mix(
+                in srgb,
+                var(--tertiary-color) 15%,
+                transparent
+            );
         }
     }
 
