@@ -1,254 +1,217 @@
-'use client';
+.admin-vagas {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-width: 0;
+    box-sizing: border-box;
 
-import { Chip } from '@mui/material';
-import { useState } from 'react';
-import { Table, TableColumn } from '@/components/base/Table/table';
-import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import './index.scss';
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
 
-export enum ModalidadeVaga {
-    PRESENCIAL = 'PRESENCIAL',
-    ONLINE = 'ONLINE',
-    HIBRIDO = 'HÍBRIDO',
+        h1 {
+            margin: 0;
+            font: var(--titulo-2);
+        }
+    }
+
+    &__eyebrow {
+        display: block;
+        font: var(--footnote-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--tertiary-color);
+        margin-bottom: 0.25rem;
+    }
+
+    &__bulk-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: color-mix(in srgb, var(--tertiary-color) 12%, var(--surface));
+        border: 1px solid color-mix(in srgb, var(--tertiary-color) 35%, var(--surface));
+        border-radius: var(--border-radius);
+        padding: var(--spacing-sm) var(--spacing-lg);
+        gap: var(--spacing-md);
+    }
+
+    &__bulk-bar-left {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+
+        strong {
+            font: var(--subhead);
+            color: var(--tertiary-color);
+        }
+    }
+
+    &__bulk-divider {
+        width: 1px;
+        height: 1.25rem;
+        background: var(--tertiary-color);
+        opacity: 0.4;
+    }
+
+    &__bulk-export {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font: var(--footnote-bold);
+        color: var(--tertiary-color);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--border-radius-sm);
+        transition: background var(--transition-fast);
+
+        &:hover {
+            background: color-mix(in srgb, var(--tertiary-color) 15%, transparent);
+        }
+    }
+
+    &__bulk-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--tertiary-color);
+        padding: var(--spacing-xs);
+        border-radius: var(--border-radius-sm);
+        transition: background var(--transition-fast);
+
+        &:hover {
+            background: color-mix(in srgb, var(--tertiary-color) 15%, transparent);
+        }
+    }
+
+    &__table-card {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    &__empty-state {
+        padding: var(--spacing-3xl) var(--spacing-xl);
+        text-align: center;
+
+        h2 {
+            font: var(--heading);
+            color: var(--text-primary);
+            margin: 0;
+        }
+    }
+
+    &__title-cell {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    &__badge {
+        font: var(--footnote-bold) !important;
+        height: 24px !important;
+        border-radius: var(--border-radius-sm) !important;
+
+        &--success {
+            background-color: var(--success) !important;
+            color: var(--preto-2) !important;
+        }
+
+        &--danger {
+            background-color: var(--error) !important;
+            color: var(--preto-2) !important;
+        }
+
+        &--info {
+            background-color: var(--info) !important;
+            color: var(--preto-2) !important;
+        }
+
+        &--presencial {
+            background-color: var(--secondary-color) !important;
+            color: var(--branco) !important;
+        }
+
+        &--online {
+            background-color: var(--warning) !important;
+            color: var(--preto-2) !important;
+        }
+
+        &--hibrido {
+            background-color: var(--tertiary-color) !important;
+            color: var(--branco) !important;
+        }
+    }
 }
 
-export type VagaDto = {
-    id: string;
-    titulo: string;
-    empresa: string;
-    numeroVagas: number;
-    modalidade: ModalidadeVaga;
-    exclusivoPcd: boolean;
-    dataAnuncio: string;
-    descricao: string;
-    linkVaga: string;
-    tipoVaga: string;
-    skills: string[];
-};
-
-const EMPRESAS = ['HP', 'DELL', 'TECHLIFE', 'TechCorp', 'DataBrasil', 'Inova Sistemas', 'CloudBR', 'SecureNet'];
-const TITULOS = [
-    'Estagiário Frontend - Python',
-    'Desenvolvedor Backend - Java',
-    'Estágiario UX',
-    'Desenvolvimento FullStack',
-    'Estagiário QA',
-    'Analista de Dados',
-    'Desenvolvedor Frontend - React',
-    'Engenheiro DevOps',
-    'Analista de Suporte',
-    'Engenheiro de Machine Learning',
-];
-const MODALIDADES = [ModalidadeVaga.PRESENCIAL, ModalidadeVaga.ONLINE, ModalidadeVaga.HIBRIDO];
-const TIPOS_VAGA = ['CLT', 'PJ', 'Estágio'];
-const SKILLS_POOL = ['React', 'TypeScript', 'Python', 'Java', 'SQL', 'Docker', 'AWS', 'Figma', 'Node.js', 'CSS'];
-
-const generateMockVagas = (count: number): VagaDto[] => {
-    return Array.from({ length: count }, (_, i) => {
-        const titulo = TITULOS[i % TITULOS.length];
-        const empresa = EMPRESAS[i % EMPRESAS.length];
-        const modalidade = MODALIDADES[i % MODALIDADES.length];
-        const exclusivoPcd = i % 3 === 0;
-        const day = String((i % 28) + 1).padStart(2, '0');
-        const month = String((i % 12) + 1).padStart(2, '0');
-        const year = i % 2 === 0 ? '2026' : '2025';
-
-        return {
-            id: String(i + 1),
-            titulo,
-            empresa,
-            numeroVagas: (i % 12) + 1,
-            modalidade,
-            exclusivoPcd,
-            dataAnuncio: `${year}-${month}-${day}`,
-            descricao: `Vaga de ${titulo} na empresa ${empresa}, modalidade ${modalidade.toLowerCase()}.`,
-            linkVaga: `https://${empresa.toLowerCase().replace(/\s+/g, '')}.com/vagas/${i + 1}`,
-            tipoVaga: TIPOS_VAGA[i % TIPOS_VAGA.length],
-            skills: [
-                SKILLS_POOL[i % SKILLS_POOL.length],
-                SKILLS_POOL[(i + 1) % SKILLS_POOL.length],
-                SKILLS_POOL[(i + 2) % SKILLS_POOL.length],
-            ],
-        };
-    });
-};
-
-// Dados mockados desta subtask. Quando a 18.1.2 existir, a lista filtrada
-// deve vir via prop em vez deste array fixo.
-const MOCK_VAGAS: VagaDto[] = generateMockVagas(245);
-
-const PAGE_SIZE = 5;
-
-const formatDate = (value: string) => {
-    const date = new Date(`${value}T00:00:00`);
-    if (Number.isNaN(date.getTime())) return value;
-    return new Intl.DateTimeFormat('pt-BR').format(date);
-};
-
-const getModalidadeBadgeClassName = (modalidade: ModalidadeVaga) => {
-    switch (modalidade) {
-        case ModalidadeVaga.PRESENCIAL:
-            return 'admin-vagas__badge admin-vagas__badge--presencial';
-        case ModalidadeVaga.ONLINE:
-            return 'admin-vagas__badge admin-vagas__badge--online';
-        case ModalidadeVaga.HIBRIDO:
-            return 'admin-vagas__badge admin-vagas__badge--hibrido';
-        default:
-            return 'admin-vagas__badge admin-vagas__badge--neutral';
+.admin-vagas__table-card--no-default-pagination {
+    .sass-paginator {
+        display: none;
     }
-};
+}
 
-export default function AdminVagas() {
-    const [selectedIds, setSelectedIds] = useState<string[]>([]);
-    const [page, setPage] = useState(1);
+.admin-vagas__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
 
-    const totalPages = Math.max(1, Math.ceil(MOCK_VAGAS.length / PAGE_SIZE));
-    const safePage = Math.min(page, totalPages);
-    const startIndex = (safePage - 1) * PAGE_SIZE;
-    const paginated = MOCK_VAGAS.slice(startIndex, startIndex + PAGE_SIZE);
+.admin-vagas__pagination-info {
+    font: var(--footnote);
+    color: var(--text-muted);
+}
 
-    const visibleIds = paginated.map((v) => v.id);
-    const allVisibleSelected =
-        visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
-    const someVisibleSelected =
-        visibleIds.some((id) => selectedIds.includes(id)) && !allVisibleSelected;
+.admin-vagas__pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
 
-    const handleToggleSelect = (rowId: string) => {
-        setSelectedIds((prev) =>
-            prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId],
-        );
-    };
+.admin-vagas__pagination-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 0.375rem 0.625rem;
+    font: var(--footnote);
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+    min-width: 36px;
 
-    const handleToggleSelectAll = () => {
-        if (allVisibleSelected) {
-            setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
-        } else {
-            setSelectedIds((prev) => [...new Set([...prev, ...visibleIds])]);
-        }
-    };
+    &:hover:not(:disabled) {
+        border-color: var(--tertiary-color);
+        color: var(--tertiary-color);
+    }
 
-    const handleClearSelection = () => setSelectedIds([]);
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}
 
-    const handlePageChange = (nextPage: number) => {
-        setPage(nextPage);
-        setSelectedIds([]);
-    };
-
-    const selectedCount = selectedIds.length;
-    const selectedCountLabel = `${selectedCount} vaga${selectedCount === 1 ? '' : 's'} selecionada${selectedCount === 1 ? '' : 's'}`;
-
-    const columns: TableColumn<VagaDto>[] = [
-        {
-            key: 'titulo',
-            header: 'Título',
-            render: (row) => <span className='admin-vagas__title-cell'>{row.titulo}</span>,
-        },
-        {
-            key: 'empresa',
-            header: 'Empresa',
-            render: (row) => row.empresa,
-        },
-        {
-            key: 'numeroVagas',
-            header: 'Número de Vagas',
-            render: (row) => row.numeroVagas,
-        },
-        {
-            key: 'modalidade',
-            header: 'Modalidade',
-            render: (row) => (
-                <Chip label={row.modalidade} className={getModalidadeBadgeClassName(row.modalidade)} />
-            ),
-        },
-        {
-            key: 'exclusivoPcd',
-            header: 'Exclusivo PCD',
-            render: (row) => (
-                <Chip
-                    label={row.exclusivoPcd ? 'SIM' : 'NÃO'}
-                    className={
-                        row.exclusivoPcd
-                            ? 'admin-vagas__badge admin-vagas__badge--success'
-                            : 'admin-vagas__badge admin-vagas__badge--danger'
-                    }
-                />
-            ),
-        },
-        {
-            key: 'dataAnuncio',
-            header: 'Data de Anúncio',
-            render: (row) => (
-                <Chip label={formatDate(row.dataAnuncio)} className='admin-vagas__badge admin-vagas__badge--info' />
-            ),
-        },
-    ];
-
-    return (
-        <section className='admin-vagas'>
-            <div className='admin-vagas__header'>
-                <div>
-                    <span className='admin-vagas__eyebrow'>Área administrativa</span>
-                    <h1>Gestão de Vagas</h1>
-                </div>
-            </div>
-
-            {selectedCount > 0 && (
-                <div className='admin-vagas__bulk-bar'>
-                    <div className='admin-vagas__bulk-bar-left'>
-                        <strong>{selectedCountLabel}</strong>
-                        <span className='admin-vagas__bulk-divider' />
-                        <button type='button' className='admin-vagas__bulk-export'>
-                            <FileDownloadOutlinedIcon fontSize='small' />
-                            Exportar selecionados
-                        </button>
-                    </div>
-                    <button
-                        type='button'
-                        onClick={handleClearSelection}
-                        className='admin-vagas__bulk-close'
-                        aria-label='Limpar seleção'
-                    >
-                        <CloseRoundedIcon fontSize='small' />
-                    </button>
-                </div>
-            )}
-
-            {MOCK_VAGAS.length === 0 ? (
-                <div className='admin-vagas__table-card'>
-                    <div className='admin-vagas__empty-state'>
-                        <h2>Nenhuma vaga encontrada</h2>
-                    </div>
-                </div>
-            ) : (
-                <Table<VagaDto>
-                    values={paginated}
-                    columns={columns}
-                    getRowId={(row) => row.id}
-                    selectable
-                    selectedIds={selectedIds}
-                    allVisibleSelected={allVisibleSelected}
-                    someVisibleSelected={someVisibleSelected}
-                    onToggleSelect={handleToggleSelect}
-                    onToggleSelectAll={handleToggleSelectAll}
-                    actionColumnConfig={{
-                        showView: true,
-                        onView: (row) => {
-                            // Modal real implementado na 18.1.4
-                            console.log('Visualizar vaga:', row.id);
-                        },
-                    }}
-                    pagination={{
-                        page: safePage,
-                        count: totalPages,
-                        onChange: handlePageChange,
-                        summaryText: `Exibindo ${startIndex + 1} a ${Math.min(
-                            startIndex + PAGE_SIZE,
-                            MOCK_VAGAS.length,
-                        )} de ${MOCK_VAGAS.length} vagas`,
-                    }}
-                />
-            )}
-        </section>
-    );
+.admin-vagas__pagination-btn--active {
+    background: var(--tertiary-color);
+    border-color: var(--tertiary-color);
+    color: var(--branco);
+    font-weight: 600;
 }
