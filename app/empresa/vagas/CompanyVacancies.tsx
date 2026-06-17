@@ -131,7 +131,12 @@ function CompanyVacanciesContent() {
             page: paginator.page,
             limit: paginator.rowsPerPage,
             search: filters.search || undefined,
-            isPcd: filters.isPcd === 'true' ? true : filters.isPcd === 'false' ? false : undefined,
+            isPcd:
+                filters.isPcd === 'true'
+                    ? true
+                    : filters.isPcd === 'false'
+                      ? false
+                      : undefined,
             workplaceType: filters.workplaceType ?? null,
         }),
         [filters, paginator.page, paginator.rowsPerPage],
@@ -164,7 +169,9 @@ function CompanyVacanciesContent() {
         setFilters({
             search: searchInput.trim(),
             isPcd: draftPcd ? String(draftPcd.value) : null,
-            workplaceType: draftWorkplaceType ? String(draftWorkplaceType.value) : null,
+            workplaceType: draftWorkplaceType
+                ? String(draftWorkplaceType.value)
+                : null,
         });
     };
 
@@ -266,7 +273,10 @@ function CompanyVacanciesContent() {
                     <IconButton
                         className='custom-table__action-button custom-table__action-button--danger'
                         onClick={() => {
-                            void deleteConfirmation(deleteVacancyMutation, v.id);
+                            void deleteConfirmation(
+                                deleteVacancyMutation,
+                                v.id,
+                            );
                         }}
                     >
                         <DeleteOutlineRoundedIcon fontSize='small' />
@@ -389,9 +399,7 @@ function CompanyVacanciesContent() {
                             <Select
                                 placeholder='Selecione'
                                 options={pcdOptions}
-                                onChange={(e) =>
-                                    setDraftPcd(e ?? null)
-                                }
+                                onChange={(e) => setDraftPcd(e ?? null)}
                                 isSearchable
                                 isClearable
                             />
@@ -480,15 +488,15 @@ function CompanyVacanciesContent() {
 
             {((!!selectedVacancy.vacancy && selectedVacancy.mode === 'edit') ||
                 showCreateModal) && (
-                    <JobOpeningModalWrapper
-                        open={!!selectedVacancy.vacancy || showCreateModal}
-                        jobOpeningId={selectedVacancy.vacancy?.id}
-                        onClose={() => {
-                            setSelectedVacancy({ vacancy: null, mode: 'view' });
-                            setShowCreateModal(false);
-                        }}
-                    />
-                )}
+                <JobOpeningModalWrapper
+                    open={!!selectedVacancy.vacancy || showCreateModal}
+                    jobOpeningId={selectedVacancy.vacancy?.id}
+                    onClose={() => {
+                        setSelectedVacancy({ vacancy: null, mode: 'view' });
+                        setShowCreateModal(false);
+                    }}
+                />
+            )}
 
             {!!selectedVacancy.vacancy && selectedVacancy.mode === 'view' && (
                 <ViewJobOpeningModalWrapper

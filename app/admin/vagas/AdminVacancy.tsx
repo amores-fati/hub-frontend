@@ -15,7 +15,16 @@ import BasicTable from '@/components/base/Table2/table';
 import { VacancyDto, WorkplaceType } from '@/dtos/VacancyDto';
 import './index.scss';
 
-const EMPRESAS = ['HP', 'DELL', 'TECHLIFE', 'TechCorp', 'DataBrasil', 'Inova Sistemas', 'CloudBR', 'SecureNet'];
+const EMPRESAS = [
+    'HP',
+    'DELL',
+    'TECHLIFE',
+    'TechCorp',
+    'DataBrasil',
+    'Inova Sistemas',
+    'CloudBR',
+    'SecureNet',
+];
 const TITULOS = [
     'Estagiário Frontend - Python',
     'Desenvolvedor Backend - Java',
@@ -28,7 +37,11 @@ const TITULOS = [
     'Analista de Suporte',
     'Engenheiro de Machine Learning',
 ];
-const WORKPLACE_TYPES = [WorkplaceType.PRESENTIAL, WorkplaceType.ONLINE, WorkplaceType.HYBRID];
+const WORKPLACE_TYPES = [
+    WorkplaceType.PRESENTIAL,
+    WorkplaceType.ONLINE,
+    WorkplaceType.HYBRID,
+];
 
 type MockVacancy = VacancyDto & { empresa: string };
 
@@ -229,7 +242,9 @@ function AdminVagas() {
                 row.workplaceType ? (
                     <Chip
                         label={workplaceTypeLabels[row.workplaceType]}
-                        className={getWorkplaceBadgeClassName(row.workplaceType)}
+                        className={getWorkplaceBadgeClassName(
+                            row.workplaceType,
+                        )}
                     />
                 ) : (
                     <span>—</span>
@@ -298,7 +313,10 @@ function AdminVagas() {
                     <div className='admin-vagas__bulk-bar-left'>
                         <strong>{selectedCountLabel}</strong>
                         <span className='admin-vagas__bulk-divider' />
-                        <button type='button' className='admin-vagas__bulk-export'>
+                        <button
+                            type='button'
+                            className='admin-vagas__bulk-export'
+                        >
                             <FileDownloadOutlinedIcon fontSize='small' />
                             Exportar selecionados
                         </button>
