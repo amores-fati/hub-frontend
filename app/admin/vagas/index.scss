@@ -1,3 +1,41 @@
 .admin-vacancies {
-    
+    width: min(1240px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.admin-vacancies__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-lg);
+
+    h1 {
+        font: var(--titulo-1);
+        line-height: 1.2;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    p {
+        margin: 0;
+        color: var(--cinza-2);
+    }
+}
+
+.admin-vacancies__subtitle-link {
+    color: var(--tertiary-color);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-vacancies {
+        padding: var(--spacing-md);
+    }
 }

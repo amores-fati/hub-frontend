@@ -4,9 +4,19 @@ import './index.scss';
 
 export default function AdminVacancies() {
     return (
-        <div className='admin-vacancies'>
-            <h1>Tela de Gestão de Vagas de Empresas</h1>
-            <p>Em desenvolvimento</p>
-        </div>
+        <section className='admin-vacancies'>
+            <div className='admin-vacancies__header'>
+                <div>
+                    <h1>Gestão de Vagas</h1>
+                    <p>
+                        Administração centralizada de{' '}
+                        <a href='#' className='admin-vacancies__subtitle-link'>
+                            vagas
+                        </a>
+                        .
+                    </p>
+                </div>
+            </div>
+        </section>
     );
 }
