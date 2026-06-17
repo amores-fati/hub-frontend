@@ -270,7 +270,6 @@ function AdminVagas() {
                     className='custom-table__action-button'
                     onClick={() => {
                         // Modal real implementado na 18.1.4
-                        console.log('Visualizar vaga:', row.id);
                     }}
                 >
                     <VisibilityOutlinedIcon fontSize='small' />

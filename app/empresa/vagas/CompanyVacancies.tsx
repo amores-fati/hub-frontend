@@ -265,9 +265,9 @@ function CompanyVacanciesContent() {
                     </IconButton>
                     <IconButton
                         className='custom-table__action-button custom-table__action-button--danger'
-                        onClick={() =>
-                            deleteConfirmation(deleteVacancyMutation, v.id)
-                        }
+                        onClick={() => {
+                            void deleteConfirmation(deleteVacancyMutation, v.id);
+                        }}
                     >
                         <DeleteOutlineRoundedIcon fontSize='small' />
                     </IconButton>

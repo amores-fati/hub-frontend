@@ -154,7 +154,7 @@ export function VacancyModal({
         skills: form.skills,
     });
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (!validate()) return;
         const payload = buildPayload();
 
