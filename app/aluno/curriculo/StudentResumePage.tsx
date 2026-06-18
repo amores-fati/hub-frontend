@@ -219,7 +219,7 @@ export function StudentResumePage({
         [resume?.photoUrl],
     );
 
-    const currentPhotoUrl = selectedPhotoPreview;
+    const currentPhotoUrl = selectedPhotoPreview || persistedPhotoUrl;
     const isSaving =
         updateResume.isPending ||
         updateStudentProfile.isPending ||

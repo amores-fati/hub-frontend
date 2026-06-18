@@ -61,6 +61,7 @@ import {
 import { Cells, CellType } from '@/components/base/Table2/types';
 import BasicTable from '@/components/base/Table2/table';
 import { deleteConfirmation } from './Swal';
+import { resolveImageUrl } from '@/utils/shared-functions/image';
 
 const PAGE_SIZE = 20;
 
@@ -528,7 +529,7 @@ function AdminStudents() {
             render: (student: AdminStudentDto) => (
                 <div className='admin-students__student-cell'>
                     <Avatar
-                        src={student.photoUrl || undefined}
+                        src={resolveImageUrl(student.photoUrl) || undefined}
                         className='admin-students__avatar'
                     >
                         {student.fullName
@@ -557,12 +558,10 @@ function AdminStudents() {
             sortable: true,
             render: (student: AdminStudentDto) => (
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                    {(Array.isArray(student.enrollmentStatus)
-                        ? student.enrollmentStatus
-                        : [
-                              student.enrollmentStatus ??
-                                  AdminStudentCourseType.NOT_ENROLLED,
-                          ]
+                    {(
+                        student.enrollmentStatus ?? [
+                            AdminStudentCourseType.NOT_ENROLLED,
+                        ]
                     ).map((status) => (
                         <Chip
                             key={status}
@@ -771,7 +770,7 @@ function AdminStudents() {
                                 value={draftLocations}
                                 onChange={(options) =>
                                     setDraftLocations(
-                                        limitToSingleOption(options),
+                                        options ? (options as Option[]) : [],
                                     )
                                 }
                                 isClearable
@@ -877,7 +876,11 @@ function AdminStudents() {
                         <div className='admin-students__details'>
                             <div className='admin-students__details-header'>
                                 <Avatar
-                                    src={selectedStudent.photoUrl || undefined}
+                                    src={
+                                        resolveImageUrl(
+                                            selectedStudent.photoUrl,
+                                        ) || undefined
+                                    }
                                     className='admin-students__avatar admin-students__avatar--large'
                                 >
                                     {selectedStudent.fullName
@@ -891,20 +894,19 @@ function AdminStudents() {
                                     <h3>{selectedStudent.fullName}</h3>
                                     <p>{selectedStudent.email}</p>
                                     <div className='admin-students__details-badges'>
-                                        <Chip
-                                            label={
-                                                courseTypeLabels[
-                                                    selectedStudent
-                                                        .enrollmentStatus[0] ??
-                                                        AdminStudentCourseType.NOT_ENROLLED
-                                                ]
-                                            }
-                                            className={getCourseBadgeClassName(
-                                                selectedStudent
-                                                    .enrollmentStatus[0] ??
-                                                    AdminStudentCourseType.NOT_ENROLLED,
-                                            )}
-                                        />
+                                        {(
+                                            selectedStudent.enrollmentStatus ?? [
+                                                AdminStudentCourseType.NOT_ENROLLED,
+                                            ]
+                                        ).map((status) => (
+                                            <Chip
+                                                key={status}
+                                                label={courseTypeLabels[status]}
+                                                className={getCourseBadgeClassName(
+                                                    status,
+                                                )}
+                                            />
+                                        ))}
                                         <Chip
                                             label={
                                                 disabilityLabels[

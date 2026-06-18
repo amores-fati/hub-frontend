@@ -8,6 +8,8 @@ import { useAuth } from '@/providers/Auth/AuthProvider';
 import {
     useEnrollInCourse,
     useRegisterInterest,
+    useUnenrollFromCourse,
+    useRemoveInterest,
 } from '@/services/api/courses/mutations';
 import {
     useGetCourses,
@@ -38,8 +40,14 @@ export default function CursosAluno() {
     const { data: studentProfile } = useGetStudentProfile();
 
     const interest = useRegisterInterest();
+    const removeInterest = useRemoveInterest();
     const enroll = useEnrollInCourse();
-    const isMutating = interest.isPending || enroll.isPending;
+    const unenroll = useUnenrollFromCourse();
+    const isMutating =
+        interest.isPending ||
+        enroll.isPending ||
+        removeInterest.isPending ||
+        unenroll.isPending;
 
     const [modal, setModal] = useState<ModalState>(null);
     const [enrollConfirm, setEnrollConfirm] = useState<CourseDto | null>(null);
@@ -116,6 +124,18 @@ export default function CursosAluno() {
         });
     }
 
+    function handleUnenroll(course: CourseDto) {
+        unenroll.mutate(course.id, {
+            onSuccess: () => setModal(null),
+        });
+    }
+
+    function handleRemoveInterest(course: CourseDto) {
+        removeInterest.mutate(course.id, {
+            onSuccess: () => setModal(null),
+        });
+    }
+
     if (isLoading) {
         return (
             <section className='cursos-aluno cursos-aluno--centered'>
@@ -186,9 +206,11 @@ export default function CursosAluno() {
                                     key={course.id}
                                     course={course}
                                     action='inscrito'
+                                    disabled={isMutating}
                                     onSaibaMais={() =>
                                         openModal(course, 'inscrito')
                                     }
+                                    onAction={() => handleUnenroll(course)}
                                 />
                             ))}
                         </div>
@@ -207,8 +229,12 @@ export default function CursosAluno() {
                                     key={course.id}
                                     course={course}
                                     action='interessado'
+                                    disabled={isMutating}
                                     onSaibaMais={() =>
                                         openModal(course, 'interessado')
+                                    }
+                                    onAction={() =>
+                                        handleRemoveInterest(course)
                                     }
                                 />
                             ))}
@@ -314,7 +340,11 @@ export default function CursosAluno() {
                             ? () => handleAskEnroll(modal.course)
                             : modal.action === 'interesse'
                               ? () => handleInterest(modal.course)
-                              : undefined
+                              : modal.action === 'inscrito'
+                                ? () => handleUnenroll(modal.course)
+                                : modal.action === 'interessado'
+                                  ? () => handleRemoveInterest(modal.course)
+                                  : undefined
                     }
                 />
             )}
