@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import {
+    cleanup,
+    fireEvent,
+    render,
+    screen,
+    within,
+} from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RedefinirSenha from './RedefinirSenha';
 
@@ -7,12 +13,35 @@ const navigationMocks = vi.hoisted(() => ({
     searchParams: new URLSearchParams('token=abc123'),
 }));
 
+const passwordResetMocks = vi.hoisted(() => ({
+    isPending: false,
+    resetPassword: vi.fn(),
+}));
+
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         push: navigationMocks.push,
     }),
     useSearchParams: () => navigationMocks.searchParams,
 }));
+
+vi.mock('@/services/auth/password-reset/mutations', () => ({
+    useResetPasswordMutation: () => ({
+        isPending: passwordResetMocks.isPending,
+        mutate: passwordResetMocks.resetPassword,
+    }),
+}));
+
+vi.mock('@mui/icons-material', async () => {
+    const { createElement } =
+        await vi.importActual<typeof import('react')>('react');
+    const MockIcon = () => createElement('span');
+
+    return {
+        Visibility: MockIcon,
+        VisibilityOff: MockIcon,
+    };
+});
 
 vi.mock('next/image', async () => {
     const { createElement } =
@@ -50,10 +79,13 @@ function fillPasswordFields(newPassword: string, passwordConfirmation: string) {
 
 describe('RedefinirSenha', () => {
     beforeEach(() => {
+        passwordResetMocks.isPending = false;
+        passwordResetMocks.resetPassword.mockClear();
         navigationMocks.push.mockClear();
     });
 
     afterEach(() => {
+        cleanup();
         vi.restoreAllMocks();
     });
 
@@ -96,6 +128,18 @@ describe('RedefinirSenha', () => {
         fireEvent.blur(passwordInput);
 
         expect(screen.getByText('Mínimo 8 caracteres')).toBeInTheDocument();
+    });
+
+    it('shows a maximum length error after password blur', () => {
+        renderResetPasswordPage();
+
+        const passwordInput = screen.getByPlaceholderText(
+            'Mínimo 8 caracteres',
+        );
+        fireEvent.change(passwordInput, { target: { value: 'a'.repeat(101) } });
+        fireEvent.blur(passwordInput);
+
+        expect(screen.getByText('Máximo 100 caracteres')).toBeInTheDocument();
     });
 
     it('shows an error when passwords do not match after confirmation blur', () => {
@@ -150,18 +194,43 @@ describe('RedefinirSenha', () => {
         expect(passwordInput.type).toBe('password');
     });
 
-    it('logs the reset password payload on submit', () => {
-        const consoleSpy = vi
-            .spyOn(console, 'log')
-            .mockImplementation(() => undefined);
+    it('submits the reset password payload to the API mutation', () => {
         renderResetPasswordPage();
 
         fillPasswordFields('senhaValida123', 'senhaValida123');
         fireEvent.click(screen.getByText('DEFINIR'));
 
-        expect(consoleSpy).toHaveBeenCalledWith({
-            token: 'abc123',
-            newPassword: 'senhaValida123',
-        });
+        expect(passwordResetMocks.resetPassword).toHaveBeenCalledWith(
+            {
+                token: 'abc123',
+                newPassword: 'senhaValida123',
+            },
+            expect.objectContaining({
+                onSuccess: expect.any(Function),
+            }),
+        );
+    });
+
+    it('goes back to login after a successful reset', () => {
+        renderResetPasswordPage();
+
+        fillPasswordFields('senhaValida123', 'senhaValida123');
+        fireEvent.click(screen.getByText('DEFINIR'));
+
+        const options = passwordResetMocks.resetPassword.mock.calls[0][1];
+        options.onSuccess();
+
+        expect(navigationMocks.push).toHaveBeenCalledWith('/login');
+    });
+
+    it('disables the submit button while reset is pending', () => {
+        passwordResetMocks.isPending = true;
+        renderResetPasswordPage();
+
+        fillPasswordFields('senhaValida123', 'senhaValida123');
+
+        expect(
+            screen.getByText('DEFININDO...').closest('button'),
+        ).toBeDisabled();
     });
 });

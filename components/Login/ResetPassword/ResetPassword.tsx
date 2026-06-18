@@ -6,6 +6,7 @@ import './index.scss';
 
 type ResetPasswordProps = {
     token: string;
+    disabled?: boolean;
     onBackToLogin: () => void;
     onSubmit: (payload: ResetPasswordPayload) => void;
 };
@@ -16,9 +17,11 @@ type TouchedFields = {
 };
 
 const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 100;
 
 export function ResetPassword({
     token,
+    disabled = false,
     onBackToLogin,
     onSubmit,
 }: ResetPasswordProps) {
@@ -30,13 +33,18 @@ export function ResetPassword({
         passwordConfirmation: false,
     });
 
-    const isPasswordValid = newPassword.length >= MIN_PASSWORD_LENGTH;
+    const isPasswordValid =
+        newPassword.length >= MIN_PASSWORD_LENGTH &&
+        newPassword.length <= MAX_PASSWORD_LENGTH;
     const isConfirmationValid =
         passwordConfirmation.length > 0 && passwordConfirmation === newPassword;
     const canSubmit = isPasswordValid && isConfirmationValid;
 
     const newPasswordError = useMemo(() => {
         if (!touched.newPassword || isPasswordValid) return '';
+        if (newPassword.length > MAX_PASSWORD_LENGTH) {
+            return 'Máximo 100 caracteres';
+        }
         return 'Mínimo 8 caracteres';
     }, [isPasswordValid, touched.newPassword]);
 
@@ -56,7 +64,7 @@ export function ResetPassword({
     };
 
     const handleSubmit = () => {
-        if (!canSubmit) return;
+        if (disabled || !canSubmit) return;
         onSubmit({ token, newPassword });
     };
 
@@ -109,6 +117,7 @@ export function ResetPassword({
                             placeholder='Mínimo 8 caracteres'
                             type='password'
                             error={!!newPasswordError}
+                            disabled={disabled}
                         />
                         {newPasswordError && (
                             <span className='reset-password__error'>
@@ -133,6 +142,7 @@ export function ResetPassword({
                             placeholder='As senhas devem ser as mesmas'
                             type='password'
                             error={!!confirmationError}
+                            disabled={disabled}
                         />
                         {confirmationError && (
                             <span className='reset-password__error'>
@@ -147,11 +157,11 @@ export function ResetPassword({
                 <div className='reset-password__submit-btn'>
                     <Button
                         onClick={handleSubmit}
-                        disabled={!canSubmit}
+                        disabled={disabled || !canSubmit}
                         variant='primary'
                     >
                         <span className='reset-password__button-text'>
-                            DEFINIR
+                            {disabled ? 'DEFININDO...' : 'DEFINIR'}
                         </span>
                     </Button>
                 </div>

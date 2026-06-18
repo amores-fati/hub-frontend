@@ -2,6 +2,7 @@
 
 import { Card } from '@/components/base';
 import { LoginInfoPanel, ResetPassword } from '@/components/Login';
+import { useResetPasswordMutation } from '@/services/auth/password-reset/mutations';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import './index.scss';
@@ -9,6 +10,8 @@ import './index.scss';
 export default function RedefinirSenha() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { mutate: resetPassword, isPending: isResettingPassword } =
+        useResetPasswordMutation();
     const initialToken = searchParams.get('token') ?? '';
     const [token, setToken] = useState<string>(initialToken);
 
@@ -25,11 +28,14 @@ export default function RedefinirSenha() {
                         <div className='reset-password-page__card-wrapper'>
                             <ResetPassword
                                 token={token}
+                                disabled={isResettingPassword}
                                 onBackToLogin={() => router.push('/login')}
                                 onSubmit={(payload) => {
-                                    // Mock da subtask 5.1, substituir pela chamada real da API
-                                    // eslint-disable-next-line no-console
-                                    console.log(payload);
+                                    resetPassword(payload, {
+                                        onSuccess: () => {
+                                            router.push('/login');
+                                        },
+                                    });
                                 }}
                             />
                         </div>

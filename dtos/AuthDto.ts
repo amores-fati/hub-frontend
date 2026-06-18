@@ -7,6 +7,14 @@ export type AuthPayload = {
     password: string;
 };
 
+export type AuthMessageResponse = {
+    message: string;
+};
+
+export type ForgotPasswordPayload = {
+    email: string;
+};
+
 export type ResetPasswordPayload = {
     token: string;
     newPassword: string;
