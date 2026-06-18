@@ -1,9 +1,15 @@
 'use client';
 
-import { Chip, IconButton } from '@mui/material';
+import { Chip, Collapse, IconButton } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
 import { useEffect, useMemo, useState } from 'react';
+import { InputComponent } from '@/components/base/Input/input';
+import { ButtonComponent } from '@/components/base/Button/button';
 import {
     Action,
     State,
@@ -75,6 +81,13 @@ const generateMockVagas = (count: number): MockVacancy[] => {
 const MOCK_VAGAS: MockVacancy[] = generateMockVagas(245);
 
 const PAGE_SIZE = 5;
+
+const normalize = (s: string) =>
+    s
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .trim();
 
 const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.PRESENTIAL]: 'Presencial',
@@ -184,23 +197,51 @@ function AdminVagas() {
     const setSelectedRows = useTableStore((state) => state.setSelectedRows);
 
     const [page, setPage] = useState(1);
+    const [searchInput, setSearchInput] = useState('');
+    const [appliedSearch, setAppliedSearch] = useState('');
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-    const totalPages = Math.max(1, Math.ceil(MOCK_VAGAS.length / PAGE_SIZE));
+    const handleSearch = () => {
+        setAppliedSearch(searchInput.trim());
+        setPage(1);
+    };
+
+    const handleClear = () => {
+        setSearchInput('');
+        setAppliedSearch('');
+        setShowAdvancedFilters(false);
+        setPage(1);
+    };
+
+    const filteredVagas = useMemo(() => {
+        if (!appliedSearch) return MOCK_VAGAS;
+        const term = normalize(appliedSearch);
+        return MOCK_VAGAS.filter(
+            (v) =>
+                normalize(v.name).includes(term) ||
+                normalize(v.empresa).includes(term) ||
+                String(v.openingsCount).includes(term) ||
+                (v.isPcd && ['pcd', 'sim'].includes(term)) ||
+                (!v.isPcd && ['nao', 'nao', 'não'].includes(term)),
+        );
+    }, [appliedSearch]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredVagas.length / PAGE_SIZE));
     const startIndex = (page - 1) * PAGE_SIZE;
-    const paginated = MOCK_VAGAS.slice(startIndex, startIndex + PAGE_SIZE);
+    const paginated = filteredVagas.slice(startIndex, startIndex + PAGE_SIZE);
 
     useEffect(() => {
         setContent(paginated);
         setPaginator({
-            itemsCount: MOCK_VAGAS.length,
+            itemsCount: filteredVagas.length,
             page,
         });
         setIsLoading(false);
-    }, [page]);
+    }, [page, appliedSearch]);
 
     useEffect(() => {
         setSelectedRows({});
-    }, [page]);
+    }, [page, appliedSearch]);
 
     const selectedCount = Object.keys(selectedRows).length;
     const selectedCountLabel = `${selectedCount} vaga${selectedCount === 1 ? '' : 's'} selecionada${selectedCount === 1 ? '' : 's'}`;
@@ -308,6 +349,50 @@ function AdminVagas() {
                 </div>
             </div>
 
+            <div className='admin-vagas__filters-card'>
+                <div className='admin-vagas__search-row'>
+                    <div className='admin-vagas__search-input'>
+                        <InputComponent
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSearch();
+                            }}
+                            placeholder='Buscar por nome, número de vagas, exclusividade para PCD...'
+                            icon={<SearchRoundedIcon fontSize='small' />}
+                        />
+                    </div>
+
+                    <ButtonComponent onClick={handleSearch}>
+                        Buscar
+                    </ButtonComponent>
+
+                    <ButtonComponent variant='secondary' onClick={handleClear}>
+                        Limpar
+                    </ButtonComponent>
+                </div>
+
+                <button
+                    type='button'
+                    className='admin-vagas__advanced-toggle'
+                    onClick={() => setShowAdvancedFilters((v) => !v)}
+                >
+                    <span>
+                        <FilterListRoundedIcon fontSize='small' />
+                        Filtros Avançados
+                    </span>
+                    {showAdvancedFilters ? (
+                        <KeyboardArrowUpRoundedIcon fontSize='small' />
+                    ) : (
+                        <KeyboardArrowDownRoundedIcon fontSize='small' />
+                    )}
+                </button>
+
+                <Collapse in={showAdvancedFilters}>
+                    <div className='admin-vagas__advanced-grid' />
+                </Collapse>
+            </div>
+
             {selectedCount > 0 && (
                 <div className='admin-vagas__bulk-bar'>
                     <div className='admin-vagas__bulk-bar-left'>
@@ -333,7 +418,7 @@ function AdminVagas() {
             )}
 
             <div className='admin-vagas__table-card admin-vagas__table-card--no-default-pagination'>
-                {MOCK_VAGAS.length === 0 ? (
+                {filteredVagas.length === 0 ? (
                     <div className='admin-vagas__empty-state'>
                         <h2>Nenhuma vaga encontrada</h2>
                     </div>
@@ -346,8 +431,8 @@ function AdminVagas() {
                             onPageChange={setPage}
                             summaryText={`Exibindo ${startIndex + 1} a ${Math.min(
                                 startIndex + PAGE_SIZE,
-                                MOCK_VAGAS.length,
-                            )} de ${MOCK_VAGAS.length} vagas`}
+                                filteredVagas.length,
+                            )} de ${filteredVagas.length} vagas`}
                         />
                     </>
                 )}

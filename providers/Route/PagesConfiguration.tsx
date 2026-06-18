@@ -78,7 +78,7 @@ export const PAGES: Page[] = [
     {
         path: '/empresa/vagas',
         navbarEnabled: true,
-        requireAuth: false,
+        requireAuth: true,
         requireRoles: [UserRole.COMPANY],
         name: 'Vagas',
         icon: <WorkIcon className='sidebar-icon' />,
@@ -86,10 +86,10 @@ export const PAGES: Page[] = [
     {
         path: '/empresa/perfil',
         navbarEnabled: true,
-        requireAuth: false,
-        requireRoles: [],
-        name: 'Vagas',
-        icon: <WorkIcon className='sidebar-icon' />,
+        requireAuth: true,
+        requireRoles: [UserRole.COMPANY],
+        name: 'Perfil',
+        icon: <PersonIcon className='sidebar-icon' />,
     },
     {
         path: '/aluno/curriculo',
@@ -153,7 +153,23 @@ export const PAGES: Page[] = [
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
         name: 'Configurações',
-        icon: <WorkIcon className='sidebar-icon' />,
+        icon: <SettingsIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/perfil/aluno',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.STUDENT],
+        name: 'Perfil do Aluno',
+        icon: <PersonIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/admin/testes-relatorios',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Testes de Relatórios',
+        icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
 ];
 

@@ -109,6 +109,55 @@
         }
     }
 
+    &__filters-card {
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: var(--spacing-lg);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    &__search-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: var(--spacing-md);
+        align-items: center;
+    }
+
+    &__search-input {
+        .custom-input {
+            width: 100%;
+        }
+    }
+
+    &__advanced-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        color: var(--tertiary-color);
+        font: var(--callout-bold);
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    }
+
+    &__advanced-grid {
+        padding-top: var(--spacing-sm);
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--spacing-md);
+    }
+
     &__table-card {
         width: 100%;
         max-width: 100%;
