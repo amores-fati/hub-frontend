@@ -1,182 +1,61 @@
 'use client';
 
 import { Input } from '@/components/base';
-import { Collapse } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { ButtonComponent } from '@/components/base/Button/button';
+import BasicTable from '@/components/base/Table2/table';
+import { Cells, CellType } from '@/components/base/Table2/types';
+import { ExportFormatModal } from '@/components/ExportFormatModal/ExportFormatModal';
 import {
+    AdminCompanyDto,
+    AdminCompanyStatus,
+    AdminCompaniesQueryParams,
+} from '@/dtos/AdminCompanyDto';
+import { useGetAdminCompanies } from '@/services/api/admin/companies/queries';
+import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
+import {
+    downloadCompaniesReport,
+    ExportCompaniesReportPayload,
+    ReportFormat,
+} from '@/services/api/admin/reports';
+import {
+    Action,
+    State,
+    TableStoreProvider,
+    useTableStore,
+} from '@/stores/TableStoreProvider';
+import {
+    EditOutlined as EditOutlinedIcon,
     FileDownloadOutlined as FileDownloadOutlinedIcon,
-    SearchRounded as SearchRoundedIcon,
     FilterListRounded as FilterListRoundedIcon,
     KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
     KeyboardArrowUpRounded as KeyboardArrowUpRoundedIcon,
-    EditOutlined as EditOutlinedIcon,
-    WhatsApp as WhatsAppIcon,
     RestartAltRounded as RestartAltRoundedIcon,
+    SearchRounded as SearchRoundedIcon,
 } from '@mui/icons-material';
-import { ButtonComponent } from '@/components/base/Button/button';
-import { useEffect, useState } from 'react';
+import { Collapse, IconButton } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { ExportFormatModal } from '@/components/ExportFormatModal/ExportFormatModal';
-import { ReportFormat } from '@/services/api/admin/reports';
-import BasicTable from '@/components/base/Table2/table';
-import { Cells, CellType } from '@/components/base/Table2/types';
-import {
-    TableStoreProvider,
-    useTableStore,
-    Action,
-    State,
-} from '@/stores/TableStoreProvider';
 import './index.scss';
 
-type CompanyStatus = 'ATIVO' | 'INATIVO';
-
-type Company = {
-    id: string;
-    name: string;
-    cnpj: string;
-    email: string;
-    phone: string;
-    city: string;
-    state: string;
-    status: CompanyStatus;
-};
-
-const MOCK_COMPANIES: Company[] = [
-    {
-        id: '1',
-        name: 'HP',
-        cnpj: '92.797.901/0001-74',
-        email: 'hp@email.com',
-        phone: '(11) 98888-8888',
-        city: 'Florianópolis',
-        state: 'Santa Catarina',
-        status: 'ATIVO',
-    },
-    {
-        id: '2',
-        name: 'DELL',
-        cnpj: '92.797.901/0001-74',
-        email: 'dell@email.com',
-        phone: '(21) 97777-7777',
-        city: 'Porto Alegre',
-        state: 'Rio Grande do Sul',
-        status: 'ATIVO',
-    },
-    {
-        id: '3',
-        name: 'DB Server',
-        cnpj: '92.797.901/0001-74',
-        email: 'db@email.com',
-        phone: '(31) 96666-6666',
-        city: 'Florianópolis',
-        state: 'Santa Catarina',
-        status: 'ATIVO',
-    },
-    {
-        id: '4',
-        name: 'ADP',
-        cnpj: '92.797.901/0001-74',
-        email: 'adp@email.com',
-        phone: '(21) 97777-7777',
-        city: 'Porto Alegre',
-        state: 'Rio Grande do Sul',
-        status: 'ATIVO',
-    },
-    {
-        id: '5',
-        name: 'TELUS',
-        cnpj: '92.797.901/0001-74',
-        email: 'telus@email.com',
-        phone: '(11) 98888-8888',
-        city: 'Porto Alegre',
-        state: 'Rio Grande do Sul',
-        status: 'INATIVO',
-    },
-    {
-        id: '6',
-        name: 'IBM',
-        cnpj: '11.222.333/0001-44',
-        email: 'ibm@email.com',
-        phone: '(11) 91111-1111',
-        city: 'São Paulo',
-        state: 'São Paulo',
-        status: 'ATIVO',
-    },
-    {
-        id: '7',
-        name: 'Microsoft',
-        cnpj: '22.333.444/0001-55',
-        email: 'ms@email.com',
-        phone: '(11) 92222-2222',
-        city: 'São Paulo',
-        state: 'São Paulo',
-        status: 'ATIVO',
-    },
-    {
-        id: '8',
-        name: 'Oracle',
-        cnpj: '33.444.555/0001-66',
-        email: 'oracle@email.com',
-        phone: '(21) 93333-3333',
-        city: 'Rio de Janeiro',
-        state: 'Rio de Janeiro',
-        status: 'ATIVO',
-    },
-    {
-        id: '9',
-        name: 'SAP',
-        cnpj: '44.555.666/0001-77',
-        email: 'sap@email.com',
-        phone: '(11) 94444-4444',
-        city: 'Campinas',
-        state: 'São Paulo',
-        status: 'INATIVO',
-    },
-    {
-        id: '10',
-        name: 'Totvs',
-        cnpj: '55.666.777/0001-88',
-        email: 'totvs@email.com',
-        phone: '(11) 95555-5555',
-        city: 'São Paulo',
-        state: 'São Paulo',
-        status: 'ATIVO',
-    },
-    {
-        id: '11',
-        name: 'Stefanini',
-        cnpj: '66.777.888/0001-99',
-        email: 'stef@email.com',
-        phone: '(11) 96666-6666',
-        city: 'São Paulo',
-        state: 'São Paulo',
-        status: 'ATIVO',
-    },
-    {
-        id: '12',
-        name: 'CI&T',
-        cnpj: '77.888.999/0001-00',
-        email: 'cit@email.com',
-        phone: '(19) 97777-7777',
-        city: 'Campinas',
-        state: 'São Paulo',
-        status: 'ATIVO',
-    },
-];
+const COMPANY_REPORT_LIMIT = 1000;
 
 type AppliedFilters = {
     search: string;
-    estado: string;
-    cidade: string;
-    status: string;
+    state: string;
+    city: string;
+    status: '' | AdminCompanyStatus;
 };
 
 const initialFilters: AppliedFilters = {
     search: '',
-    estado: '',
-    cidade: '',
+    state: '',
+    city: '',
     status: '',
 };
+
+type CompanyReportFilters = NonNullable<
+    ExportCompaniesReportPayload['filters']
+>;
 
 const getInitials = (name: string): string => {
     const words = name.trim().split(/\s+/);
@@ -184,21 +63,22 @@ const getInitials = (name: string): string => {
     return name.slice(0, 2).toUpperCase();
 };
 
-const filterCompanies = (applied: AppliedFilters): Company[] =>
-    MOCK_COMPANIES.filter((c) => {
-        const term = applied.search.toLowerCase();
-        if (
-            term &&
-            !c.name.toLowerCase().includes(term) &&
-            !c.cnpj.includes(term) &&
-            !c.email.toLowerCase().includes(term)
-        )
-            return false;
-        if (applied.estado && c.state !== applied.estado) return false;
-        if (applied.cidade && c.city !== applied.cidade) return false;
-        if (applied.status && c.status !== applied.status) return false;
-        return true;
-    });
+const getErrorMessage = (error: unknown, fallback: string) =>
+    error instanceof Error ? error.message : fallback;
+
+const buildCompanyFilters = (
+    filters: AppliedFilters,
+): CompanyReportFilters | undefined => {
+    const reportFilters: CompanyReportFilters = {};
+    const search = filters.search.trim();
+
+    if (search) reportFilters.search = search;
+    if (filters.status) reportFilters.status = filters.status;
+    if (filters.state) reportFilters.state = filters.state;
+    if (filters.city) reportFilters.city = filters.city;
+
+    return Object.keys(reportFilters).length ? reportFilters : undefined;
+};
 
 export default function Index() {
     return (
@@ -209,214 +89,199 @@ export default function Index() {
 }
 
 function AdminCompanies() {
+    const paginator = useTableStore((state) => ({ ...state.paginator }));
+    const setPaginator = useTableStore((state) => state.setPaginator);
+    const setIsLoading = useTableStore((state) => state.setIsLoading);
     const setCells = useTableStore(
-        (s: State<Company> & Action<Company>) => s.setCells,
+        (s: State<AdminCompanyDto> & Action<AdminCompanyDto>) => s.setCells,
     );
     const setContent = useTableStore(
-        (s: State<Company> & Action<Company>) => s.setContent,
+        (s: State<AdminCompanyDto> & Action<AdminCompanyDto>) => s.setContent,
     );
-    const setPaginator = useTableStore((state) => state.setPaginator);
     const selectedCompanies = useTableStore(
         (state) => state.selectedRows,
-    ) as Record<string, Company>;
+    ) as Record<string, AdminCompanyDto>;
     const setSelectedCompanies = useTableStore(
         (state) => state.setSelectedRows,
     );
 
-    const [search, setSearch] = useState('');
+    const [searchInput, setSearchInput] = useState('');
     const [advancedOpen, setAdvancedOpen] = useState(false);
-    const [filterEstado, setFilterEstado] = useState('');
-    const [filterCidade, setFilterCidade] = useState('');
-    const [filterData, setFilterData] = useState('');
-    const [filterStatus, setFilterStatus] = useState('');
-    const [applied, setApplied] = useState<AppliedFilters>(initialFilters);
+    const [draftState, setDraftState] = useState('');
+    const [draftCity, setDraftCity] = useState('');
+    const [draftStatus, setDraftStatus] = useState<'' | AdminCompanyStatus>('');
+    const [filters, setFilters] = useState<AppliedFilters>(initialFilters);
     const [exportModalOpen, setExportModalOpen] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
 
-    const estadosDisponiveis = [
-        ...new Set(MOCK_COMPANIES.map((c) => c.state)),
-    ].sort();
-    const cidadesDisponiveis = (
-        filterEstado
-            ? MOCK_COMPANIES.filter((c) => c.state === filterEstado)
-            : MOCK_COMPANIES
-    )
-        .reduce<string[]>((acc, c) => {
-            if (!acc.includes(c.city)) acc.push(c.city);
-            return acc;
-        }, [])
-        .sort();
+    const { data: locationsData } = useGetAdminLocations({ scope: 'COMPANY' });
 
-    const handleWhatsApp = (company: Company) => {
-        const digits = company.phone.replace(/\D/g, '');
-        const number = digits.startsWith('55') ? digits : `55${digits}`;
-        window.open(`https://wa.me/${number}`, '_blank', 'noopener,noreferrer');
+    const stateOptions = useMemo(() => {
+        return [...new Set((locationsData ?? []).map((location) => location.uf))]
+            .filter(Boolean)
+            .sort();
+    }, [locationsData]);
+
+    const cityOptions = useMemo(() => {
+        return (locationsData ?? [])
+            .filter((location) => !draftState || location.uf === draftState)
+            .map((location) => location.city)
+            .filter((city, index, cities) => cities.indexOf(city) === index)
+            .sort();
+    }, [draftState, locationsData]);
+
+    const queryParams: AdminCompaniesQueryParams = {
+        page: paginator.page,
+        limit: paginator.rowsPerPage,
+        search: filters.search || undefined,
+        status: filters.status || undefined,
+        state: filters.state || undefined,
+        city: filters.city || undefined,
     };
+
+    const { data, isError, isFetching, isLoading } =
+        useGetAdminCompanies(queryParams);
+
+    const totalCompanies = data?.total ?? 0;
+    const companies = data?.data ?? [];
+    const selectedCount = Object.keys(selectedCompanies).length;
+
+    useEffect(() => {
+        if (isLoading || isFetching) setIsLoading(true);
+    }, [isFetching, isLoading, setIsLoading]);
+
+    useEffect(() => {
+        if (!data) return;
+        setContent(data.data);
+        setPaginator({
+            itemsCount: data.total,
+            isLoading: false,
+        });
+    }, [data, setContent, setPaginator]);
+
+    useEffect(() => {
+        if (!isError) return;
+        setContent([]);
+        setPaginator({ itemsCount: 0, isLoading: false });
+    }, [isError, setContent, setPaginator]);
 
     const handleEdit = () => {
-        toast.info('Funcionalidade disponível em breve.');
+        toast.info('Funcionalidade disponivel em breve.');
     };
 
-    const exportToCSV = (companies: Company[]) => {
-        const headers = [
-            'Empresa',
-            'CNPJ',
-            'Email',
-            'Telefone',
-            'Cidade',
-            'Estado',
-            'Status',
-        ];
-        const rows = companies.map((c) => [
-            c.name,
-            c.cnpj,
-            c.email,
-            c.phone,
-            c.city,
-            c.state,
-            c.status,
-        ]);
-        const csv = [headers, ...rows]
-            .map((r) => r.map((v) => `"${v}"`).join(','))
-            .join('\n');
-        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `relatorio_empresas_${Date.now()}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
+    const handleExportWithFormat = async (format: ReportFormat) => {
+        if (format !== 'xlsx') return;
 
-    const exportToPDF = (companies: Company[]) => {
-        const win = window.open('', '_blank', 'width=1120,height=840');
-        if (!win) {
-            toast.error(
-                'Não foi possível abrir a janela de exportação. Verifique o bloqueador de pop-up.',
+        const selectedIds = Object.keys(selectedCompanies);
+
+        if (selectedIds.length > COMPANY_REPORT_LIMIT) {
+            toast.info(
+                `O relatorio permite ate ${COMPANY_REPORT_LIMIT} empresas selecionadas.`,
             );
             return;
         }
-        const rows = companies
-            .map(
-                (c) =>
-                    `<tr><td>${c.name}</td><td>${c.cnpj}</td><td>${c.email}</td><td>${c.phone}</td><td>${c.city}, ${c.state}</td><td>${c.status}</td></tr>`,
-            )
-            .join('');
-        const html = `<html lang="pt-BR"><head><title>Relatório de Empresas</title><style>body{font-family:Arial,sans-serif;padding:32px;color:#1d1d1d}table{width:100%;border-collapse:collapse;margin-top:24px}th,td{border:1px solid #e0e0e0;padding:10px;text-align:left;font-size:12px}th{background:#f8f9fa}</style></head><body><h1>Gestão de Empresas</h1><p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p><p>Total: ${companies.length} empresa(s)</p><table><thead><tr><th>Empresa</th><th>CNPJ</th><th>Email</th><th>Telefone</th><th>Localização</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
-        win.document.open();
-        win.document.write(html);
-        win.document.close();
-        win.focus();
-        win.print();
-    };
 
-    const handleExportWithFormat = (format: ReportFormat) => {
-        const selectedList = Object.values(selectedCompanies);
-        const list =
-            selectedList.length > 0 ? selectedList : filterCompanies(applied);
-        if (format === 'csv') exportToCSV(list);
-        else exportToPDF(list);
-        setExportModalOpen(false);
+        if (selectedIds.length === 0 && totalCompanies > COMPANY_REPORT_LIMIT) {
+            toast.info(
+                `O relatorio permite ate ${COMPANY_REPORT_LIMIT} empresas. Refine os filtros antes de exportar.`,
+            );
+            return;
+        }
+
+        const payload: ExportCompaniesReportPayload =
+            selectedIds.length > 0
+                ? { mode: 'selected', ids: selectedIds }
+                : { mode: 'all', filters: buildCompanyFilters(filters) };
+
+        setIsExporting(true);
+        try {
+            await downloadCompaniesReport(payload, 'xlsx');
+            setExportModalOpen(false);
+        } catch (error) {
+            toast.error(
+                getErrorMessage(error, 'Nao foi possivel exportar empresas.'),
+            );
+        } finally {
+            setIsExporting(false);
+        }
     };
 
     const applyFilters = () => {
-        // eslint-disable-next-line no-console
-        console.log('[Buscar]', {
-            search,
-            estado: filterEstado,
-            cidade: filterCidade,
-            status: filterStatus,
-        });
-        setApplied({
-            search,
-            estado: filterEstado,
-            cidade: filterCidade,
-            status: filterStatus,
+        setPaginator({ page: 1 });
+        setFilters({
+            search: searchInput.trim(),
+            state: draftState,
+            city: draftCity,
+            status: draftStatus,
         });
         setSelectedCompanies({});
     };
 
     const clearFilters = () => {
-        setSearch('');
-        setFilterEstado('');
-        setFilterCidade('');
-        setFilterData('');
-        setFilterStatus('');
-        setApplied(initialFilters);
+        setSearchInput('');
+        setDraftState('');
+        setDraftCity('');
+        setDraftStatus('');
+        setFilters(initialFilters);
         setSelectedCompanies({});
+        setPaginator({ page: 1 });
         setAdvancedOpen(false);
     };
 
-    const handleEstadoChange = (state: string) => {
-        setFilterEstado(state);
-        setFilterCidade('');
+    const handleStateChange = (state: string) => {
+        setDraftState(state);
+        setDraftCity('');
     };
 
-    const cells: Cells<Company>[] = [
+    const cells: Cells<AdminCompanyDto>[] = [
         { key: 'id', header: '', type: CellType.CHECKBOX, sortable: false },
         {
             key: 'name',
             header: 'EMPRESA',
-            sortable: true,
-            render: (c) => (
+            sortable: false,
+            render: (company) => (
                 <div className='ac__company-cell'>
-                    <div className='ac__avatar'>{getInitials(c.name)}</div>
-                    <span className='ac__company-name'>{c.name}</span>
+                    <div className='ac__avatar'>
+                        {getInitials(company.name)}
+                    </div>
+                    <span className='ac__company-name'>{company.name}</span>
                 </div>
             ),
         },
         { key: 'cnpj', header: 'CNPJ', sortable: false },
         {
             key: 'email',
-            header: 'CONTATO',
+            header: 'EMAIL',
             sortable: false,
-            render: (c) => (
-                <div className='ac__contact'>
-                    <span className='ac__contact-email'>{c.email}</span>
-                    <span className='ac__contact-phone'>{c.phone}</span>
-                </div>
+            render: (company) => (
+                <span className='ac__contact-email'>{company.email}</span>
             ),
         },
         {
-            key: 'city',
-            header: 'LOCALIZAÇÃO',
+            key: 'responsibleName',
+            header: 'RESPONSAVEL',
             sortable: false,
-            render: (c) => (
-                <span>
-                    {c.city}, {c.state}
-                </span>
-            ),
         },
         {
             key: 'status',
             header: 'STATUS',
             sortable: false,
-            render: (c) => (
+            render: (company) => (
                 <span
-                    className={`ac__status ac__status--${c.status === 'ATIVO' ? 'active' : 'inactive'}`}
+                    className={`ac__status ac__status--${company.status === 'ATIVO' ? 'active' : 'inactive'}`}
                 >
-                    {c.status}
+                    {company.status}
                 </span>
             ),
         },
         {
             key: 'actions',
-            header: 'AÇÕES',
+            header: 'ACOES',
             sortable: false,
-            render: (c) => (
-                <>
-                    <IconButton
-                        className='ac__icon-btn--whatsapp'
-                        onClick={() => handleWhatsApp(c)}
-                        size='small'
-                    >
-                        <WhatsAppIcon sx={{ fontSize: 18 }} />
-                    </IconButton>
-                    <IconButton onClick={handleEdit} size='small'>
-                        <EditOutlinedIcon
-                            sx={{ fontSize: 16, color: '#1d1d1d' }}
-                        />
-                    </IconButton>
-                </>
+            render: () => (
+                <IconButton onClick={handleEdit} size='small'>
+                    <EditOutlinedIcon sx={{ fontSize: 16, color: '#1d1d1d' }} />
+                </IconButton>
             ),
         },
     ];
@@ -425,47 +290,43 @@ function AdminCompanies() {
         setCells(cells);
     }, []);
 
-    useEffect(() => {
-        const filtered = filterCompanies(applied);
-        setContent(filtered);
-        setPaginator({ itemsCount: filtered.length, isLoading: false });
-    }, [applied]);
-
-    const selectedCount = Object.keys(selectedCompanies).length;
-
     return (
         <section className='ac'>
-            {/* Header */}
             <div className='ac__header'>
                 <div>
                     <span className='ac__eyebrow'>Area administrativa</span>
-                    <h1>Gestão de Empresas</h1>
+                    <h1>Gestao de Empresas</h1>
                 </div>
                 <div className='ac__header-action'>
                     <ButtonComponent
                         variant='secondary'
                         onClick={() => setExportModalOpen(true)}
+                        disabled={isExporting || isLoading}
                     >
                         <span className='ac__button-content'>
                             <FileDownloadOutlinedIcon fontSize='small' />
-                            Exportar Lista
+                            Exportar XLSX
                         </span>
                     </ButtonComponent>
                 </div>
             </div>
 
-            {/* Filtros */}
             <div className='ac__filters-card'>
                 <div className='ac__search-row'>
                     <div className='ac__search-input'>
                         <Input
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder='Buscar por razão social, CNPJ, email...'
+                            value={searchInput}
+                            onChange={(event) =>
+                                setSearchInput(event.target.value)
+                            }
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') applyFilters();
+                            }}
+                            placeholder='Buscar por razao social, CNPJ, email...'
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
                     </div>
-                    <ButtonComponent onClick={applyFilters}>
+                    <ButtonComponent onClick={applyFilters} disabled={isLoading}>
                         <span className='ac__button-content'>
                             <SearchRoundedIcon fontSize='small' />
                             Buscar
@@ -486,11 +347,11 @@ function AdminCompanies() {
                 <button
                     type='button'
                     className='ac__advanced-toggle'
-                    onClick={() => setAdvancedOpen((v) => !v)}
+                    onClick={() => setAdvancedOpen((value) => !value)}
                 >
                     <span>
                         <FilterListRoundedIcon fontSize='small' />
-                        Filtros avançados
+                        Filtros avancados
                     </span>
                     {advancedOpen ? (
                         <KeyboardArrowUpRoundedIcon fontSize='small' />
@@ -502,18 +363,18 @@ function AdminCompanies() {
                 <Collapse in={advancedOpen}>
                     <div className='ac__advanced-grid'>
                         <div>
-                            <label className='ac__field-label'>Estado</label>
+                            <label className='ac__field-label'>UF</label>
                             <select
                                 className='ac__field-select'
-                                value={filterEstado}
-                                onChange={(e) =>
-                                    handleEstadoChange(e.target.value)
+                                value={draftState}
+                                onChange={(event) =>
+                                    handleStateChange(event.target.value)
                                 }
                             >
-                                <option value=''>Todos os estados</option>
-                                {estadosDisponiveis.map((s) => (
-                                    <option key={s} value={s}>
-                                        {s}
+                                <option value=''>Todas as UFs</option>
+                                {stateOptions.map((state) => (
+                                    <option key={state} value={state}>
+                                        {state}
                                     </option>
                                 ))}
                             </select>
@@ -522,34 +383,23 @@ function AdminCompanies() {
                             <label className='ac__field-label'>Cidade</label>
                             <select
                                 className='ac__field-select'
-                                value={filterCidade}
-                                onChange={(e) =>
-                                    setFilterCidade(e.target.value)
+                                value={draftCity}
+                                onChange={(event) =>
+                                    setDraftCity(event.target.value)
                                 }
-                                disabled={!filterEstado}
+                                disabled={!draftState}
                             >
                                 <option value=''>
-                                    {filterEstado
+                                    {draftState
                                         ? 'Todas as cidades'
-                                        : 'Selecione um estado primeiro'}
+                                        : 'Selecione uma UF primeiro'}
                                 </option>
-                                {cidadesDisponiveis.map((c) => (
-                                    <option key={c} value={c}>
-                                        {c}
+                                {cityOptions.map((city) => (
+                                    <option key={city} value={city}>
+                                        {city}
                                     </option>
                                 ))}
                             </select>
-                        </div>
-                        <div>
-                            <label className='ac__field-label'>
-                                Data de cadastro
-                            </label>
-                            <input
-                                type='date'
-                                className='ac__field-input'
-                                value={filterData}
-                                onChange={(e) => setFilterData(e.target.value)}
-                            />
                         </div>
                         <div>
                             <label className='ac__field-label'>
@@ -557,9 +407,13 @@ function AdminCompanies() {
                             </label>
                             <select
                                 className='ac__field-select'
-                                value={filterStatus}
-                                onChange={(e) =>
-                                    setFilterStatus(e.target.value)
+                                value={draftStatus}
+                                onChange={(event) =>
+                                    setDraftStatus(
+                                        event.target.value as
+                                            | ''
+                                            | AdminCompanyStatus,
+                                    )
                                 }
                             >
                                 <option value=''>Todos</option>
@@ -571,7 +425,6 @@ function AdminCompanies() {
                 </Collapse>
             </div>
 
-            {/* Bulk bar */}
             {selectedCount > 0 && (
                 <div className='ac__bulk-bar'>
                     <strong>
@@ -582,6 +435,7 @@ function AdminCompanies() {
                         <button
                             type='button'
                             onClick={() => setExportModalOpen(true)}
+                            disabled={isExporting}
                         >
                             <FileDownloadOutlinedIcon fontSize='small' />
                             Exportar selecionados
@@ -590,13 +444,24 @@ function AdminCompanies() {
                 </div>
             )}
 
-            {/* Tabela */}
             <div className='ac__table-card'>
-                <BasicTable<Company> />
+                {isError ? (
+                    <div className='ac__empty'>
+                        Nao foi possivel carregar as empresas.
+                    </div>
+                ) : companies.length === 0 && !isLoading && !isFetching ? (
+                    <div className='ac__empty'>
+                        Nenhuma empresa encontrada com os filtros aplicados.
+                    </div>
+                ) : (
+                    <BasicTable<AdminCompanyDto> />
+                )}
             </div>
 
             <ExportFormatModal
+                formats={['xlsx']}
                 open={exportModalOpen}
+                loading={isExporting}
                 onClose={() => setExportModalOpen(false)}
                 onExport={handleExportWithFormat}
             />

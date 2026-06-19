@@ -43,6 +43,10 @@
     gap: 12px;
 }
 
+.efm__options--single {
+    grid-template-columns: 1fr;
+}
+
 .efm__option {
     display: flex;
     flex-direction: column;
@@ -76,7 +80,7 @@
     color: #e53935;
 }
 
-.efm__option-icon--csv {
+.efm__option-icon--xlsx {
     color: #2e7d32;
 }
 

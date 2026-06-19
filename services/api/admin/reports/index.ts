@@ -10,6 +10,7 @@ export type StudentReportStatus = 'ENROLLMENT' | 'INTEREST' | 'NAO_INSCRITO';
 
 export type CourseReportStatus = 'ATIVO' | 'INATIVO';
 export type ResumeReportStatus = 'ATIVO' | 'INATIVO';
+export type CompanyReportStatus = 'ATIVO' | 'INATIVO';
 
 export type ExportCoursesReportPayload = {
     mode: AdminReportMode;
@@ -57,9 +58,26 @@ export type ExportResumesReportPayload = {
     };
 };
 
-type AdminReportEndpoint = 'courses' | 'resumes' | 'students' | 'vacancies';
+export type ExportCompaniesReportPayload = {
+    mode: AdminReportMode;
+    ids?: string[];
+    filters?: {
+        search?: string;
+        status?: CompanyReportStatus;
+        state?: string;
+        city?: string;
+    };
+};
+
+type AdminReportEndpoint =
+    | 'companies'
+    | 'courses'
+    | 'resumes'
+    | 'students'
+    | 'vacancies';
 
 type AdminReportPayloadByEndpoint = {
+    companies: ExportCompaniesReportPayload;
     courses: ExportCoursesReportPayload;
     resumes: ExportResumesReportPayload;
     students: ExportStudentsReportPayload;
@@ -71,6 +89,7 @@ type ReportErrorPayload = {
 };
 
 const fallbackFilenamePrefixes: Record<AdminReportEndpoint, string> = {
+    companies: 'relatorio_empresas',
     courses: 'relatorio_cursos',
     resumes: 'relatorio_curriculos',
     students: 'relatorio_alunos',
@@ -111,11 +130,11 @@ const getReportTimestamp = () => {
     return `${date}_${time}`;
 };
 
-export type ReportFormat = 'pdf' | 'csv';
+export type ReportFormat = 'pdf' | 'xlsx';
 
 const formatMimeType: Record<ReportFormat, string> = {
     pdf: 'application/pdf',
-    csv: 'text/csv',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 };
 
 const getFallbackFilename = (
@@ -215,6 +234,11 @@ export const downloadCoursesReport = (
     payload: ExportCoursesReportPayload,
     format: ReportFormat = 'pdf',
 ) => downloadAdminReport('courses', payload, format);
+
+export const downloadCompaniesReport = (
+    payload: ExportCompaniesReportPayload,
+    format: ReportFormat = 'xlsx',
+) => downloadAdminReport('companies', payload, format);
 
 export const downloadStudentsReport = (
     payload: ExportStudentsReportPayload,

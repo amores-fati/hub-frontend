@@ -124,14 +124,6 @@ export const PAGES: Page[] = [
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
     {
-        path: '/admin/empresas',
-        navbarEnabled: true,
-        requireAuth: true,
-        requireRoles: [UserRole.ADMIN],
-        name: 'Gestão de Empresas',
-        icon: <WorkIcon className='sidebar-icon' />,
-    },
-    {
         path: '/aluno/perfil',
         navbarEnabled: true,
         requireRoles: [UserRole.STUDENT],
