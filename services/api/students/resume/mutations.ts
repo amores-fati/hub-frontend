@@ -83,7 +83,9 @@ export const useUploadStudentResumePhoto = () =>
                     currentResume
                         ? {
                               ...currentResume,
-                              photoUrl: photo.photoUrl,
+                              photoUrl: photo.photoUrl
+                                  ? `${photo.photoUrl}?t=${Date.now()}`
+                                  : photo.photoUrl,
                           }
                         : currentResume,
             );

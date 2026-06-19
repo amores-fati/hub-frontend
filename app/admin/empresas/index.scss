@@ -1,0 +1,320 @@
+/* Prefixo curto: ac (admin-companies) */
+
+.ac {
+    width: min(1240px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* ── Header ── */
+.ac__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-lg);
+
+    h1 {
+        font: var(--titulo-1);
+        line-height: 1.2;
+        margin-bottom: var(--spacing-xs);
+    }
+}
+
+.ac__eyebrow {
+    display: inline-flex;
+    margin-bottom: var(--spacing-sm);
+    color: var(--tertiary-color);
+    font: var(--footnote-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.ac__header-action {
+    width: min(220px, 100%);
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.ac__button-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ── Filters card ── */
+.ac__filters-card,
+.ac__table-card,
+.ac__bulk-bar {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.ac__filters-card {
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.ac__search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.ac__search-input {
+    .custom-input {
+        width: 100%;
+    }
+}
+
+.ac__search-helper {
+    display: block;
+    margin-top: 0.45rem;
+    color: var(--text-muted);
+    font: var(--footnote);
+}
+
+.ac__advanced-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--tertiary-color);
+    font: var(--callout-bold);
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+.ac__advanced-grid {
+    padding-top: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.ac__field-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #828282;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ac__field-input,
+.ac__field-select {
+    width: 100%;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #1d1d1d;
+    outline: none;
+    transition: border-color 150ms ease;
+
+    &:focus {
+        border-color: #673ab7;
+    }
+
+    &::placeholder {
+        color: #828282;
+    }
+}
+
+.ac__field-select {
+    appearance: none;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+/* ── Bulk bar ── */
+.ac__bulk-bar {
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    strong {
+        color: var(--tertiary-color);
+        font: var(--callout-bold);
+    }
+}
+
+.ac__bulk-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--text-primary);
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--border-radius);
+        transition: background-color var(--transition-fast);
+    }
+
+    button:hover {
+        background: var(--surface-alt);
+    }
+}
+
+/* ── Table card ── */
+.ac__table-card {
+    background: #ffffff;
+    border-radius: 16px;
+    outline: 1px solid #e0e0e0;
+    outline-offset: -1px;
+    overflow: hidden;
+
+    .MuiTableContainer-root {
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+
+    .MuiPaper-root {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+}
+
+.ac__icon-btn--whatsapp {
+    color: #25d366 !important;
+
+    &:hover {
+        background: rgba(37, 211, 102, 0.08) !important;
+    }
+}
+
+/* ── Company cell ── */
+.ac__company-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+}
+
+.ac__avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #828282;
+    letter-spacing: 0.02em;
+}
+
+.ac__company-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1d1d1d;
+    line-height: 25.2px;
+}
+
+/* ── Contact ── */
+.ac__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ac__contact-email {
+    font-size: 15px;
+    font-weight: 400;
+    color: #1d1d1d;
+    line-height: 22.4px;
+    text-align: center;
+}
+
+.ac__contact-phone {
+    font-size: 13px;
+    font-weight: 300;
+    color: #828282;
+    line-height: 19.6px;
+    text-align: center;
+}
+
+/* ── Status badge ── */
+.ac__status {
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 19.6px;
+}
+
+.ac__status--active {
+    background: #7ed298;
+}
+
+.ac__status--inactive {
+    background: #f3858c;
+}
+
+/* ── Empty state ── */
+.ac__empty {
+    padding: 3rem;
+    text-align: center;
+    font-size: 15px;
+    color: #828282;
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+    .ac__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ac__search-row {
+        flex-wrap: wrap;
+
+        .ac__search-input-wrap {
+            flex: 1 1 100%;
+        }
+    }
+
+    .ac__advanced-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .ac {
+        padding: 1.25rem;
+    }
+
+    .ac__advanced-grid {
+        grid-template-columns: 1fr;
+    }
+}

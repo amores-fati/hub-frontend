@@ -1,7 +1,5 @@
-'use client';
+import AdminConfiguration from './AdminConfigurations';
 
-import AdminConfiguracoes from './AdminConfiguracoes';
-
-export default function ConfiguracoesPage() {
-    return <AdminConfiguracoes />;
+export default function Page() {
+    return <AdminConfiguration />;
 }

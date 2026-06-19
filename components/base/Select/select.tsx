@@ -43,6 +43,36 @@ export const style = {
     }),
 };
 
+export const multiStyle = {
+    valueContainer: (provided: any) => ({
+        ...provided,
+        padding: '4px 8px',
+        display: 'flex',
+        flexWrap: 'wrap' as const,
+        maxHeight: '5rem',
+        overflow: 'auto',
+        gap: '4px',
+    }),
+    placeholder: (provided: any) => ({
+        ...provided,
+        fontSize: '0.75rem',
+    }),
+    menu: (provided: any) => ({
+        ...provided,
+        fontSize: '1rem',
+    }),
+    control: (provided: any) => ({
+        ...provided,
+        paddingLeft: '1rem',
+        height: 'auto',
+        minHeight: '2.5rem',
+    }),
+    menuPortal: (provided: any) => ({
+        ...provided,
+        zIndex: 9999,
+    }),
+};
+
 export function CustomSelect({
     value,
     defaultValue,
@@ -115,7 +145,7 @@ export function CustomMultSelect({
             isMulti={true}
             options={options}
             noOptionsMessage={() => 'Nenhuma opção disponível'}
-            styles={style}
+            styles={multiStyle}
         />
     );
 }

@@ -234,8 +234,14 @@ export function CourseModal({
                         {course.modality === 'online' && (
                             <button
                                 className='course-modal__btn course-modal__btn--outline'
-                                onClick={() => course.externalLink && window.open(course.externalLink, '_blank')}
-                                disabled={action !== 'interessado' || !course.externalLink}
+                                onClick={() =>
+                                    course.externalLink &&
+                                    window.open(course.externalLink, '_blank')
+                                }
+                                disabled={
+                                    action !== 'interessado' ||
+                                    !course.externalLink
+                                }
                             >
                                 <OpenInNewIcon sx={{ fontSize: 16 }} />
                                 Acessar curso
