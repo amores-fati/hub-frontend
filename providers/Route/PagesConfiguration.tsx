@@ -6,7 +6,6 @@ import {
     HomeFilled,
     MenuBook as MenuBookIcon,
     Person as PersonIcon,
-    Settings as SettingsIcon,
     Work as WorkIcon,
     Business as BusinessIcon,
     Settings as SettingsIcon,
