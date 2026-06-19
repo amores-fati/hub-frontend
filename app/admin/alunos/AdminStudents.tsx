@@ -197,11 +197,22 @@ const initialFiltersState: AppliedFiltersState = {
 
 const STUDENT_REPORT_LIMIT = 1000;
 
-const normalizeText = (value: string) =>
-    value
+const normalizeText = (value?: string | null) =>
+    (value ?? '')
         .normalize('NFD')
         .replaceAll(/[\u0300-\u036f]/g, '')
         .trim();
+
+const formatLocation = (city?: string | null, state?: string | null) => {
+    const normalizedCity = normalizeText(city);
+    const normalizedState = state?.trim();
+
+    if (normalizedCity && normalizedState) {
+        return `${normalizedCity}/${normalizedState}`;
+    }
+
+    return normalizedCity || normalizedState || 'Nao informado';
+};
 
 const formatCpf = (cpf: string) =>
     cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -598,7 +609,7 @@ function AdminStudents() {
             sortable: true,
             render: (student: AdminStudentDto) => (
                 <>
-                    {normalizeText(student.city)}/{student.state}
+                    {formatLocation(student.city, student.state)}
                 </>
             ),
         },
@@ -1002,8 +1013,10 @@ function AdminStudents() {
                                     <div>
                                         <strong>Cidade / Estado</strong>
                                         <span>
-                                            {selectedStudent.city}/
-                                            {selectedStudent.state}
+                                            {formatLocation(
+                                                selectedStudent.city,
+                                                selectedStudent.state,
+                                            )}
                                         </span>
                                     </div>
                                     <div className='admin-students__details-grid-item--full'>
