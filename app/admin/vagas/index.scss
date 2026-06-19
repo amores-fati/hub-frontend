@@ -154,8 +154,15 @@
     &__advanced-grid {
         padding-top: var(--spacing-sm);
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: var(--spacing-md);
+    }
+
+    &__field-label {
+        display: inline-block;
+        margin-bottom: var(--spacing-sm);
+        color: var(--cinza-2);
+        font: var(--footnote-bold);
     }
 
     &__table-card {

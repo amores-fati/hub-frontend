@@ -10,6 +10,8 @@ import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRound
 import { useEffect, useMemo, useState } from 'react';
 import { InputComponent } from '@/components/base/Input/input';
 import { ButtonComponent } from '@/components/base/Button/button';
+import { Select } from '@/components/base';
+import { Option } from '@/components/base/Select/select';
 import {
     Action,
     State,
@@ -94,6 +96,17 @@ const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.ONLINE]: 'Online',
     [WorkplaceType.HYBRID]: 'Híbrido',
 };
+
+const workplaceTypeOptions: Option[] = [
+    { value: WorkplaceType.PRESENTIAL, label: workplaceTypeLabels[WorkplaceType.PRESENTIAL] },
+    { value: WorkplaceType.ONLINE, label: workplaceTypeLabels[WorkplaceType.ONLINE] },
+    { value: WorkplaceType.HYBRID, label: workplaceTypeLabels[WorkplaceType.HYBRID] },
+];
+
+const pcdOptions: Option[] = [
+    { value: 'true', label: 'Sim' },
+    { value: 'false', label: 'Não' },
+];
 
 const formatDate = (value: string) => {
     const date = new Date(`${value}T00:00:00`);
@@ -200,31 +213,51 @@ function AdminVagas() {
     const [searchInput, setSearchInput] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+    const [draftPcd, setDraftPcd] = useState<Option | null>(null);
+    const [draftWorkplaceType, setDraftWorkplaceType] = useState<Option | null>(null);
+    const [appliedPcd, setAppliedPcd] = useState<string | null>(null);
+    const [appliedWorkplaceType, setAppliedWorkplaceType] = useState<string | null>(null);
 
     const handleSearch = () => {
         setAppliedSearch(searchInput.trim());
+        setAppliedPcd(draftPcd ? String(draftPcd.value) : null);
+        setAppliedWorkplaceType(draftWorkplaceType ? String(draftWorkplaceType.value) : null);
         setPage(1);
     };
 
     const handleClear = () => {
         setSearchInput('');
         setAppliedSearch('');
+        setDraftPcd(null);
+        setDraftWorkplaceType(null);
+        setAppliedPcd(null);
+        setAppliedWorkplaceType(null);
         setShowAdvancedFilters(false);
         setPage(1);
     };
 
     const filteredVagas = useMemo(() => {
-        if (!appliedSearch) return MOCK_VAGAS;
-        const term = normalize(appliedSearch);
-        return MOCK_VAGAS.filter(
-            (v) =>
-                normalize(v.name).includes(term) ||
-                normalize(v.empresa).includes(term) ||
-                String(v.openingsCount).includes(term) ||
-                (v.isPcd && ['pcd', 'sim'].includes(term)) ||
-                (!v.isPcd && ['nao', 'nao', 'não'].includes(term)),
-        );
-    }, [appliedSearch]);
+        return MOCK_VAGAS.filter((v) => {
+            if (appliedSearch) {
+                const term = normalize(appliedSearch);
+                const matchesSearch =
+                    normalize(v.name).includes(term) ||
+                    normalize(v.empresa).includes(term) ||
+                    String(v.openingsCount).includes(term) ||
+                    (v.isPcd && ['pcd', 'sim'].includes(term)) ||
+                    (!v.isPcd && ['nao', 'não'].includes(term));
+                if (!matchesSearch) return false;
+            }
+            if (appliedPcd !== null) {
+                if (appliedPcd === 'true' && !v.isPcd) return false;
+                if (appliedPcd === 'false' && v.isPcd) return false;
+            }
+            if (appliedWorkplaceType !== null && v.workplaceType !== (appliedWorkplaceType as WorkplaceType)) {
+                return false;
+            }
+            return true;
+        });
+    }, [appliedSearch, appliedPcd, appliedWorkplaceType]);
 
     const totalPages = Math.max(1, Math.ceil(filteredVagas.length / PAGE_SIZE));
     const startIndex = (page - 1) * PAGE_SIZE;
@@ -237,11 +270,11 @@ function AdminVagas() {
             page,
         });
         setIsLoading(false);
-    }, [page, appliedSearch]);
+    }, [page, appliedSearch, appliedPcd, appliedWorkplaceType]);
 
     useEffect(() => {
         setSelectedRows({});
-    }, [page, appliedSearch]);
+    }, [page, appliedSearch, appliedPcd, appliedWorkplaceType]);
 
     const selectedCount = Object.keys(selectedRows).length;
     const selectedCountLabel = `${selectedCount} vaga${selectedCount === 1 ? '' : 's'} selecionada${selectedCount === 1 ? '' : 's'}`;
@@ -389,7 +422,35 @@ function AdminVagas() {
                 </button>
 
                 <Collapse in={showAdvancedFilters}>
-                    <div className='admin-vagas__advanced-grid' />
+                    <div className='admin-vagas__advanced-grid'>
+                        <div>
+                            <label className='admin-vagas__field-label'>
+                                Exclusivo PCD
+                            </label>
+                            <Select
+                                placeholder='Selecione'
+                                options={pcdOptions}
+                                onChange={(e) => setDraftPcd(e ?? null)}
+                                value={draftPcd}
+                                isSearchable
+                                isClearable
+                            />
+                        </div>
+
+                        <div>
+                            <label className='admin-vagas__field-label'>
+                                Modalidade
+                            </label>
+                            <Select
+                                placeholder='Selecione as modalidades'
+                                options={workplaceTypeOptions}
+                                onChange={(e) => setDraftWorkplaceType(e ?? null)}
+                                value={draftWorkplaceType}
+                                isSearchable
+                                isClearable
+                            />
+                        </div>
+                    </div>
                 </Collapse>
             </div>
 
