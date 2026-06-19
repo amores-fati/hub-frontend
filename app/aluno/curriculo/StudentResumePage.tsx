@@ -480,8 +480,8 @@ export function StudentResumePage({
                                 style={
                                     currentPhotoUrl
                                         ? {
-                                            backgroundImage: `url("${currentPhotoUrl}")`,
-                                        }
+                                              backgroundImage: `url("${currentPhotoUrl}")`,
+                                          }
                                         : undefined
                                 }
                                 aria-label='Foto do aluno'
@@ -667,8 +667,8 @@ export function StudentResumePage({
                                             style={{
                                                 backgroundColor:
                                                     SKILL_DOT_COLORS[
-                                                    index %
-                                                    SKILL_DOT_COLORS.length
+                                                        index %
+                                                            SKILL_DOT_COLORS.length
                                                     ],
                                             }}
                                         />

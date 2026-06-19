@@ -85,11 +85,7 @@ const MOCK_VAGAS: MockVacancy[] = generateMockVagas(245);
 const PAGE_SIZE = 5;
 
 const normalize = (s: string) =>
-    s
-        .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '')
-        .toLowerCase()
-        .trim();
+    s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 
 const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.PRESENTIAL]: 'Presencial',
@@ -98,9 +94,18 @@ const workplaceTypeLabels: Record<WorkplaceType, string> = {
 };
 
 const workplaceTypeOptions: Option[] = [
-    { value: WorkplaceType.PRESENTIAL, label: workplaceTypeLabels[WorkplaceType.PRESENTIAL] },
-    { value: WorkplaceType.ONLINE, label: workplaceTypeLabels[WorkplaceType.ONLINE] },
-    { value: WorkplaceType.HYBRID, label: workplaceTypeLabels[WorkplaceType.HYBRID] },
+    {
+        value: WorkplaceType.PRESENTIAL,
+        label: workplaceTypeLabels[WorkplaceType.PRESENTIAL],
+    },
+    {
+        value: WorkplaceType.ONLINE,
+        label: workplaceTypeLabels[WorkplaceType.ONLINE],
+    },
+    {
+        value: WorkplaceType.HYBRID,
+        label: workplaceTypeLabels[WorkplaceType.HYBRID],
+    },
 ];
 
 const pcdOptions: Option[] = [
@@ -214,14 +219,20 @@ function AdminVagas() {
     const [appliedSearch, setAppliedSearch] = useState('');
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [draftPcd, setDraftPcd] = useState<Option | null>(null);
-    const [draftWorkplaceType, setDraftWorkplaceType] = useState<Option | null>(null);
+    const [draftWorkplaceType, setDraftWorkplaceType] = useState<Option | null>(
+        null,
+    );
     const [appliedPcd, setAppliedPcd] = useState<string | null>(null);
-    const [appliedWorkplaceType, setAppliedWorkplaceType] = useState<string | null>(null);
+    const [appliedWorkplaceType, setAppliedWorkplaceType] = useState<
+        string | null
+    >(null);
 
     const handleSearch = () => {
         setAppliedSearch(searchInput.trim());
         setAppliedPcd(draftPcd ? String(draftPcd.value) : null);
-        setAppliedWorkplaceType(draftWorkplaceType ? String(draftWorkplaceType.value) : null);
+        setAppliedWorkplaceType(
+            draftWorkplaceType ? String(draftWorkplaceType.value) : null,
+        );
         setPage(1);
     };
 
@@ -252,7 +263,10 @@ function AdminVagas() {
                 if (appliedPcd === 'true' && !v.isPcd) return false;
                 if (appliedPcd === 'false' && v.isPcd) return false;
             }
-            if (appliedWorkplaceType !== null && v.workplaceType !== (appliedWorkplaceType as WorkplaceType)) {
+            if (
+                appliedWorkplaceType !== null &&
+                v.workplaceType !== (appliedWorkplaceType as WorkplaceType)
+            ) {
                 return false;
             }
             return true;
@@ -444,7 +458,9 @@ function AdminVagas() {
                             <Select
                                 placeholder='Selecione as modalidades'
                                 options={workplaceTypeOptions}
-                                onChange={(e) => setDraftWorkplaceType(e ?? null)}
+                                onChange={(e) =>
+                                    setDraftWorkplaceType(e ?? null)
+                                }
                                 value={draftWorkplaceType}
                                 isSearchable
                                 isClearable
