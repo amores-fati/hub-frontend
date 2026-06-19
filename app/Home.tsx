@@ -13,6 +13,7 @@ import {
     useGetStudentCountByCity,
     useGetStudentCountByMonth,
 } from '../services/api/admin/dashboard/queries';
+import { CompanyVacancies } from './empresa/vagas/CompanyVacancies';
 
 type HomeFallbackProps = {
     description: string;
@@ -62,7 +63,12 @@ export default function HomePage() {
         isError: isCountByMonthError,
     } = useGetStudentCountByMonth();
 
-    if (isDashboardLoading || isDisabilityLoading || isStudentCountLoading || isCountByMonthLoading)
+    if (
+        isDashboardLoading ||
+        isDisabilityLoading ||
+        isStudentCountLoading ||
+        isCountByMonthLoading
+    )
         <Loading />;
 
     useEffect(() => {
@@ -101,7 +107,10 @@ export default function HomePage() {
 
     if (
         shouldRenderAdminHome &&
-        (isDashboardError || isDisabilityError || isStudentCountError || isCountByMonthError)
+        (isDashboardError ||
+            isDisabilityError ||
+            isStudentCountError ||
+            isCountByMonthError)
     ) {
         return (
             <HomeFallback
@@ -134,13 +143,7 @@ export default function HomePage() {
     }
 
     if (role === UserRole.COMPANY) {
-        return (
-            <HomeFallback
-                tag='Área da empresa'
-                title='Bem-vindo à plataforma'
-                description='A home da empresa será exibida aqui. Por enquanto, esta área permanece como placeholder até a próxima etapa de implementação.'
-            />
-        );
+        return <CompanyVacancies />;
     }
 
     return (
