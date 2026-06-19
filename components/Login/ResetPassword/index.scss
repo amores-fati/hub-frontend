@@ -1,0 +1,68 @@
+@use '../../../scss/globals.scss' as *;
+
+.reset-password {
+    &__card-content {
+        padding: 0 !important;
+    }
+
+    &__content,
+    &__invalid {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        width: 100%;
+    }
+
+    &__title {
+        margin: 0;
+        font: var(--titulo-3);
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    &__description {
+        margin: 0;
+        font: var(--callout);
+        color: var(--text-primary);
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        width: 100%;
+    }
+
+    &__label {
+        margin: 0;
+        font: var(--body-2-semibold);
+        color: var(--text-primary);
+    }
+
+    &__error {
+        font: var(--footnote-bold);
+        color: #b00020;
+    }
+
+    &__card-actions {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        padding: var(--spacing-lg) 0 0 !important;
+    }
+
+    &__submit-btn {
+        width: 100%;
+
+        @include sm {
+            width: 220px;
+        }
+    }
+
+    &__button-text {
+        font-weight: 700;
+        font-size: 15px;
+        text-transform: uppercase;
+    }
+}

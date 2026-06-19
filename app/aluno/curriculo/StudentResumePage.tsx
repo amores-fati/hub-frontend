@@ -1,6 +1,7 @@
 'use client';
 
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from '@mui/icons-material/Close';
 import CodeIcon from '@mui/icons-material/Code';
 import EditIcon from '@mui/icons-material/Edit';
@@ -10,6 +11,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 import {
     ChangeEvent,
     FormEvent,
@@ -171,6 +173,7 @@ export function StudentResumePage({
     isLoading: boolean;
     studentId?: string;
 }) {
+    const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { user } = useAuth();
@@ -718,6 +721,15 @@ export function StudentResumePage({
                         )}
                     </div>
                 </aside>
+
+                <button
+                    className='student-resume-button student-resume-button--ghost'
+                    type='button'
+                    onClick={() => router.back()}
+                >
+                    <ArrowBackIcon fontSize='small' />
+                    Voltar
+                </button>
             </div>
         </section>
     );

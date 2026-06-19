@@ -39,6 +39,20 @@ export const PAGES: Page[] = [
         name: 'Login',
     },
     {
+        path: '/redefinir-senha',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Redefinir Senha',
+    },
+    {
+        path: '/reset-password',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Redefinir Senha',
+    },
+    {
         path: '/teste',
         navbarEnabled: false,
         requireRoles: [],
