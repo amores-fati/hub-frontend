@@ -168,6 +168,7 @@ const exportCurriculaToPdf = (
                 <td>${escapeHtml(c.cpf)}</td>
                 <td>${escapeHtml(areaLabels[c.activityArea] ?? c.activityArea ?? 'Não informado')}</td>
                 <td>${escapeHtml(getModalityLabel(c.preference))}</td>
+                <td>${escapeHtml(c.isPcd ? 'Sim' : 'Não')}</td>
                 <td>${escapeHtml(c.isAvailable ? 'Ativo' : 'Inativo')}</td>
             </tr>`,
         )
@@ -190,7 +191,7 @@ const exportCurriculaToPdf = (
                 <p>Data de geração: ${generatedAt}</p>
                 <p>Total: ${curricula.length}</p>
                 <table>
-                    <thead><tr><th>Nome</th><th>CPF</th><th>Área</th><th>Preferência</th><th>Status</th></tr></thead>
+                    <thead><tr><th>Nome</th><th>CPF</th><th>Área</th><th>Preferência</th><th>PCD</th><th>Status</th></tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
             </body>
@@ -223,6 +224,7 @@ type AppliedFiltersState = {
     activityArea: string[];
     modality: 'remoto' | 'presencial' | null;
     status: 'available' | 'unavailable' | null;
+    isPcd: boolean | null;
 };
 
 const initialFiltersState: AppliedFiltersState = {
@@ -231,6 +233,7 @@ const initialFiltersState: AppliedFiltersState = {
     activityArea: [],
     modality: null,
     status: null,
+    isPcd: null,
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -285,6 +288,7 @@ function AdminCurriculo() {
     const [draftStatuses, setDraftStatuses] = useState<
         'available' | 'unavailable' | null
     >(null);
+    const [draftIsPcd, setDraftIsPcd] = useState<boolean | null>(null);
     const [filters, setFilters] =
         useState<AppliedFiltersState>(initialFiltersState);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -297,7 +301,8 @@ function AdminCurriculo() {
                 filters.city.length ||
                 filters.activityArea.length ||
                 filters.modality ||
-                filters.status,
+                filters.status ||
+                filters.isPcd !== null,
             ),
         [filters],
     );
@@ -312,6 +317,7 @@ function AdminCurriculo() {
             : undefined,
         preference: filters.modality ? filters.modality : undefined,
         status: filters.status ? filters.status : undefined,
+        isPcd: filters.isPcd !== null ? filters.isPcd : undefined,
         sortBy: paginator.orderColumn,
         sortOrder: paginator.orderDirection,
     });
@@ -345,6 +351,7 @@ function AdminCurriculo() {
             activityArea: draftAreas.map((o) => String(o.value)),
             modality: draftModalities,
             status: draftStatuses,
+            isPcd: draftIsPcd,
         });
     };
 
@@ -354,6 +361,7 @@ function AdminCurriculo() {
         setDraftAreas([]);
         setDraftModalities(null);
         setDraftStatuses(null);
+        setDraftIsPcd(null);
         setPaginator({ page: 1 });
         setFilters(initialFiltersState);
     };
@@ -431,6 +439,17 @@ function AdminCurriculo() {
                 <Chip
                     label={c.isAvailable ? 'Ativo' : 'Inativo'}
                     className={getStatusBadgeClass(c.isAvailable)}
+                />
+            ),
+        },
+        {
+            key: 'isPcd',
+            header: 'PCD',
+            sortable: false,
+            render: (c) => (
+                <Chip
+                    label={c.isPcd ? 'Sim' : 'Não'}
+                    className={`admin-curriculos__badge admin-curriculos__badge--${c.isPcd ? 'ativo' : 'inativo'}`}
                 />
             ),
         },
@@ -627,6 +646,24 @@ function AdminCurriculo() {
                                     )
                                 }
                                 isSearchable
+                            />
+                        </div>
+                        <div className='admin-curriculos__filter-group'>
+                            <label className='admin-curriculos__filter-label'>
+                                PCD
+                            </label>
+                            <CustomSelect
+                                isClearable={true}
+                                placeholder='Selecione'
+                                options={[
+                                    { value: 'true', label: 'Sim' },
+                                    { value: 'false', label: 'Não' },
+                                ]}
+                                onChange={(e) => {
+                                    if (e?.value === 'true') setDraftIsPcd(true);
+                                    else if (e?.value === 'false') setDraftIsPcd(false);
+                                    else setDraftIsPcd(null);
+                                }}
                             />
                         </div>
                     </div>

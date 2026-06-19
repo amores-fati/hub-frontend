@@ -17,6 +17,7 @@ export type AdminCurriculumDto = {
     activityArea: string;
     preference: AdminCurriculumModality;
     isAvailable: boolean;
+    isPcd: boolean;
     photoUrl?: string | null;
     github?: string | null;
     linkedin?: string | null;
@@ -43,6 +44,7 @@ export type AdminCurriculaQueryParams = {
     activityArea?: string[];
     preference?: 'remoto' | 'presencial';
     status?: 'available' | 'unavailable';
+    isPcd?: boolean;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
 };
