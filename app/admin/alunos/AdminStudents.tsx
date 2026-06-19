@@ -22,8 +22,10 @@ import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import {
     downloadStudentsReport,
     ExportStudentsReportPayload,
+    ReportFormat,
     StudentReportStatus,
 } from '@/services/api/admin/reports';
+import { ExportFormatModal } from '@/components/ExportFormatModal/ExportFormatModal';
 import { Option } from '@/components/base/Select/select';
 import {
     Avatar,
@@ -195,11 +197,22 @@ const initialFiltersState: AppliedFiltersState = {
 
 const STUDENT_REPORT_LIMIT = 1000;
 
-const normalizeText = (value: string) =>
-    value
+const normalizeText = (value?: string | null) =>
+    (value ?? '')
         .normalize('NFD')
         .replaceAll(/[\u0300-\u036f]/g, '')
         .trim();
+
+const formatLocation = (city?: string | null, state?: string | null) => {
+    const normalizedCity = normalizeText(city);
+    const normalizedState = state?.trim();
+
+    if (normalizedCity && normalizedState) {
+        return `${normalizedCity}/${normalizedState}`;
+    }
+
+    return normalizedCity || normalizedState || 'Nao informado';
+};
 
 const formatCpf = (cpf: string) =>
     cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -354,6 +367,9 @@ function AdminStudents() {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isExportingSelected, setIsExportingSelected] = useState(false);
+    const [exportModalOpen, setExportModalOpen] = useState<
+        'all' | 'selected' | null
+    >(null);
 
     const { data: locationsData } = useGetAdminLocations({ scope: 'STUDENT' });
 
@@ -406,7 +422,7 @@ function AdminStudents() {
         Object.keys(selectedStudents).length === 1 ? '' : 's'
     } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
 
-    const handleExportAll = async () => {
+    const handleExportAll = async (format: ReportFormat) => {
         const unsupportedFilterMessage =
             getUnsupportedStudentReportFilterMessage(filters);
 
@@ -424,10 +440,11 @@ function AdminStudents() {
 
         setIsExporting(true);
         try {
-            await downloadStudentsReport({
-                mode: 'all',
-                filters: buildStudentReportFilters(filters),
-            });
+            await downloadStudentsReport(
+                { mode: 'all', filters: buildStudentReportFilters(filters) },
+                format,
+            );
+            setExportModalOpen(null);
         } catch (error) {
             toast.error(
                 getErrorMessage(
@@ -440,7 +457,7 @@ function AdminStudents() {
         }
     };
 
-    const handleExportSelected = async () => {
+    const handleExportSelected = async (format: ReportFormat) => {
         const selectedIds = Object.keys(selectedStudents);
 
         if (selectedIds.length === 0) {
@@ -457,10 +474,11 @@ function AdminStudents() {
 
         setIsExportingSelected(true);
         try {
-            await downloadStudentsReport({
-                mode: 'selected',
-                ids: selectedIds,
-            });
+            await downloadStudentsReport(
+                { mode: 'selected', ids: selectedIds },
+                format,
+            );
+            setExportModalOpen(null);
         } catch (error) {
             toast.error(
                 getErrorMessage(
@@ -471,6 +489,12 @@ function AdminStudents() {
         } finally {
             setIsExportingSelected(false);
         }
+    };
+
+    const handleExportWithFormat = (format: ReportFormat) => {
+        if (exportModalOpen === 'all') void handleExportAll(format);
+        else if (exportModalOpen === 'selected')
+            void handleExportSelected(format);
     };
 
     const handleApplyAllFilters = () => {
@@ -584,9 +608,7 @@ function AdminStudents() {
             header: 'Localização',
             sortable: true,
             render: (student: AdminStudentDto) => (
-                <>
-                    {normalizeText(student.city)}/{student.state}
-                </>
+                <>{formatLocation(student.city, student.state)}</>
             ),
         },
         {
@@ -653,9 +675,7 @@ function AdminStudents() {
                 <div className='admin-students__header-action'>
                     <ButtonComponent
                         variant='secondary'
-                        onClick={() => {
-                            void handleExportAll();
-                        }}
+                        onClick={() => setExportModalOpen('all')}
                         disabled={isExporting || isLoading}
                     >
                         <span className='admin-students__button-content'>
@@ -795,9 +815,7 @@ function AdminStudents() {
                     <div className='admin-students__bulk-actions'>
                         <button
                             type='button'
-                            onClick={() => {
-                                void handleExportSelected();
-                            }}
+                            onClick={() => setExportModalOpen('selected')}
                             disabled={isExportingSelected}
                         >
                             {isExportingSelected ? (
@@ -993,8 +1011,10 @@ function AdminStudents() {
                                     <div>
                                         <strong>Cidade / Estado</strong>
                                         <span>
-                                            {selectedStudent.city}/
-                                            {selectedStudent.state}
+                                            {formatLocation(
+                                                selectedStudent.city,
+                                                selectedStudent.state,
+                                            )}
                                         </span>
                                     </div>
                                     <div className='admin-students__details-grid-item--full'>
@@ -1220,6 +1240,13 @@ function AdminStudents() {
                     </ButtonComponent>
                 </DialogActions>
             </Dialog>
+
+            <ExportFormatModal
+                open={exportModalOpen !== null}
+                loading={isExporting || isExportingSelected}
+                onClose={() => setExportModalOpen(null)}
+                onExport={handleExportWithFormat}
+            />
         </section>
     );
 }
