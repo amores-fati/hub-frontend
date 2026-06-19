@@ -117,7 +117,9 @@ function AdminCompanies() {
     const { data: locationsData } = useGetAdminLocations({ scope: 'COMPANY' });
 
     const stateOptions = useMemo(() => {
-        return [...new Set((locationsData ?? []).map((location) => location.uf))]
+        return [
+            ...new Set((locationsData ?? []).map((location) => location.uf)),
+        ]
             .filter(Boolean)
             .sort();
     }, [locationsData]);
@@ -326,7 +328,10 @@ function AdminCompanies() {
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
                     </div>
-                    <ButtonComponent onClick={applyFilters} disabled={isLoading}>
+                    <ButtonComponent
+                        onClick={applyFilters}
+                        disabled={isLoading}
+                    >
                         <span className='ac__button-content'>
                             <SearchRoundedIcon fontSize='small' />
                             Buscar

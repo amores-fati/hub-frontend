@@ -608,9 +608,7 @@ function AdminStudents() {
             header: 'Localização',
             sortable: true,
             render: (student: AdminStudentDto) => (
-                <>
-                    {formatLocation(student.city, student.state)}
-                </>
+                <>{formatLocation(student.city, student.state)}</>
             ),
         },
         {
