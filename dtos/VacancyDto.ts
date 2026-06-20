@@ -15,6 +15,7 @@ export type VacancyDto = {
     description?: string | null;
     skills: Skill[];
     companyId: string;
+    companyName?: string;
     name: string;
     openingsCount: number;
     applicationLink?: string | null;

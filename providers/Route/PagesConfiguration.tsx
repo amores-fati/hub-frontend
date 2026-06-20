@@ -92,7 +92,7 @@ export const PAGES: Page[] = [
     {
         path: '/empresa/vagas',
         navbarEnabled: true,
-        requireAuth: false,
+        requireAuth: true,
         requireRoles: [UserRole.COMPANY],
         name: 'Vagas',
         icon: <WorkIcon className='sidebar-icon' />,
