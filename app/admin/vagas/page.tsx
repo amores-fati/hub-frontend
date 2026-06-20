@@ -1,7 +1,7 @@
 'use client';
 
-import AdminVacancy from './AdminVacancy';
+import { CompanyVacancies } from 'app/empresa/vagas/CompanyVacancies';
 
-export default function VagasPage() {
-    return <AdminVacancy />;
+export default function CompanyVacanciesPage() {
+    return <CompanyVacancies />;
 }

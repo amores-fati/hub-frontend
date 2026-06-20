@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, MultSelect, Select } from '@/components/base';
+import { Input, Select } from '@/components/base';
 import {
     VacanciesQueryParams,
     VacancyDto,
@@ -39,6 +39,7 @@ import BasicTable from '@/components/base/Table2/table';
 import './index.scss';
 import LoadingModal from '../../../components/Modal';
 import { deleteConfirmation } from './Swal';
+import { usePathname } from 'next/navigation';
 
 const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.PRESENTIAL]: 'Presencial',
@@ -93,6 +94,9 @@ export function CompanyVacancies() {
 }
 
 function CompanyVacanciesContent() {
+    const pathname = usePathname(); 
+    const isAdminRoute = pathname?.includes('/admin');
+
     const [searchInput, setSearchInput] = useState('');
     const [draftPcd, setDraftPcd] = useState<Option | null>(null);
     const [draftWorkplaceType, setDraftWorkplaceType] = useState<Option | null>(
@@ -184,7 +188,7 @@ function CompanyVacanciesContent() {
         setSelectedRows({});
     };
 
-    const cells: Cells<VacancyDto>[] = [
+    const companyCells: Cells<VacancyDto>[] = [
         { key: 'id', header: '', type: CellType.CHECKBOX, sortable: false },
         {
             key: 'name',
@@ -286,9 +290,95 @@ function CompanyVacanciesContent() {
         },
     ];
 
+    const adminCells: Cells<VacancyDto>[] = [
+        {
+            key: 'id',
+            header: '',
+            type: CellType.CHECKBOX,
+            sortable: false,
+        },
+        {
+            key: 'name',
+            header: 'Título',
+            sortable: false,
+            render: (row) => (
+                <span className='admin-vagas__title-cell'>{row.name}</span>
+            ),
+        },
+        {
+            key: 'companyId',
+            header: 'Empresa',
+            sortable: false,
+            // Renderiza um componente auxiliar que buscará a empresa através do companyId
+            render: (row) => <CompanyNameCell companyId={row.companyId} />,
+        },
+        {
+            key: 'openingsCount',
+            header: 'Número de Vagas',
+            sortable: false,
+            render: (row) => row.openingsCount,
+        },
+        {
+            key: 'workplaceType',
+            header: 'Modalidade',
+            sortable: false,
+            render: (row) =>
+                row.workplaceType ? (
+                    <Chip
+                        label={workplaceTypeLabels[row.workplaceType]}
+                        className={`company-vacancies__badge company-vacancies__badge--workplace-${row.workplaceType}`}
+                    />
+                ) : (
+                    <span>—</span>
+                ),
+        },
+        {
+            key: 'isPcd',
+            header: 'Exclusivo PCD',
+            sortable: false,
+            render: (row) => (
+                <Chip
+                    label={row.isPcd ? 'SIM' : 'NÃO'}
+                    className={
+                        row.isPcd
+                            ? 'admin-vagas__badge admin-vagas__badge--success'
+                            : 'admin-vagas__badge admin-vagas__badge--danger'
+                    }
+                />
+            ),
+        },
+        {
+            key: 'announcementDate',
+            header: 'Data de Anúncio',
+            sortable: false,
+            render: (row) => (
+                <Chip
+                    label={formatAnnouncementDate(row.announcementDate)}
+                    className='admin-vagas__badge admin-vagas__badge--info'
+                />
+            ),
+        },
+        {
+            key: 'actions',
+            header: 'Ações',
+            sortable: false,
+            render: (row) => (
+                <IconButton
+                    className='custom-table__action-button'
+                    onClick={() => {
+                        setSelectedVacancy({ vacancy: row, mode: 'view' });
+                    }}
+                >
+                    <VisibilityOutlinedIcon fontSize='small' />
+                </IconButton>
+            ),
+        },
+    ];
+
     useEffect(() => {
-        setCells(cells);
-    }, []);
+        const activeCells = isAdminRoute ? adminCells : companyCells;
+        setCells(activeCells);
+    }, [isAdminRoute, setCells]);
 
     const isBusy = isLoading || isFetching;
     const vacancies = data?.data ?? [];
@@ -312,19 +402,21 @@ function CompanyVacanciesContent() {
                 </div>
 
                 <div className='company-vacancies__header-actions'>
-                    <div className='company-vacancies__whatsapp-btn'>
-                        <ButtonComponent
-                            variant='primary'
-                            onClick={() =>
-                                toast.info('Funcionalidade em desenvolvimento.')
-                            }
-                        >
-                            <span className='company-vacancies__button-content'>
-                                <WhatsAppIcon fontSize='small' />
-                                Chamar no Whatsapp
-                            </span>
-                        </ButtonComponent>
-                    </div>
+                    {!isAdminRoute && (
+                        <div className='company-vacancies__whatsapp-btn'>
+                            <ButtonComponent
+                                variant='primary'
+                                onClick={() =>
+                                    window.open('https://wa.me/555192669381', '_blank', 'noopener,noreferrer')
+                                }
+                            >
+                                <span className='company-vacancies__button-content'>
+                                    <WhatsAppIcon fontSize='small' />
+                                    Chamar no Whatsapp
+                                </span>
+                            </ButtonComponent>
+                        </div>
+                    )}
 
                     <ButtonComponent onClick={() => setShowCreateModal(true)}>
                         <span className='company-vacancies__button-content'>
@@ -509,6 +601,22 @@ function CompanyVacanciesContent() {
                 />
             )}
         </section>
+    );
+}
+
+function CompanyNameCell({ companyId }: { companyId: string }) {
+    // TODO: Adicione aqui a importação e o uso do seu hook que busca a empresa por ID.
+    // Exemplo:
+    // const { data: company, isLoading } = useGetCompanyById(companyId);
+    //
+    // if (isLoading) return <span>Carregando...</span>;
+    // return <span>{company?.name || 'Empresa desconhecida'}</span>;
+
+    // Retorno de fallback temporário:
+    return (
+        <span className='company-vacancies__vacancy-name'>
+            ID: {companyId}
+        </span>
     );
 }
 
