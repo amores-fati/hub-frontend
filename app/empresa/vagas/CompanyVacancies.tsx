@@ -26,6 +26,7 @@ import {
     useGetCompanyJobOpening,
     useGetCompanyVacancies,
 } from '@/services/api/companies/vacancies/queries';
+import { useGetAdminVacancies } from '@/services/api/admin/vacancies/queries';
 import { useDeleteVacancy } from '@/services/api/companies/vacancies/mutations';
 import { VacancyModal } from './VacancyModal';
 import {
@@ -146,8 +147,24 @@ function CompanyVacanciesContent() {
         [filters, paginator.page, paginator.rowsPerPage],
     );
 
-    const { data, isLoading, isFetching, isError } =
-        useGetCompanyVacancies(queryParams);
+    const {
+        data: companyData,
+        isLoading: companyLoading,
+        isFetching: companyFetching,
+        isError: companyError,
+    } = useGetCompanyVacancies(queryParams, { enabled: !isAdminRoute });
+
+    const {
+        data: adminData,
+        isLoading: adminLoading,
+        isFetching: adminFetching,
+        isError: adminError,
+    } = useGetAdminVacancies(queryParams, { enabled: isAdminRoute });
+
+    const data = isAdminRoute ? adminData : companyData;
+    const isLoading = isAdminRoute ? adminLoading : companyLoading;
+    const isFetching = isAdminRoute ? adminFetching : companyFetching;
+    const isError = isAdminRoute ? adminError : companyError;
 
     const { mutate: deleteVacancyMutation } = useDeleteVacancy();
 
@@ -309,8 +326,11 @@ function CompanyVacanciesContent() {
             key: 'companyId',
             header: 'Empresa',
             sortable: false,
-            // Renderiza um componente auxiliar que buscará a empresa através do companyId
-            render: (row) => <CompanyNameCell companyId={row.companyId} />,
+            render: (row) => (
+                <span className='company-vacancies__vacancy-name'>
+                    {row.companyName || 'Empresa desconhecida'}
+                </span>
+            ),
         },
         {
             key: 'openingsCount',
@@ -604,21 +624,7 @@ function CompanyVacanciesContent() {
     );
 }
 
-function CompanyNameCell({ companyId }: { companyId: string }) {
-    // TODO: Adicione aqui a importação e o uso do seu hook que busca a empresa por ID.
-    // Exemplo:
-    // const { data: company, isLoading } = useGetCompanyById(companyId);
-    //
-    // if (isLoading) return <span>Carregando...</span>;
-    // return <span>{company?.name || 'Empresa desconhecida'}</span>;
 
-    // Retorno de fallback temporário:
-    return (
-        <span className='company-vacancies__vacancy-name'>
-            ID: {companyId}
-        </span>
-    );
-}
 
 function ViewJobOpeningModalWrapper({
     open,

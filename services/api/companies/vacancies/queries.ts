@@ -23,8 +23,12 @@ const buildApiParams = (params: VacanciesQueryParams) => {
     return apiParams;
 };
 
-export const useGetCompanyVacancies = (params: VacanciesQueryParams) =>
+export const useGetCompanyVacancies = (
+    params: VacanciesQueryParams,
+    options?: { enabled?: boolean }
+) =>
     useQuery({
+        enabled: options?.enabled,
         queryKey: [
             QUERY_KEYS.COMPANY_VACANCIES,
             params.page,
