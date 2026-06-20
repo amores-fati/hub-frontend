@@ -1,5 +1,5 @@
-import AdminConfiguration from './AdminConfigurations';
+import AdminConfiguracoes from './AdminConfiguracoes';
 
 export default function Page() {
-    return <AdminConfiguration />;
+    return <AdminConfiguracoes />;
 }

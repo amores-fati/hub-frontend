@@ -39,6 +39,20 @@ export const PAGES: Page[] = [
         name: 'Login',
     },
     {
+        path: '/redefinir-senha',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Redefinir Senha',
+    },
+    {
+        path: '/reset-password',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Redefinir Senha',
+    },
+    {
         path: '/teste',
         navbarEnabled: false,
         requireRoles: [],
@@ -122,6 +136,15 @@ export const PAGES: Page[] = [
         requireRoles: [UserRole.ADMIN],
         name: 'Gestão de Currículos',
         icon: <AssignmentIndIcon className='sidebar-icon' />,
+    },
+
+    {
+       path: '/admin/configuracoes',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Configurações',
+        icon: <SettingsIcon className='sidebar-icon' />,
     },
     {
         path: '/aluno/perfil',

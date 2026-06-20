@@ -1,5 +1,6 @@
 const QUERY_KEYS = {
     ADMIN_DASHBOARD: 'admin-dashboard',
+    ADMIN_COMPANIES: 'admin-companies',
     ADMIN_CURRICULUM: 'admin-curriculum',
     ADMIN_STUDENTS: 'admin-students',
     ADMIN_STUDENT_RESUME: 'admin-student-resume',
