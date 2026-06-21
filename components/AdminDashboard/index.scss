@@ -349,3 +349,35 @@
         justify-self: center;
     }
 }
+
+html[data-contrast='high'] {
+    .admin-dashboard__hero {
+        background:
+            radial-gradient(circle at top left, rgba(255, 209, 0, 0.2), transparent 28%),
+            radial-gradient(circle at right bottom, rgba(103, 58, 183, 0.3), transparent 32%),
+            linear-gradient(135deg, #0d0d0d, #1a0d2e);
+        border-color: rgba(103, 58, 183, 0.5);
+    }
+
+    .admin-dashboard__eyebrow {
+        background: rgba(103, 58, 183, 0.35);
+        color: #d4b8ff;
+    }
+
+    .admin-stat-card--primary .admin-stat-card__icon {
+        background: rgba(255, 255, 0, 0.2);
+        color: #ffff00;
+    }
+
+    .admin-stat-card__helper {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .dashboard-timeline__icon {
+        background: rgba(103, 58, 183, 0.35);
+    }
+
+    .dashboard-timeline__content {
+        border-bottom-color: rgba(255, 255, 255, 0.15);
+    }
+}

@@ -1,14 +1,17 @@
 'use client';
 
 import * as echarts from 'echarts';
+import { useMemo } from 'react';
 import { Card, EChart } from '@/components/base';
 import type { EChartsOption } from 'echarts';
+import { useAccessibility } from '@/providers/Accessibility/AccessibilityProvider';
 import { EnrollmentChartProps } from './Types';
 import { getDashboardChartTheme } from './chartTheme';
 import { formatMonthLabel } from './Utils';
 
 export function EnrollmentChart({ data }: EnrollmentChartProps) {
-    const theme = getDashboardChartTheme();
+    const { highContrast } = useAccessibility();
+    const theme = useMemo(() => getDashboardChartTheme(), [highContrast]);
     const labels = data.map((item) => formatMonthLabel(item.month));
     const values = data.map((item) => item.count);
 
@@ -84,8 +87,8 @@ export function EnrollmentChart({ data }: EnrollmentChartProps) {
                 },
                 areaStyle: {
                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: `${theme.tertiary}61` },
-                        { offset: 1, color: `${theme.primary}14` },
+                        { offset: 0, color: theme.tertiaryAlpha38 },
+                        { offset: 1, color: theme.primaryAlpha08 },
                     ]),
                 },
             },

@@ -90,14 +90,6 @@ export const PAGES: Page[] = [
         icon: <GroupIcon className='sidebar-icon' />,
     },
     {
-        path: '/empresa/vagas',
-        navbarEnabled: true,
-        requireAuth: true,
-        requireRoles: [UserRole.COMPANY],
-        name: 'Vagas',
-        icon: <WorkIcon className='sidebar-icon' />,
-    },
-    {
         path: '/empresa/perfil',
         navbarEnabled: true,
         requireAuth: false,
@@ -139,7 +131,7 @@ export const PAGES: Page[] = [
     },
 
     {
-       path: '/admin/configuracoes',
+        path: '/admin/configuracoes',
         navbarEnabled: true,
         requireAuth: true,
         requireRoles: [UserRole.ADMIN],
@@ -231,11 +223,6 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
     ],
     [UserRole.COMPANY]: [
         { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },
-        {
-            title: 'Vagas',
-            icon: <WorkIcon />,
-            expectedPath: '/empresa/vagas',
-        },
         {
             title: 'Perfil',
             icon: <PersonIcon />,

@@ -6,3 +6,7 @@
         border-radius: var(--border-radius);
     }
 }
+
+html[data-contrast='high'] .select__single-value {
+    color: #ffffff !important;
+}

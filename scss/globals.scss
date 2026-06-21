@@ -77,6 +77,13 @@
     --transition-base: 250ms ease;
     --transition-slow: 400ms ease;
 
+    // Acessibilidade
+    --a11y-bar-height: 36px;
+
+    // Gráficos
+    --chart-grid: rgba(26, 26, 26, 0.1);
+    --chart-track: rgba(26, 26, 26, 0.08);
+
     // Z-index
     --z-base: 0;
     --z-raised: 10;
@@ -193,6 +200,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    padding-top: var(--a11y-bar-height);
 }
 
 img,
@@ -553,5 +561,169 @@ pre {
 .hide-on-desktop {
     @include lg {
         display: none !important;
+    }
+}
+
+// ------------------------------------------------------------
+// 13. ACESSIBILIDADE
+// ------------------------------------------------------------
+
+html[data-font-size='large'] {
+    font-size: 18px;
+}
+html[data-font-size='larger'] {
+    font-size: 20px;
+}
+
+html[data-contrast='high'] {
+    --background: #000000;
+    --background-1: #000000;
+    --background-2: #0d0d0d;
+    --surface: #0d0d0d;
+    --surface-alt: #1a1a1a;
+
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --text-muted: #cccccc;
+    --text-on-primary: #000000;
+    --text-on-dark: #ffffff;
+
+    --preto-1: #000000;
+    --preto-2: #000000;
+    --preto-3: #0d0d0d;
+    --branco: #ffffff;
+
+    --cinza-1: #ffffff;
+    --cinza-2: #eeeeee;
+    --cinza-3: #cccccc;
+    --cinza-4: #aaaaaa;
+    --cinza-5: #333333;
+
+    --primary-color: #ffff00;
+    --secondary-color: #ff69b4;
+    --tertiary-color: #b39ddb;
+
+    // Gráficos em alto contraste
+    --chart-grid: rgba(255, 255, 255, 0.25);
+    --chart-track: rgba(255, 255, 255, 0.12);
+
+    --border-color: #ffffff;
+    --shadow: 0 0 0 2px #ffffff;
+    --shadow-sm: 0 0 0 1px #ffffff;
+    --shadow-lg: 0 0 0 3px #ffffff;
+
+    // Forçar cor de texto em todos os elementos com cores hardcoded
+    h1, h2, h3, h4, h5, h6,
+    p, span, div, li, td, th, caption,
+    label, small, strong, em, b, i, dt, dd,
+    button, summary {
+        color: #ffffff !important;
+    }
+
+    // Inputs e selects
+    input, textarea, select,
+    .MuiInputBase-input,
+    .MuiOutlinedInput-input,
+    .MuiSelect-select {
+        color: #ffffff !important;
+        background-color: #0d0d0d !important;
+
+        &::placeholder {
+            color: #aaaaaa !important;
+            opacity: 1 !important;
+        }
+    }
+
+    // Containers de input MUI
+    .MuiOutlinedInput-root,
+    .MuiInputBase-root,
+    .MuiFilledInput-root {
+        background-color: #0d0d0d !important;
+
+        fieldset, .MuiOutlinedInput-notchedOutline {
+            border-color: #888888 !important;
+        }
+
+        &:hover fieldset,
+        &:hover .MuiOutlinedInput-notchedOutline {
+            border-color: #cccccc !important;
+        }
+
+        &.Mui-focused fieldset,
+        &.Mui-focused .MuiOutlinedInput-notchedOutline {
+            border-color: #ffff00 !important;
+        }
+    }
+
+    // Labels MUI
+    .MuiInputLabel-root,
+    .MuiFormLabel-root {
+        color: #cccccc !important;
+
+        &.Mui-focused {
+            color: #ffff00 !important;
+        }
+    }
+
+    // Linhas e células de tabela
+    table, thead, tbody, tfoot, tr, td, th {
+        background-color: #000000 !important;
+        border-color: #444444 !important;
+    }
+
+    // Opções de <select> nativo
+    select option {
+        background-color: #0d0d0d !important;
+        color: #ffffff !important;
+    }
+
+    // Dropdown MUI Select / Autocomplete
+    .MuiPaper-root,
+    .MuiMenu-paper,
+    .MuiPopover-paper {
+        background-color: #0d0d0d !important;
+        color: #ffffff !important;
+    }
+
+    .MuiMenuItem-root,
+    .MuiAutocomplete-option {
+        background-color: #0d0d0d !important;
+        color: #ffffff !important;
+
+        &:hover,
+        &.Mui-selected,
+        &.Mui-focusVisible {
+            background-color: #1a1a1a !important;
+        }
+    }
+
+    // react-select (classes geradas com __control, __menu, etc.)
+    [class*="__control"],
+    [class*="__menu"],
+    [class*="__option"],
+    [class*="__single-value"],
+    [class*="__placeholder"],
+    [class*="__input-container"] {
+        background-color: #0d0d0d !important;
+        color: #ffffff !important;
+        border-color: #888888 !important;
+    }
+
+    [class*="__option--is-focused"],
+    [class*="__option--is-selected"] {
+        background-color: #1a1a1a !important;
+    }
+
+    * {
+        border-color: var(--border-color) !important;
+    }
+
+    a {
+        color: #ffff00 !important;
+        text-decoration: underline !important;
+
+        &:hover {
+            color: #ff69b4 !important;
+        }
     }
 }

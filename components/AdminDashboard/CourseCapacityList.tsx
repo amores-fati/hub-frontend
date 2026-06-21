@@ -1,12 +1,15 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Card, EChart } from '@/components/base';
 import type { EChartsOption } from 'echarts';
+import { useAccessibility } from '@/providers/Accessibility/AccessibilityProvider';
 import { CourseCapacityProps } from './Types';
 import { getDashboardChartTheme } from './chartTheme';
 
 export function CourseCapacityList({ data }: CourseCapacityProps) {
-    const theme = getDashboardChartTheme();
+    const { highContrast } = useAccessibility();
+    const theme = useMemo(() => getDashboardChartTheme(), [highContrast]);
     const chartColors = [
         theme.tertiary,
         theme.secondary,

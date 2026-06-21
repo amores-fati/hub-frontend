@@ -374,3 +374,26 @@
         color: #ffffff;
     }
 }
+
+html[data-contrast='high'] {
+    .ca-section {
+        background: #0d0d0d;
+        outline-color: #444444;
+        box-shadow: none;
+    }
+
+    .ca-empty {
+        background: #0d0d0d;
+        border-color: #555555;
+    }
+
+    .enroll-confirm {
+        background: #0d0d0d;
+        box-shadow: 0 0 0 2px #ffffff;
+    }
+
+    .enroll-confirm__btn--outline {
+        background: transparent;
+        border-color: #888888;
+    }
+}

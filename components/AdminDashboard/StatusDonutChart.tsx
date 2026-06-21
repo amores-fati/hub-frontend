@@ -1,14 +1,17 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Card, EChart } from '@/components/base';
 import type { EChartsOption } from 'echarts';
+import { useAccessibility } from '@/providers/Accessibility/AccessibilityProvider';
 import { getDashboardChartTheme } from './chartTheme';
 import { StatusChartProps } from './Types';
 import { formatPercentage } from './Utils';
 
 export function StatusDonutChart({ data }: StatusChartProps) {
+    const { highContrast } = useAccessibility();
     const total = data.reduce((acc, item) => acc + item.count, 0);
-    const theme = getDashboardChartTheme();
+    const theme = useMemo(() => getDashboardChartTheme(), [highContrast]);
     const statusColors = [
         theme.primary,
         theme.tertiary,

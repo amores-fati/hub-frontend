@@ -196,3 +196,10 @@
         color: #1d1d1d;
     }
 }
+
+html[data-contrast='high'] {
+    .course-card__body {
+        background: #0d0d0d;
+        outline-color: #444444;
+    }
+}
