@@ -22,6 +22,7 @@ export type Paginator = {
     from: number;
     to: number;
     isLoading: boolean;
+    itemsLabel?: string;
 };
 
 export type RowsPerPage = {

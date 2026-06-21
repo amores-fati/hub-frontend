@@ -1,49 +1,80 @@
-.sass-showing {
-    margin-top: 0;
-    margin-left: 0;
-    margin-bottom: 0;
-    padding: 0;
-    margin-right: 10;
-}
-
-.sass-arrow {
-    margin: 0;
-    padding: 0;
-}
-
-.sass-arrow > button {
-    background: none;
-    border: none;
-}
-
-.sass-arrow[aria-disabled='false'] > button {
-    cursor: pointer;
-}
-
-.sass-arrow[aria-disabled='true'] > button {
-    cursor: default;
-}
-
-.sass-arrow[aria-disabled='true'] > button > svg {
-    color: gray;
-}
-
-.sass-paginator {
+.paginator {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
     align-items: center;
-    margin: 0 1rem;
+    height: 3rem;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background-color: var(--background-2);
+    border-top: none;
 
     // sticky footer
     position: sticky;
     bottom: 0;
     z-index: 2;
-    background-color: #fff; // ou sua var, ex: var(--background-color)
-    border-top: 1px solid #e0e0e0;
-    padding: 4px 0;
 }
 
-.sass-paginator > div:first-of-type {
-    margin: 1rem;
+.paginator__count {
+    font: var(--footnote);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.paginator__controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.paginator__nav-btn {
+    font: var(--footnote);
+    font-weight: 500;
+    padding: 5px 12px;
+    border: 1px solid var(--cinza-4);
+    border-radius: var(--border-radius-sm);
+    background: var(--surface);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast);
+
+    &:hover:not(:disabled) {
+        background: var(--background-1);
+        border-color: var(--cinza-3);
+    }
+
+    &:disabled {
+        color: var(--cinza-4);
+        cursor: default;
+    }
+}
+
+.paginator__page-btn {
+    font: var(--footnote);
+    font-weight: 500;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast);
+
+    &:hover:not(:disabled):not(.paginator__page-btn--active) {
+        background: var(--background-1);
+    }
+
+    &--active {
+        background: var(--tertiary-color);
+        color: var(--branco);
+        cursor: default;
+    }
+
+    &:disabled {
+        cursor: default;
+    }
 }
