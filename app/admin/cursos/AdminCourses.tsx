@@ -530,6 +530,7 @@ function AdminStudents() {
                                 value={modality}
                                 onChange={(option) => setModality(option)}
                                 isSearchable
+                                isClearable
                             />
                         </div>
                     </div>
