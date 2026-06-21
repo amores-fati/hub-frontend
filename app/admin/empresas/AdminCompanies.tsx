@@ -1,42 +1,68 @@
 'use client';
 
-import { Input, MultSelect } from '@/components/base';
-import { ButtonComponent } from '@/components/base/Button/button';
-import BasicTable from '@/components/base/Table2/table';
-import { Cells, CellType } from '@/components/base/Table2/types';
-import { ExportFormatModal } from '@/components/ExportFormatModal/ExportFormatModal';
+import { Input, Loading, MultSelect, Select } from '@/components/base';
 import {
-    AdminCompanyDto,
-    AdminCompanyStatus,
-    AdminCompaniesQueryParams,
-} from '@/dtos/AdminCompanyDto';
-import { useGetAdminCompanies } from '@/services/api/admin/companies/queries';
+    FamilyIncome,
+    Gender,
+    Race,
+    Scholarship,
+    SocialBenefit,
+    WhoInformed,
+} from '@/dtos/StudentDto';
+import {
+    AdminStudentCourseType,
+    AdminStudentDisabilityType,
+    AdminStudentsQueryParams,
+} from '@/dtos/AdminStudentDto';
+import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
+import { useGetAdminStudents } from '@/services/api/admin/students/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import {
     downloadCompaniesReport,
+    downloadStudentsReport,
     ExportCompaniesReportPayload,
+    ExportStudentsReportPayload,
     ReportFormat,
+    StudentReportStatus,
 } from '@/services/api/admin/reports';
+import { ExportFormatModal } from '@/components/ExportFormatModal/ExportFormatModal';
+import { Option } from '@/components/base/Select/select';
+import {
+    Avatar,
+    Chip,
+    CircularProgress,
+    Collapse,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+} from '@mui/material';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
+import { ButtonComponent } from '@/components/base/Button/button';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
+import './index.scss';
 import {
     Action,
     State,
     TableStoreProvider,
     useTableStore,
 } from '@/stores/TableStoreProvider';
-import {
-    EditOutlined as EditOutlinedIcon,
-    FileDownloadOutlined as FileDownloadOutlinedIcon,
-    FilterListRounded as FilterListRoundedIcon,
-    KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
-    KeyboardArrowUpRounded as KeyboardArrowUpRoundedIcon,
-    RestartAltRounded as RestartAltRoundedIcon,
-    SearchRounded as SearchRoundedIcon,
-} from '@mui/icons-material';
-import { Chip, Collapse, IconButton } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
-import { toast } from 'react-toastify';
-import './index.scss';
-import { Option } from '../../../components/base/Select/select';
+import { Cells, CellType } from '@/components/base/Table2/types';
+import BasicTable from '@/components/base/Table2/table';
+import { resolveImageUrl } from '@/utils/shared-functions/image';
+import { AdminCompanyDto } from '../../../dtos/AdminCompanyDto';
+import { useGetAdminCompanies } from '../../../services/api/admin/companies/queries';
 
 const COMPANY_REPORT_LIMIT = 1000;
 
@@ -45,40 +71,199 @@ const getStatusBadgeClass = (status: 'ATIVO' | 'INATIVO') =>
         ? 'admin-companies__badge admin-companies__badge--ativo'
         : 'admin-companies__badge admin-companies__badge--inativo';
 
-type AppliedFilters = {
-    search: string;
-    city: string[];
-    status: '' | AdminCompanyStatus;
-};
-
-const initialFilters: AppliedFilters = {
-    search: '',
-    city: [],
-    status: '',
-};
-
-type CompanyReportFilters = NonNullable<
-    ExportCompaniesReportPayload['filters']
->;
-
 const getInitials = (name: string): string => {
     const words = name.trim().split(/\s+/);
     if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
     return name.slice(0, 2).toUpperCase();
 };
 
+const courseTypeLabels: Record<AdminStudentCourseType, string> = {
+    [AdminStudentCourseType.PRESENTIAL]: 'Presencial',
+    [AdminStudentCourseType.ONLINE]: 'Online',
+    [AdminStudentCourseType.NOT_ENROLLED]: 'Não inscrito',
+};
+
+const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
+    [AdminStudentDisabilityType.NONE]: 'Não',
+    [AdminStudentDisabilityType.PHYSICAL]: 'Física',
+    [AdminStudentDisabilityType.HEARING]: 'Auditiva',
+    [AdminStudentDisabilityType.VISUAL]: 'Visual',
+    [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
+    [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
+    [AdminStudentDisabilityType.MULTIPLE]: 'Múltipla',
+    [AdminStudentDisabilityType.OTHER]: 'Outra',
+};
+
+const courseTypeOptions: Option[] = [
+    {
+        value: AdminStudentCourseType.PRESENTIAL,
+        label: courseTypeLabels[AdminStudentCourseType.PRESENTIAL],
+    },
+    {
+        value: AdminStudentCourseType.ONLINE,
+        label: courseTypeLabels[AdminStudentCourseType.ONLINE],
+    },
+    {
+        value: AdminStudentCourseType.NOT_ENROLLED,
+        label: courseTypeLabels[AdminStudentCourseType.NOT_ENROLLED],
+    },
+];
+
+const disabilityOptions: Option[] = [
+    {
+        value: AdminStudentDisabilityType.NONE,
+        label: disabilityLabels[AdminStudentDisabilityType.NONE],
+    },
+    {
+        value: AdminStudentDisabilityType.PHYSICAL,
+        label: disabilityLabels[AdminStudentDisabilityType.PHYSICAL],
+    },
+    {
+        value: AdminStudentDisabilityType.HEARING,
+        label: disabilityLabels[AdminStudentDisabilityType.HEARING],
+    },
+    {
+        value: AdminStudentDisabilityType.VISUAL,
+        label: disabilityLabels[AdminStudentDisabilityType.VISUAL],
+    },
+    {
+        value: AdminStudentDisabilityType.INTELLECTUAL,
+        label: disabilityLabels[AdminStudentDisabilityType.INTELLECTUAL],
+    },
+    {
+        value: AdminStudentDisabilityType.PSYCHOSOCIAL,
+        label: disabilityLabels[AdminStudentDisabilityType.PSYCHOSOCIAL],
+    },
+    {
+        value: AdminStudentDisabilityType.OTHER,
+        label: disabilityLabels[AdminStudentDisabilityType.OTHER],
+    },
+];
+
+type AppliedFiltersState = Required<
+    Pick<
+        AdminStudentsQueryParams,
+        'search' | 'modality' | 'disabilityType' | 'city'
+    >
+>;
+
+const initialFiltersState: AppliedFiltersState = {
+    search: '',
+    modality: '',
+    disabilityType: [],
+    city: [],
+};
+
+const STUDENT_REPORT_LIMIT = 1000;
+
+const normalizeText = (value?: string | null) =>
+    (value ?? '')
+        .normalize('NFD')
+        .replaceAll(/[\u0300-\u036f]/g, '')
+        .trim();
+
+const formatLocation = (city?: string | null, state?: string | null) => {
+    const normalizedCity = normalizeText(city);
+    const normalizedState = state?.trim();
+
+    if (normalizedCity && normalizedState) {
+        return `${normalizedCity}/${normalizedState}`;
+    }
+
+    return normalizedCity || normalizedState || 'Nao informado';
+};
+
+const formatCpf = (cpf: string) =>
+    cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+
+const formatMaskedCpf = (cpf: string) =>
+    cpf.replace(/(\d{3})\d{3}(\d{3})(\d{2})/, '$1.***.$2-$3');
+
+const formatPhone = (phone: string) => {
+    if (!phone) return 'Não informado';
+    const digits = phone.replace(/\D/g, '');
+
+    if (digits.length === 11) {
+        return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+
+    return phone;
+};
+
+const formatDate = (value?: string | null) => {
+    if (!value) {
+        return 'Não informado';
+    }
+
+    const date = new Date(`${value}T00:00:00`);
+
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat('pt-BR').format(date);
+};
+
+const buildWhatsAppLink = (phone: string) => {
+    if (!phone) return '#';
+    return `https://wa.me/55${phone.replace(/\D/g, '')}`;
+};
+
+const getBooleanLabel = (value?: string) =>
+    value === 'ATIVO' ? 'Sim' : value === 'INATIVO' ? 'Não' : 'Não informado';
+
+type StudentReportFilters = NonNullable<ExportStudentsReportPayload['filters']>;
+
+const getFirstFilterValue = (values: string[]) =>
+    values.find((value) => value.trim().length > 0);
+
 const getErrorMessage = (error: unknown, fallback: string) =>
     error instanceof Error ? error.message : fallback;
 
-const buildCompanyFilters = (
-    filters: AppliedFilters,
-): CompanyReportFilters | undefined => {
-    const reportFilters: CompanyReportFilters = {};
+const getUnsupportedStudentReportFilterMessage = (
+    filters: AppliedFiltersState,
+) => {
+    const courseType = filters.modality;
+    const disabilityType = getFirstFilterValue(filters.disabilityType);
+
+    if (
+        (courseType as AdminStudentCourseType) ===
+            AdminStudentCourseType.PRESENTIAL ||
+        (courseType as AdminStudentCourseType) === AdminStudentCourseType.ONLINE
+    ) {
+        return 'O relatório do backend ainda não suporta filtro por modalidade. Limpe esse filtro para exportar.';
+    }
+
+    if (disabilityType === AdminStudentDisabilityType.NONE) {
+        return 'O relatório do backend ainda não suporta filtro por alunos sem PCD. Limpe esse filtro para exportar.';
+    }
+
+    return null;
+};
+
+const getStudentReportStatus = (
+    courseType?: string,
+): StudentReportStatus | undefined => {
+    if (courseType === AdminStudentCourseType.NOT_ENROLLED) {
+        return 'NAO_INSCRITO';
+    }
+
+    return undefined;
+};
+
+const buildStudentReportFilters = (
+    filters: AppliedFiltersState,
+): StudentReportFilters | undefined => {
+    const reportFilters: StudentReportFilters = {};
     const search = filters.search.trim();
+    const location = getFirstFilterValue(filters.city);
+    const disabilityType = getFirstFilterValue(filters.disabilityType);
+    const status = getStudentReportStatus(filters.modality);
 
     if (search) reportFilters.search = search;
-    if (filters.status) reportFilters.status = filters.status;
-    if (filters.city) reportFilters.city = filters.city;
+    if (location) reportFilters.location = location;
+    if (disabilityType) reportFilters.pcdType = disabilityType;
+    if (status) reportFilters.status = status;
 
     return Object.keys(reportFilters).length ? reportFilters : undefined;
 };
@@ -86,13 +271,15 @@ const buildCompanyFilters = (
 export default function Index() {
     return (
         <TableStoreProvider>
-            <AdminCompanies />
+            <AdminStudents />
         </TableStoreProvider>
     );
 }
 
-function AdminCompanies() {
-    const paginator = useTableStore((state) => ({ ...state.paginator }));
+function AdminStudents() {
+    const paginator = useTableStore((state) => ({
+        ...state.paginator,
+    }));
     const setPaginator = useTableStore((state) => state.setPaginator);
     const setIsLoading = useTableStore((state) => state.setIsLoading);
     const setCells = useTableStore(
@@ -101,20 +288,25 @@ function AdminCompanies() {
     const setContent = useTableStore(
         (s: State<AdminCompanyDto> & Action<AdminCompanyDto>) => s.setContent,
     );
-    const selectedCompanies = useTableStore(
-        (state) => state.selectedRows,
-    ) as Record<string, AdminCompanyDto>;
+    const selectedCompanies = useTableStore((state) => state.selectedRows);
     const setSelectedCompanies = useTableStore(
         (state) => state.setSelectedRows,
     );
 
     const [searchInput, setSearchInput] = useState('');
-    const [advancedOpen, setAdvancedOpen] = useState(false);
-    const [draftLocation, setDraftLocation] = useState<Option[]>([]);
-    const [draftStatus, setDraftStatus] = useState<'' | AdminCompanyStatus>('');
-    const [filters, setFilters] = useState<AppliedFilters>(initialFilters);
-    const [exportModalOpen, setExportModalOpen] = useState(false);
+    const [draftCourseTypes, setDraftCourseTypes] = useState<Option | null>(
+        null,
+    );
+    const [draftLocations, setDraftLocations] = useState<Option[]>([]);
+    const [draftDisabilityTypes, setDraftDisabilityTypes] = useState<Option[]>(
+        [],
+    );
+    const [filters, setFilters] =
+        useState<AppliedFiltersState>(initialFiltersState);
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+    const [isExportingSelected, setIsExportingSelected] = useState(false);
+    const [exportModalOpen, setExportModalOpen] = useState<boolean>(false);
 
     const { data: locationsData } = useGetAdminLocations({ scope: 'COMPANY' });
 
@@ -125,43 +317,38 @@ function AdminCompanies() {
         }));
     }, [locationsData]);
 
-    const queryParams: AdminCompaniesQueryParams = {
-        page: paginator.page,
-        limit: paginator.rowsPerPage,
-        search: filters.search || undefined,
-        status: filters.status || undefined,
-        city: filters.city || undefined,
+    const getParameters = (): AdminStudentsQueryParams => {
+        return {
+            page: paginator.page,
+            limit: paginator.rowsPerPage,
+            search: filters.search || undefined,
+            city: filters.city,
+            sortBy: paginator.orderColumn,
+            sortOrder: paginator.orderDirection,
+        };
     };
 
     const { data, isError, isFetching, isLoading } =
-        useGetAdminCompanies(queryParams);
-
-    const totalCompanies = data?.total ?? 0;
-    const companies = data?.data ?? [];
-    const selectedCount = Object.keys(selectedCompanies).length;
+        useGetAdminCompanies(getParameters());
 
     useEffect(() => {
         if (isLoading || isFetching) setIsLoading(true);
-    }, [isFetching, isLoading, setIsLoading]);
+    }, [isLoading, isFetching]);
 
     useEffect(() => {
-        if (!data) return;
+        if (!data || !data?.data) return;
         setContent(data.data);
         setPaginator({
             itemsCount: data.total,
-            isLoading: false,
         });
-    }, [data, setContent, setPaginator]);
+        setIsLoading(false);
+    }, [data, isLoading, isFetching]);
 
-    useEffect(() => {
-        if (!isError) return;
-        setContent([]);
-        setPaginator({ itemsCount: 0, isLoading: false });
-    }, [isError, setContent, setPaginator]);
-
-    const handleEdit = () => {
-        toast.info('Funcionalidade disponivel em breve.');
-    };
+    const companies = data?.data ?? [];
+    const totalCompanies = data?.total ?? 0;
+    const selectedCountLabel = `${Object.keys(selectedCompanies).length} empresa${
+        Object.keys(selectedCompanies).length === 1 ? '' : 's'
+    } selecionada${Object.keys(selectedCompanies).length === 1 ? '' : 's'}`;
 
     const handleExportWithFormat = async (format: ReportFormat) => {
         if (format !== 'xlsx') return;
@@ -185,7 +372,7 @@ function AdminCompanies() {
         const payload: ExportCompaniesReportPayload =
             selectedIds.length > 0
                 ? { mode: 'selected', ids: selectedIds }
-                : { mode: 'all', filters: buildCompanyFilters(filters) };
+                : { mode: 'all', filters: getParameters() };
 
         setIsExporting(true);
         try {
@@ -200,31 +387,32 @@ function AdminCompanies() {
         }
     };
 
-    const applyFilters = () => {
+    const handleApplyAllFilters = () => {
         setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
-            city: draftLocation.map((option) => String(option.value)),
-            status: draftStatus,
+            modality: draftCourseTypes ? String(draftCourseTypes.value) : '',
+            city: draftLocations.map((option) => String(option.value)),
+            disabilityType: draftDisabilityTypes.map((option) =>
+                String(option.value),
+            ),
         });
-        setSelectedCompanies({});
     };
 
-    const clearFilters = () => {
+    const handleClearFilters = () => {
         setSearchInput('');
-        setDraftLocation([]);
-        setDraftStatus('');
-        setFilters(initialFilters);
-        setSelectedCompanies({});
+        setDraftCourseTypes(null);
+        setDraftLocations([]);
+        setDraftDisabilityTypes([]);
         setPaginator({ page: 1 });
-        setAdvancedOpen(false);
+        setFilters(initialFiltersState);
     };
 
     const cells: Cells<AdminCompanyDto>[] = [
         { key: 'id', header: '', type: CellType.CHECKBOX, sortable: false },
         {
             key: 'name',
-            header: 'EMPRESA',
+            header: 'Empresa',
             sortable: false,
             render: (company) => (
                 <div className='ac__company-cell'>
@@ -237,8 +425,14 @@ function AdminCompanies() {
         },
         { key: 'cnpj', header: 'CNPJ', sortable: false },
         {
+            key: 'city',
+            header: 'Cidade',
+            sortable: false,
+            render: (company) => formatLocation(company.city, company.state),
+        },
+        {
             key: 'email',
-            header: 'EMAIL',
+            header: 'Email',
             sortable: false,
             render: (company) => (
                 <span className='ac__contact-email'>{company.email}</span>
@@ -246,28 +440,18 @@ function AdminCompanies() {
         },
         {
             key: 'responsibleName',
-            header: 'RESPONSAVEL',
+            header: 'Responsável',
             sortable: false,
         },
         {
             key: 'status',
-            header: 'STATUS',
+            header: 'Status',
             sortable: false,
             render: (company) => (
                 <Chip
                     label={company.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
                     className={getStatusBadgeClass(company.status)}
                 />
-            ),
-        },
-        {
-            key: 'actions',
-            header: 'ACOES',
-            sortable: false,
-            render: () => (
-                <IconButton onClick={handleEdit} size='small'>
-                    <EditOutlinedIcon sx={{ fontSize: 16, color: '#1d1d1d' }} />
-                </IconButton>
             ),
         },
     ];
@@ -277,12 +461,15 @@ function AdminCompanies() {
     }, []);
 
     return (
-        <section className='ac'>
-            <div className='ac__header'>
+        <section className='admin-companies'>
+            <div className='admin-companies__header'>
                 <div>
-                    <span className='ac__eyebrow'>Area administrativa</span>
-                    <h1>Gestao de Empresas</h1>
+                    <span className='admin-companies__eyebrow'>
+                        Area administrativa
+                    </span>
+                    <h1>Gestão de Empresas</h1>
                 </div>
+
                 <div className='ac__header-action'>
                     <ButtonComponent
                         variant='secondary'
@@ -297,70 +484,91 @@ function AdminCompanies() {
                 </div>
             </div>
 
-            <div className='ac__filters-card'>
-                <div className='ac__search-row'>
-                    <div className='ac__search-input'>
+            <div className='admin-companies__filters-card'>
+                <div className='admin-companies__search-row'>
+                    <div className='admin-companies__search-input'>
                         <Input
                             value={searchInput}
                             onChange={(event) =>
                                 setSearchInput(event.target.value)
                             }
                             onKeyDown={(event) => {
-                                if (event.key === 'Enter') applyFilters();
+                                if (event.key === 'Enter') {
+                                    handleApplyAllFilters();
+                                }
                             }}
-                            placeholder='Buscar por razao social, CNPJ, email...'
+                            placeholder='Buscar por nome, CNPJ, email...'
                             icon={<SearchRoundedIcon fontSize='small' />}
                         />
                     </div>
+
                     <ButtonComponent
-                        onClick={applyFilters}
+                        onClick={handleApplyAllFilters}
                         disabled={isLoading}
                     >
-                        <span className='ac__button-content'>
+                        <span className='admin-companies__button-content'>
                             <SearchRoundedIcon fontSize='small' />
                             Buscar
                         </span>
                     </ButtonComponent>
-                    <ButtonComponent variant='secondary' onClick={clearFilters}>
-                        <span className='ac__button-content'>
+
+                    <ButtonComponent
+                        variant='secondary'
+                        onClick={handleClearFilters}
+                    >
+                        <span className='admin-companies__button-content'>
                             <RestartAltRoundedIcon fontSize='small' />
                             Limpar
                         </span>
                     </ButtonComponent>
                 </div>
 
-                <small className='ac__search-helper'>
+                <small className='admin-companies__search-helper'>
                     A busca funciona com qualquer quantidade de caracteres.
                 </small>
 
                 <button
+                    className='admin-companies__advanced-toggle'
+                    onClick={() => setShowAdvancedFilters((value) => !value)}
                     type='button'
-                    className='ac__advanced-toggle'
-                    onClick={() => setAdvancedOpen((value) => !value)}
                 >
                     <span>
                         <FilterListRoundedIcon fontSize='small' />
-                        Filtros avancados
+                        Filtros avançados
                     </span>
-                    {advancedOpen ? (
+                    {showAdvancedFilters ? (
                         <KeyboardArrowUpRoundedIcon fontSize='small' />
                     ) : (
                         <KeyboardArrowDownRoundedIcon fontSize='small' />
                     )}
                 </button>
 
-                <Collapse in={advancedOpen}>
-                    <div className='ac__advanced-grid'>
+                <Collapse in={showAdvancedFilters}>
+                    <div className='admin-companies__advanced-grid'>
                         <div>
-                            <label className='admin-students__field-label'>
+                            <label className='admin-companies__field-label'>
+                                Modalidade do curso
+                            </label>
+                            <Select
+                                placeholder='Selecione uma modalidade'
+                                options={courseTypeOptions}
+                                defaultValue={draftCourseTypes ?? undefined}
+                                onChange={(e) => setDraftCourseTypes(e)}
+                                isClearable
+                                isSearchable
+                            />
+                        </div>
+
+                        <div>
+                            <label className='admin-companies__field-label'>
                                 Localização
                             </label>
                             <MultSelect
                                 placeholder='Selecione uma cidade'
                                 options={locationOptions}
-                                value={draftLocation}
+                                value={draftLocations}
                                 onChange={(options) =>
-                                    setDraftLocation(
+                                    setDraftLocations(
                                         options ? (options as Option[]) : [],
                                     )
                                 }
@@ -370,68 +578,79 @@ function AdminCompanies() {
                         </div>
 
                         <div>
-                            <label className='ac__field-label'>
-                                Status da empresa
+                            <label className='admin-companies__field-label'>
+                                Status PCD
                             </label>
-                            <select
-                                className='ac__field-select'
-                                value={draftStatus}
-                                onChange={(event) =>
-                                    setDraftStatus(
-                                        event.target.value as
-                                            | ''
-                                            | AdminCompanyStatus,
+                            <MultSelect
+                                placeholder='Selecione um status'
+                                options={disabilityOptions}
+                                value={draftDisabilityTypes}
+                                onChange={(options) =>
+                                    setDraftDisabilityTypes(
+                                        options ? (options as Option[]) : [],
                                     )
                                 }
-                            >
-                                <option value=''>Todos</option>
-                                <option value='ATIVO'>Ativo</option>
-                                <option value='INATIVO'>Inativo</option>
-                            </select>
+                                isClearable
+                                isSearchable
+                            />
                         </div>
                     </div>
                 </Collapse>
             </div>
 
-            {selectedCount > 0 && (
-                <div className='ac__bulk-bar'>
-                    <strong>
-                        {selectedCount} empresa{selectedCount !== 1 ? 's' : ''}{' '}
-                        selecionada{selectedCount !== 1 ? 's' : ''}
-                    </strong>
-                    <div className='ac__bulk-actions'>
+            {Object.keys(selectedCompanies).length > 0 && (
+                <div className='admin-companies__bulk-bar'>
+                    <strong>{selectedCountLabel}</strong>
+
+                    <div className='admin-companies__bulk-actions'>
                         <button
                             type='button'
                             onClick={() => setExportModalOpen(true)}
-                            disabled={isExporting}
+                            disabled={isExportingSelected}
                         >
-                            <FileDownloadOutlinedIcon fontSize='small' />
+                            {isExportingSelected ? (
+                                <CircularProgress size={14} />
+                            ) : (
+                                <PictureAsPdfRoundedIcon fontSize='small' />
+                            )}
                             Exportar selecionados
                         </button>
                     </div>
                 </div>
             )}
 
-            <div className='ac__table-card'>
-                {isError ? (
-                    <div className='ac__empty'>
-                        Nao foi possivel carregar as empresas.
+            <div className='admin-companies__table-card'>
+                {isLoading && !data ? (
+                    <div className='admin-companies__loading-state'>
+                        <Loading />
                     </div>
-                ) : companies.length === 0 && !isLoading && !isFetching ? (
-                    <div className='ac__empty'>
-                        Nenhuma empresa encontrada com os filtros aplicados.
+                ) : isError ? (
+                    <div className='admin-companies__empty-state'>
+                        <span className='admin-companies__eyebrow'>
+                            Erro ao carregar
+                        </span>
+                        <h2>Não foi possível carregar as empresas.</h2>
+                    </div>
+                ) : companies.length === 0 ? (
+                    <div className='admin-companies__empty-state'>
+                        <h2>
+                            Nenhuma empresa encontrada com os filtros aplicados.
+                        </h2>
+                        <p>Tente ajustar a busca ou limpar os filtros.</p>
                     </div>
                 ) : (
-                    <BasicTable<AdminCompanyDto> />
+                    <>
+                        <BasicTable />
+                    </>
                 )}
             </div>
 
             <ExportFormatModal
-                formats={['xlsx']}
                 open={exportModalOpen}
-                loading={isExporting}
+                loading={isExporting || isExportingSelected}
                 onClose={() => setExportModalOpen(false)}
                 onExport={handleExportWithFormat}
+                formats={['xlsx']}
             />
         </section>
     );
