@@ -6,6 +6,8 @@ export type AdminCompanyDto = {
     cnpj: string;
     email: string;
     responsibleName: string;
+    city: string;
+    state: string;
     status: AdminCompanyStatus;
 };
 
@@ -14,8 +16,7 @@ export type AdminCompaniesQueryParams = {
     limit?: number;
     search?: string;
     status?: AdminCompanyStatus;
-    state?: string;
-    city?: string;
+    city?: string[];
 };
 
 export type AdminCompaniesResponse = {

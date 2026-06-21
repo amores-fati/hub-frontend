@@ -64,8 +64,7 @@ export type ExportCompaniesReportPayload = {
     filters?: {
         search?: string;
         status?: CompanyReportStatus;
-        state?: string;
-        city?: string;
+        city?: string[];
     };
 };
 
@@ -205,7 +204,7 @@ export async function downloadAdminReport<
     try {
         const response = await adminReportsApi.post<Blob>(
             `/${endpoint}`,
-            payload,
+            { ...payload, format },
             {
                 headers: {
                     Accept: formatMimeType[format],

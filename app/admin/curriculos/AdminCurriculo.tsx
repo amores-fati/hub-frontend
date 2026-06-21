@@ -660,8 +660,10 @@ function AdminCurriculo() {
                                     { value: 'false', label: 'Não' },
                                 ]}
                                 onChange={(e) => {
-                                    if (e?.value === 'true') setDraftIsPcd(true);
-                                    else if (e?.value === 'false') setDraftIsPcd(false);
+                                    if (e?.value === 'true')
+                                        setDraftIsPcd(true);
+                                    else if (e?.value === 'false')
+                                        setDraftIsPcd(false);
                                     else setDraftIsPcd(null);
                                 }}
                             />

@@ -4,13 +4,9 @@ import {
 } from '@/dtos/AdminCompanyDto';
 import QUERY_KEYS from '@/utils/contants/queries';
 import { useQuery } from '@tanstack/react-query';
+import qs from 'qs';
 
 import { adminCompaniesApi } from '.';
-
-const removeEmptyParams = (params: AdminCompaniesQueryParams) =>
-    Object.fromEntries(
-        Object.entries(params).filter(([, value]) => value !== undefined),
-    ) as AdminCompaniesQueryParams;
 
 export const useGetAdminCompanies = (params: AdminCompaniesQueryParams) =>
     useQuery({
@@ -20,11 +16,17 @@ export const useGetAdminCompanies = (params: AdminCompaniesQueryParams) =>
             params.limit,
             params.search,
             params.status,
-            params.state,
             params.city,
         ],
         queryFn: () =>
             adminCompaniesApi
-                .get('/filter', { params: removeEmptyParams(params) })
+                .get('/filter', {
+                    params: params,
+                    paramsSerializer: (params) =>
+                        qs.stringify(params, {
+                            arrayFormat: 'repeat',
+                            encoder: (value) => encodeURIComponent(value),
+                        }),
+                })
                 .then((res) => res.data as AdminCompaniesResponse),
     });

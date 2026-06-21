@@ -1243,6 +1243,7 @@ function AdminStudents() {
                 loading={isExporting || isExportingSelected}
                 onClose={() => setExportModalOpen(null)}
                 onExport={handleExportWithFormat}
+                formats={['xlsx', 'pdf']}
             />
         </section>
     );

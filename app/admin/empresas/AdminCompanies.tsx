@@ -1,6 +1,6 @@
 'use client';
 
-import { Input } from '@/components/base';
+import { Input, MultSelect } from '@/components/base';
 import { ButtonComponent } from '@/components/base/Button/button';
 import BasicTable from '@/components/base/Table2/table';
 import { Cells, CellType } from '@/components/base/Table2/types';
@@ -32,24 +32,28 @@ import {
     RestartAltRounded as RestartAltRoundedIcon,
     SearchRounded as SearchRoundedIcon,
 } from '@mui/icons-material';
-import { Collapse, IconButton } from '@mui/material';
+import { Chip, Collapse, IconButton } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import './index.scss';
+import { Option } from '../../../components/base/Select/select';
 
 const COMPANY_REPORT_LIMIT = 1000;
 
+const getStatusBadgeClass = (status: 'ATIVO' | 'INATIVO') =>
+    status === 'ATIVO'
+        ? 'admin-companies__badge admin-companies__badge--ativo'
+        : 'admin-companies__badge admin-companies__badge--inativo';
+
 type AppliedFilters = {
     search: string;
-    state: string;
-    city: string;
+    city: string[];
     status: '' | AdminCompanyStatus;
 };
 
 const initialFilters: AppliedFilters = {
     search: '',
-    state: '',
-    city: '',
+    city: [],
     status: '',
 };
 
@@ -74,7 +78,6 @@ const buildCompanyFilters = (
 
     if (search) reportFilters.search = search;
     if (filters.status) reportFilters.status = filters.status;
-    if (filters.state) reportFilters.state = filters.state;
     if (filters.city) reportFilters.city = filters.city;
 
     return Object.keys(reportFilters).length ? reportFilters : undefined;
@@ -107,8 +110,7 @@ function AdminCompanies() {
 
     const [searchInput, setSearchInput] = useState('');
     const [advancedOpen, setAdvancedOpen] = useState(false);
-    const [draftState, setDraftState] = useState('');
-    const [draftCity, setDraftCity] = useState('');
+    const [draftLocation, setDraftLocation] = useState<Option[]>([]);
     const [draftStatus, setDraftStatus] = useState<'' | AdminCompanyStatus>('');
     const [filters, setFilters] = useState<AppliedFilters>(initialFilters);
     const [exportModalOpen, setExportModalOpen] = useState(false);
@@ -116,28 +118,18 @@ function AdminCompanies() {
 
     const { data: locationsData } = useGetAdminLocations({ scope: 'COMPANY' });
 
-    const stateOptions = useMemo(() => {
-        return [
-            ...new Set((locationsData ?? []).map((location) => location.uf)),
-        ]
-            .filter(Boolean)
-            .sort();
+    const locationOptions = useMemo(() => {
+        return (locationsData ?? []).map((loc) => ({
+            value: `${loc.city}/${loc.uf}`,
+            label: `${loc.city}/${loc.uf}`,
+        }));
     }, [locationsData]);
-
-    const cityOptions = useMemo(() => {
-        return (locationsData ?? [])
-            .filter((location) => !draftState || location.uf === draftState)
-            .map((location) => location.city)
-            .filter((city, index, cities) => cities.indexOf(city) === index)
-            .sort();
-    }, [draftState, locationsData]);
 
     const queryParams: AdminCompaniesQueryParams = {
         page: paginator.page,
         limit: paginator.rowsPerPage,
         search: filters.search || undefined,
         status: filters.status || undefined,
-        state: filters.state || undefined,
         city: filters.city || undefined,
     };
 
@@ -212,8 +204,7 @@ function AdminCompanies() {
         setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
-            state: draftState,
-            city: draftCity,
+            city: draftLocation.map((option) => String(option.value)),
             status: draftStatus,
         });
         setSelectedCompanies({});
@@ -221,18 +212,12 @@ function AdminCompanies() {
 
     const clearFilters = () => {
         setSearchInput('');
-        setDraftState('');
-        setDraftCity('');
+        setDraftLocation([]);
         setDraftStatus('');
         setFilters(initialFilters);
         setSelectedCompanies({});
         setPaginator({ page: 1 });
         setAdvancedOpen(false);
-    };
-
-    const handleStateChange = (state: string) => {
-        setDraftState(state);
-        setDraftCity('');
     };
 
     const cells: Cells<AdminCompanyDto>[] = [
@@ -269,11 +254,10 @@ function AdminCompanies() {
             header: 'STATUS',
             sortable: false,
             render: (company) => (
-                <span
-                    className={`ac__status ac__status--${company.status === 'ATIVO' ? 'active' : 'inactive'}`}
-                >
-                    {company.status}
-                </span>
+                <Chip
+                    label={company.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
+                    className={getStatusBadgeClass(company.status)}
+                />
             ),
         },
         {
@@ -368,44 +352,23 @@ function AdminCompanies() {
                 <Collapse in={advancedOpen}>
                     <div className='ac__advanced-grid'>
                         <div>
-                            <label className='ac__field-label'>UF</label>
-                            <select
-                                className='ac__field-select'
-                                value={draftState}
-                                onChange={(event) =>
-                                    handleStateChange(event.target.value)
+                            <label className='admin-students__field-label'>
+                                Localização
+                            </label>
+                            <MultSelect
+                                placeholder='Selecione uma cidade'
+                                options={locationOptions}
+                                value={draftLocation}
+                                onChange={(options) =>
+                                    setDraftLocation(
+                                        options ? (options as Option[]) : [],
+                                    )
                                 }
-                            >
-                                <option value=''>Todas as UFs</option>
-                                {stateOptions.map((state) => (
-                                    <option key={state} value={state}>
-                                        {state}
-                                    </option>
-                                ))}
-                            </select>
+                                isClearable
+                                isSearchable
+                            />
                         </div>
-                        <div>
-                            <label className='ac__field-label'>Cidade</label>
-                            <select
-                                className='ac__field-select'
-                                value={draftCity}
-                                onChange={(event) =>
-                                    setDraftCity(event.target.value)
-                                }
-                                disabled={!draftState}
-                            >
-                                <option value=''>
-                                    {draftState
-                                        ? 'Todas as cidades'
-                                        : 'Selecione uma UF primeiro'}
-                                </option>
-                                {cityOptions.map((city) => (
-                                    <option key={city} value={city}>
-                                        {city}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+
                         <div>
                             <label className='ac__field-label'>
                                 Status da empresa
