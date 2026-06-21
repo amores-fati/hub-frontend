@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Loading, MultSelect, Table } from '@/components/base';
+import { Input, Loading, MultSelect, Select } from '@/components/base';
 import {
     FamilyIncome,
     Gender,
@@ -15,7 +15,6 @@ import {
     AdminStudentDto,
     AdminStudentsQueryParams,
 } from '@/dtos/AdminStudentDto';
-import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
 import { useGetAdminStudents } from '@/services/api/admin/students/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
@@ -355,7 +354,9 @@ function AdminStudents() {
     const setSelectedStudents = useTableStore((state) => state.setSelectedRows);
 
     const [searchInput, setSearchInput] = useState('');
-    const [draftCourseTypes, setDraftCourseTypes] = useState<Option[]>([]);
+    const [draftCourseTypes, setDraftCourseTypes] = useState<Option | null>(
+        null,
+    );
     const [draftLocations, setDraftLocations] = useState<Option[]>([]);
     const [draftDisabilityTypes, setDraftDisabilityTypes] = useState<Option[]>(
         [],
@@ -501,7 +502,7 @@ function AdminStudents() {
         setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
-            modality: draftCourseTypes.map((option) => String(option.value))[0],
+            modality: draftCourseTypes ? String(draftCourseTypes.value) : '',
             city: draftLocations.map((option) => String(option.value)),
             disabilityType: draftDisabilityTypes.map((option) =>
                 String(option.value),
@@ -511,7 +512,7 @@ function AdminStudents() {
 
     const handleClearFilters = () => {
         setSearchInput('');
-        setDraftCourseTypes([]);
+        setDraftCourseTypes(null);
         setDraftLocations([]);
         setDraftDisabilityTypes([]);
         setPaginator({ page: 1 });
@@ -755,15 +756,11 @@ function AdminStudents() {
                             <label className='admin-students__field-label'>
                                 Modalidade do curso
                             </label>
-                            <MultSelect
+                            <Select
                                 placeholder='Selecione uma modalidade'
                                 options={courseTypeOptions}
-                                value={draftCourseTypes}
-                                onChange={(options) =>
-                                    setDraftCourseTypes(
-                                        limitToSingleOption(options),
-                                    )
-                                }
+                                defaultValue={draftCourseTypes ?? undefined}
+                                onChange={(e) => setDraftCourseTypes(e)}
                                 isClearable
                                 isSearchable
                             />
@@ -796,9 +793,9 @@ function AdminStudents() {
                                 options={disabilityOptions}
                                 value={draftDisabilityTypes}
                                 onChange={(options) =>
-                                    setDraftDisabilityTypes([
-                                        ...limitToSingleOption(options),
-                                    ])
+                                    setDraftDisabilityTypes(
+                                        options ? (options as Option[]) : [],
+                                    )
                                 }
                                 isClearable
                                 isSearchable

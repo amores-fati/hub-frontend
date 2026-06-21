@@ -21,9 +21,6 @@ export type SelectProps = {
 export const style = {
     valueContainer: (provided: any) => ({
         ...provided,
-        maxHeight: '2rem',
-        overflow: 'auto',
-        padding: '1 1',
     }),
     placeholder: (provided: any) => ({
         ...provided,
@@ -36,6 +33,7 @@ export const style = {
     control: (provided: any) => ({
         ...provided,
         paddingLeft: '1rem',
+        minHeight: '2.0rem',
     }),
     menuPortal: (provided: any) => ({
         ...provided,
@@ -46,7 +44,6 @@ export const style = {
 export const multiStyle = {
     valueContainer: (provided: any) => ({
         ...provided,
-        padding: '4px 8px',
         display: 'flex',
         flexWrap: 'wrap' as const,
         maxHeight: '5rem',
