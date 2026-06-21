@@ -2,24 +2,13 @@
 
 import { Input, Loading, MultSelect, Select } from '@/components/base';
 import {
-    FamilyIncome,
-    Gender,
-    Race,
-    Scholarship,
-    SocialBenefit,
-    WhoInformed,
-} from '@/dtos/StudentDto';
-import {
     AdminStudentCourseType,
     AdminStudentDisabilityType,
     AdminStudentsQueryParams,
 } from '@/dtos/AdminStudentDto';
-import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
-import { useGetAdminStudents } from '@/services/api/admin/students/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import {
     downloadCompaniesReport,
-    downloadStudentsReport,
     ExportCompaniesReportPayload,
     ExportStudentsReportPayload,
     ReportFormat,
@@ -27,22 +16,9 @@ import {
 } from '@/services/api/admin/reports';
 import { ExportFormatModal } from '@/components/ExportFormatModal/ExportFormatModal';
 import { Option } from '@/components/base/Select/select';
-import {
-    Avatar,
-    Chip,
-    CircularProgress,
-    Collapse,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-} from '@mui/material';
+import { Chip, CircularProgress, Collapse } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
@@ -60,9 +36,8 @@ import {
 } from '@/stores/TableStoreProvider';
 import { Cells, CellType } from '@/components/base/Table2/types';
 import BasicTable from '@/components/base/Table2/table';
-import { resolveImageUrl } from '@/utils/shared-functions/image';
-import { AdminCompanyDto } from '../../../dtos/AdminCompanyDto';
-import { useGetAdminCompanies } from '../../../services/api/admin/companies/queries';
+import { AdminCompanyDto } from '@/dtos/AdminCompanyDto';
+import { useGetAdminCompanies } from '@/services/api/admin/companies/queries';
 
 const COMPANY_REPORT_LIMIT = 1000;
 

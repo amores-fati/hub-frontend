@@ -227,7 +227,7 @@
     color: var(--preto-1) !important;
 }
 
-.company-vacancies__badge--workplace-presential {
+.company-vacancies__badge--workplace-presencial {
     background: var(--secondary-color) !important;
 }
 
@@ -236,7 +236,7 @@
     color: var(--preto-1) !important;
 }
 
-.company-vacancies__badge--workplace-hybrid {
+.company-vacancies__badge--workplace-hibrido {
     background: var(--tertiary-color) !important;
 }
 
@@ -269,4 +269,19 @@
     .company-vacancies {
         padding: var(--spacing-md);
     }
+}
+
+// ── Status ────────────────────────────────────────────────────────────────────
+.vacancies-pcd__badge--active {
+    color: var(--background-1) !important;
+    background: #22c55e !important;
+}
+
+.vacancies-pcd__badge--inactive {
+    color: var(--background-1) !important;
+    background: var(--secondary-color) !important;
+}
+
+.vacancies-modality__badge {
+    background: var(--tertiary-color) !important;
 }

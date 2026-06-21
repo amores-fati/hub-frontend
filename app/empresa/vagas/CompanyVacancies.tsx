@@ -42,6 +42,11 @@ import LoadingModal from '../../../components/Modal';
 import { deleteConfirmation } from './Swal';
 import { usePathname } from 'next/navigation';
 
+const getStatusBadgeClass = (isPcd: boolean) =>
+    isPcd
+        ? 'vacancies-pcd__badge vacancies-pcd__badge--active'
+        : 'vacancies-pcd__badge vacancies-pcd__badge--inactive';
+
 const workplaceTypeLabels: Record<WorkplaceType, string> = {
     [WorkplaceType.PRESENTIAL]: 'Presencial',
     [WorkplaceType.ONLINE]: 'Online',
@@ -95,7 +100,7 @@ export function CompanyVacancies() {
 }
 
 function CompanyVacanciesContent() {
-    const pathname = usePathname(); 
+    const pathname = usePathname();
     const isAdminRoute = pathname?.includes('/admin');
 
     const [searchInput, setSearchInput] = useState('');
@@ -239,8 +244,8 @@ function CompanyVacanciesContent() {
             sortable: false,
             render: (v) => (
                 <Chip
-                    label={v.isPcd ? 'SIM' : 'NÃO'}
-                    className={`company-vacancies__badge company-vacancies__badge--${v.isPcd ? 'success' : 'danger'}`}
+                    label={v.isPcd ? 'Sim' : 'Não'}
+                    className={`${getStatusBadgeClass(v.isPcd)}`}
                 />
             ),
         },
@@ -358,12 +363,8 @@ function CompanyVacanciesContent() {
             sortable: false,
             render: (row) => (
                 <Chip
-                    label={row.isPcd ? 'SIM' : 'NÃO'}
-                    className={
-                        row.isPcd
-                            ? 'admin-vagas__badge admin-vagas__badge--success'
-                            : 'admin-vagas__badge admin-vagas__badge--danger'
-                    }
+                    label={row.isPcd ? 'Sim' : 'Não'}
+                    className={`${getStatusBadgeClass(row.isPcd)}`}
                 />
             ),
         },
@@ -409,16 +410,18 @@ function CompanyVacanciesContent() {
             <div className='company-vacancies__header'>
                 <div>
                     <h1>Gestão de Vagas</h1>
-                    <p>
-                        Administração centralizada de{' '}
-                        <a
-                            href='#'
-                            className='company-vacancies__subtitle-link'
-                        >
-                            vagas
-                        </a>
-                        .
-                    </p>
+                    {isAdminRoute && (
+                        <p>
+                            Administração centralizada de{' '}
+                            <a
+                                href='#'
+                                className='company-vacancies__subtitle-link'
+                            >
+                                vagas
+                            </a>
+                            .
+                        </p>
+                    )}
                 </div>
 
                 <div className='company-vacancies__header-actions'>
@@ -427,7 +430,11 @@ function CompanyVacanciesContent() {
                             <ButtonComponent
                                 variant='primary'
                                 onClick={() =>
-                                    window.open('https://wa.me/555192669381', '_blank', 'noopener,noreferrer')
+                                    window.open(
+                                        'https://wa.me/555192669381',
+                                        '_blank',
+                                        'noopener,noreferrer',
+                                    )
                                 }
                             >
                                 <span className='company-vacancies__button-content'>
@@ -438,12 +445,16 @@ function CompanyVacanciesContent() {
                         </div>
                     )}
 
-                    <ButtonComponent onClick={() => setShowCreateModal(true)}>
-                        <span className='company-vacancies__button-content'>
-                            <AddIcon fontSize='small' />
-                            Nova Vaga
-                        </span>
-                    </ButtonComponent>
+                    {!isAdminRoute && (
+                        <ButtonComponent
+                            onClick={() => setShowCreateModal(true)}
+                        >
+                            <span className='company-vacancies__button-content'>
+                                <AddIcon fontSize='small' />
+                                Nova Vaga
+                            </span>
+                        </ButtonComponent>
+                    )}
                 </div>
             </div>
 
@@ -580,12 +591,6 @@ function CompanyVacanciesContent() {
                                 aplicados.
                             </h2>
                             <p>Tente ajustar a busca ou limpar os filtros.</p>
-                            <ButtonComponent
-                                variant='secondary'
-                                onClick={handleClearFilters}
-                            >
-                                Limpar filtros
-                            </ButtonComponent>
                         </div>
                     ) : (
                         <div className='company-vacancies__empty-state'>
@@ -623,8 +628,6 @@ function CompanyVacanciesContent() {
         </section>
     );
 }
-
-
 
 function ViewJobOpeningModalWrapper({
     open,
