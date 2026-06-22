@@ -55,7 +55,7 @@ export default function ClientLayout({
         <div className='layout-container'>
             <div className='w-full'>
                 {currentPage?.navbarEnabled && <Navbar />}
-                <main className='w-full' data-a11y-content="true">{children}</main>
+                <main className='w-full'>{children}</main>
             </div>
         </div>
     );

@@ -1,5 +1,4 @@
 import Select, { MultiValue, SingleValue } from 'react-select';
-import { useAccessibility } from '@/providers/Accessibility/AccessibilityProvider';
 import './index.scss';
 
 export type Option = {
@@ -82,16 +81,6 @@ export function CustomSelect({
     isSearchable,
     isLoading,
 }: SelectProps) {
-    const { highContrast } = useAccessibility();
-
-    const resolvedStyle = {
-        ...style,
-        singleValue: (provided: any) => ({
-            ...provided,
-            color: highContrast ? '#ffffff' : provided.color,
-        }),
-    };
-
     return (
         <Select
             onChange={onChange}
@@ -107,7 +96,7 @@ export function CustomSelect({
             isSearchable={!!isSearchable}
             options={options}
             noOptionsMessage={() => 'Nenhuma opção disponível'}
-            styles={resolvedStyle}
+            styles={style}
         />
     );
 }
@@ -135,16 +124,6 @@ export function CustomMultSelect({
     isSearchable,
     isLoading,
 }: MultiSelectProps) {
-    const { highContrast } = useAccessibility();
-
-    const resolvedMultiStyle = {
-        ...multiStyle,
-        singleValue: (provided: any) => ({
-            ...provided,
-            color: highContrast ? '#ffffff' : provided.color,
-        }),
-    };
-
     return (
         <Select
             closeMenuOnScroll={false}
@@ -163,7 +142,7 @@ export function CustomMultSelect({
             isMulti={true}
             options={options}
             noOptionsMessage={() => 'Nenhuma opção disponível'}
-            styles={resolvedMultiStyle}
+            styles={multiStyle}
         />
     );
 }

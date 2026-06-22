@@ -28,8 +28,15 @@ const READABLE_TAGS = new Set([
 ]);
 
 function getReadableText(el: HTMLElement): string {
+    // Prioriza rótulo acessível; cai para texto visível, placeholder ou alt.
+    const aria = el.getAttribute('aria-label');
+    if (aria?.trim()) return aria.trim();
     // Use innerText so hidden elements are ignored
-    return el.innerText?.trim() ?? '';
+    const text = el.innerText?.trim();
+    if (text) return text;
+    const placeholder = (el as HTMLInputElement).placeholder;
+    if (placeholder?.trim()) return placeholder.trim();
+    return el.getAttribute('alt')?.trim() ?? '';
 }
 
 function isReadableTarget(el: HTMLElement): boolean {
@@ -42,11 +49,44 @@ function isReadableTarget(el: HTMLElement): boolean {
     return hasDirectText && el.children.length <= 2;
 }
 
+const STORAGE_KEY = 'hub-a11y';
+
+interface StoredSettings {
+    fontSize?: FontSize;
+    highContrast?: boolean;
+    hoverReadEnabled?: boolean;
+}
+
+function loadStoredSettings(): StoredSettings {
+    if (typeof window === 'undefined') return {};
+    try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        return raw ? (JSON.parse(raw) as StoredSettings) : {};
+    } catch {
+        return {};
+    }
+}
+
+function prefersHighContrast(): boolean {
+    return (
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-contrast: more)').matches
+    );
+}
+
+function pickPtBrVoice(): SpeechSynthesisVoice | null {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+    const voices = window.speechSynthesis.getVoices();
+    return voices.find(v => v.lang?.toLowerCase().startsWith('pt')) ?? null;
+}
+
 export function AccessibilityProvider({ children }: { children: React.ReactNode }) {
     const [fontSize, setFontSize] = useState<FontSize>('normal');
     const [highContrast, setHighContrast] = useState(false);
     const [hoverReadEnabled, setHoverReadEnabled] = useState(false);
     const [speechSupported, setSpeechSupported] = useState(false);
+    const [hydrated, setHydrated] = useState(false);
 
     // Ref para leitura síncrona do valor atual sem precisar de dep no useCallback
     const highContrastRef = useRef(false);
@@ -57,6 +97,34 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
     useEffect(() => {
         setSpeechSupported(typeof window !== 'undefined' && 'speechSynthesis' in window);
     }, []);
+
+    // Carrega as preferências salvas; no primeiro acesso respeita o SO (prefers-contrast)
+    useEffect(() => {
+        const stored = loadStoredSettings();
+        if (stored.fontSize && FONT_SIZES.includes(stored.fontSize)) {
+            setFontSize(stored.fontSize);
+        }
+        if (stored.highContrast ?? prefersHighContrast()) {
+            setHighContrast(true);
+        }
+        if (stored.hoverReadEnabled) {
+            setHoverReadEnabled(true);
+        }
+        setHydrated(true);
+    }, []);
+
+    // Persiste as preferências (somente após a hidratação, para não sobrescrever com os defaults)
+    useEffect(() => {
+        if (!hydrated) return;
+        try {
+            window.localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({ fontSize, highContrast, hoverReadEnabled }),
+            );
+        } catch {
+            /* localStorage indisponível (modo privado/quota) — ignora */
+        }
+    }, [hydrated, fontSize, highContrast, hoverReadEnabled]);
 
     useEffect(() => {
         document.documentElement.setAttribute('data-font-size', fontSize);
@@ -84,9 +152,23 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
         };
     }, [cancelSpeech]);
 
-    // Attach / detach hover listeners based on mode
+    // Liga/desliga a leitura por voz: hover do mouse e foco via teclado
     useEffect(() => {
         if (!hoverReadEnabled) return;
+
+        const speak = (target: HTMLElement) => {
+            const text = getReadableText(target);
+            if (!text || !window.speechSynthesis) return;
+
+            lastReadElRef.current = target;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            utterance.rate = 0.95;
+            const voice = pickPtBrVoice();
+            if (voice) utterance.voice = voice;
+            window.speechSynthesis.speak(utterance);
+        };
 
         const handleMouseOver = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
@@ -99,18 +181,18 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
             if (target === lastReadElRef.current) return;
 
             if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = setTimeout(() => speak(target), 350);
+        };
 
-            hoverTimerRef.current = setTimeout(() => {
-                const text = getReadableText(target);
-                if (!text || !window.speechSynthesis) return;
+        // Foco via teclado (Tab): lê imediatamente, sem o atraso do hover.
+        // Não exige isReadableTarget — focar é uma ação explícita do usuário.
+        const handleFocusIn = (e: FocusEvent) => {
+            const target = e.target as HTMLElement | null;
+            if (!target || target.closest('[data-a11y-bar]')) return;
+            if (target === lastReadElRef.current) return;
 
-                lastReadElRef.current = target;
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'pt-BR';
-                utterance.rate = 0.95;
-                window.speechSynthesis.speak(utterance);
-            }, 350);
+            if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+            speak(target);
         };
 
         const handleMouseOut = (e: MouseEvent) => {
@@ -126,10 +208,12 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
 
         document.addEventListener('mouseover', handleMouseOver);
         document.addEventListener('mouseout', handleMouseOut);
+        document.addEventListener('focusin', handleFocusIn);
 
         return () => {
             document.removeEventListener('mouseover', handleMouseOver);
             document.removeEventListener('mouseout', handleMouseOut);
+            document.removeEventListener('focusin', handleFocusIn);
             if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
         };
     }, [hoverReadEnabled]);
