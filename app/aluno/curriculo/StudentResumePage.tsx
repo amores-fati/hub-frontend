@@ -22,7 +22,8 @@ import {
 } from 'react';
 import { toast } from 'react-toastify';
 
-import { Loading } from '@/components/base';
+import { Loading, Select } from '@/components/base';
+import { Option } from '@/components/base/Select/select';
 import {
     ApiErrorDto,
     ResumeSkill,
@@ -210,7 +211,7 @@ export function StudentResumePage({
     const [githubUrl, setGithubUrl] = useState('');
     const [videoPresentationUrl, setVideoPresentationUrl] = useState('');
     const [isEditingResume, setIsEditingResume] = useState(false);
-    const [skillInput, setSkillInput] = useState('');
+    const [selectedSkill, setSelectedSkill] = useState<Option | null>(null);
     const [skills, setSkills] = useState<ResumeSkill[]>([]);
     const [selectedPhotoFile, setSelectedPhotoFile] = useState<File | null>(
         null,
@@ -245,16 +246,18 @@ export function StudentResumePage({
         updateStudentProfile.isPending ||
         uploadPhoto.isPending;
     const isManagingSkill = addSkill.isPending || removeSkill.isPending;
-    const availableSkillOptions = useMemo(
+    const availableSkillOptions = useMemo<Option[]>(
         () =>
-            (skillCatalog ?? []).filter(
-                (option) =>
-                    !skills.some(
-                        (skill) =>
-                            normalizeSkillName(skill.skillName) ===
-                            normalizeSkillName(option.name),
-                    ),
-            ),
+            (skillCatalog ?? [])
+                .filter(
+                    (option) =>
+                        !skills.some(
+                            (skill) =>
+                                normalizeSkillName(skill.skillName) ===
+                                normalizeSkillName(option.name),
+                        ),
+                )
+                .map((option) => ({ value: option.id, label: option.name })),
         [skillCatalog, skills],
     );
 
@@ -413,7 +416,7 @@ export function StudentResumePage({
     const handleAddSkill = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const skillName = skillInput.trim();
+        const skillName = selectedSkill?.label.trim() ?? '';
 
         if (!skillName) {
             toast.error('Selecione uma habilidade para adicionar.');
@@ -434,7 +437,7 @@ export function StudentResumePage({
         try {
             const createdSkill = await addSkill.mutateAsync({ skillName });
             setSkills((currentSkills) => [...currentSkills, createdSkill]);
-            setSkillInput('');
+            setSelectedSkill(null);
             toast.success('Habilidade adicionada.');
         } catch (error) {
             toast.error(
@@ -725,29 +728,24 @@ export function StudentResumePage({
                                 className='student-resume-skill-form'
                                 onSubmit={(event) => void handleAddSkill(event)}
                             >
-                                <select
-                                    value={skillInput}
-                                    onChange={(event) =>
-                                        setSkillInput(event.target.value)
+                                <Select
+                                    placeholder={
+                                        isLoadingSkillCatalog
+                                            ? 'Carregando habilidades...'
+                                            : 'Digite para buscar uma habilidade'
+                                    }
+                                    options={availableSkillOptions}
+                                    value={selectedSkill}
+                                    onChange={(option) =>
+                                        setSelectedSkill(option)
                                     }
                                     disabled={
                                         isManagingSkill || isLoadingSkillCatalog
                                     }
-                                >
-                                    <option value=''>
-                                        {isLoadingSkillCatalog
-                                            ? 'Carregando habilidades...'
-                                            : 'Selecione uma habilidade'}
-                                    </option>
-                                    {availableSkillOptions.map((option) => (
-                                        <option
-                                            key={option.id}
-                                            value={option.name}
-                                        >
-                                            {option.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                    isLoading={isLoadingSkillCatalog}
+                                    isSearchable
+                                    isClearable
+                                />
                                 <button
                                     className='student-resume-button student-resume-button--primary'
                                     type='submit'
