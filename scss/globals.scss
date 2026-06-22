@@ -78,7 +78,9 @@
     --transition-slow: 400ms ease;
 
     // Acessibilidade
-    --a11y-bar-height: 36px;
+    // Em rem para escalar junto com o aumento de fonte (mantém a barra,
+    // o padding do body e o `top` da navbar sempre sincronizados).
+    --a11y-bar-height: 2.25rem;
 
     // Gráficos
     --chart-grid: rgba(26, 26, 26, 0.1);
@@ -92,6 +94,7 @@
     --z-overlay: 300;
     --z-modal: 400;
     --z-toast: 500;
+    --z-a11y-bar: 9999; // sempre acima de tudo
 
     // SF Pro
     --titulo-g:
