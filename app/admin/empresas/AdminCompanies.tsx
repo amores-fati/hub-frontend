@@ -66,6 +66,7 @@ const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
     [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
     [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
     [AdminStudentDisabilityType.MULTIPLE]: 'Múltipla',
+    [AdminStudentDisabilityType.TEA]: 'TEA',
     [AdminStudentDisabilityType.OTHER]: 'Outra',
 };
 

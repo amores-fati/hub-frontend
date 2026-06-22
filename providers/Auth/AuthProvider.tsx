@@ -5,6 +5,7 @@ import {
     removeStoreAuthToken,
     setStoreAuthToken,
 } from '@/utils/stores/auth';
+import { queryClient } from '@/services/query-client';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import React, {
@@ -54,7 +55,14 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
 
     useEffect(() => {
         if (token) {
-            const decoded = jwtDecode<UserProfileDto>(token);
+            const decoded = jwtDecode<UserProfileDto & { exp?: number }>(token);
+            // Token expirado é tratado como deslogado.
+            if (decoded.exp && decoded.exp * 1000 <= Date.now()) {
+                removeStoreAuthToken();
+                setToken(undefined);
+                setUser(null);
+                return;
+            }
             setUser({ ...decoded });
         } else {
             setUser(null);
@@ -66,7 +74,16 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
         setIsHydrated(true);
     }, [user]);
 
-    const isLogged = () => !!getStoreAuthToken();
+    const isLogged = () => {
+        const stored = getStoreAuthToken();
+        if (!stored) return false;
+        try {
+            const decoded = jwtDecode<{ exp?: number }>(stored);
+            return !decoded.exp || decoded.exp * 1000 > Date.now();
+        } catch {
+            return false;
+        }
+    };
 
     const setAuthToken = (token?: string, rememberMe?: boolean) => {
         setToken(token);
@@ -80,6 +97,8 @@ const AuthProvider: React.FC<{ children?: ReactNode }> = ({
     const logout = () => {
         setToken(undefined);
         removeStoreAuthToken();
+        // Limpa o cache do React Query para não vazar dados do usuário anterior.
+        queryClient.clear();
         router.push('/login');
     };
 

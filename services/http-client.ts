@@ -1,6 +1,10 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+    AxiosError,
+    AxiosInstance,
+    InternalAxiosRequestConfig,
+} from 'axios';
 
-import { getStoreAuthToken } from '@/utils/stores/auth';
+import { getStoreAuthToken, removeStoreAuthToken } from '@/utils/stores/auth';
 
 export type HttpClient = {
     url: string;
@@ -23,6 +27,24 @@ export const createHttpClient = (url: string, parent?: HttpClient) => {
                 config.headers.Authorization = `Bearer ${token}`;
             }
             return config;
+        },
+    );
+
+    // Sessão expirada/inválida: ao receber 401, limpa o token e redireciona
+    // para o login (evita "logado fantasma"). Não redireciona se já no /login.
+    httpClient.interceptors.response.use(
+        (response) => response,
+        (error: AxiosError) => {
+            if (
+                error.response?.status === 401 &&
+                typeof window !== 'undefined'
+            ) {
+                removeStoreAuthToken();
+                if (window.location.pathname !== '/login') {
+                    window.location.assign('/login');
+                }
+            }
+            return Promise.reject(error);
         },
     );
 

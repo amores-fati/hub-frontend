@@ -1,21 +1,43 @@
 'use client';
-import { Button } from '@/components/base';
+import { Button, Loading } from '@/components/base';
+import { useGetCompanyProfile } from '@/services/api/companies/queries';
+import { useUpdateCompanyProfile } from '@/services/api/companies/mutations';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ContatoSection } from './components/ContatoSection';
 import { DadosEmpresaSection } from './components/DadosEmpresaSection';
-import { MOCK_COMPANY } from './mock';
+import { companyToForm, formToUpdatePayload } from './FormMappers';
 import './index.scss';
 import { EditCompanyForm } from './Types';
 import { validateCompanyForm } from './Validation';
 
 export default function CompanyPerfil() {
-    const [form, setForm] = useState<EditCompanyForm>(MOCK_COMPANY);
+    const { data, isLoading } = useGetCompanyProfile();
+
+    if (isLoading || !data) {
+        return <Loading />;
+    }
+
+    return <CompanyPerfilForm initialData={data} />;
+}
+
+function CompanyPerfilForm({
+    initialData,
+}: {
+    initialData: Parameters<typeof companyToForm>[0];
+}) {
+    const [form, setForm] = useState<EditCompanyForm>(() =>
+        companyToForm(initialData),
+    );
+    const { mutate, isPending } = useUpdateCompanyProfile();
+
+    useEffect(() => {
+        setForm(companyToForm(initialData));
+    }, [initialData]);
 
     function onSave() {
         if (!validateCompanyForm(form)) return;
-
-        console.log('Payload que será enviado:', form);
+        mutate(formToUpdatePayload(form));
     }
 
     return (
@@ -34,7 +56,7 @@ export default function CompanyPerfil() {
             </div>
 
             <footer className='perfil-empresa-page__footer'>
-                <Button onClick={onSave}>
+                <Button onClick={onSave} disabled={isPending}>
                     <SaveOutlinedIcon fontSize='small' />
                     <span>Salvar alterações</span>
                 </Button>

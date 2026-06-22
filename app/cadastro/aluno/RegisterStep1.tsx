@@ -308,6 +308,14 @@ export function validateFormStep1(form: StudentRegisterPayload) {
         toast.error('As senhas não conferem');
         throw new Error('Missing parameter');
     }
+    if (!form.gender) {
+        toast.error('Gênero é obrigatório');
+        throw new Error('Missing parameter');
+    }
+    if (!form.race) {
+        toast.error('Raça/cor é obrigatória');
+        throw new Error('Missing parameter');
+    }
 
     function isValidCPF(cpf: string): boolean {
         const digits = cpf.replace(/\D/g, '');
