@@ -6,6 +6,7 @@ const QUERY_KEYS = {
     ADMIN_STUDENT_RESUME: 'admin-student-resume',
     CEP: 'cep',
     CNPJ: 'cnpj',
+    COMPANY_PROFILE: 'company-profile',
     COMPANY_VACANCIES: 'company-vacancies',
     COURSES: 'courses',
     ENROLLMENTS: 'enrollments',

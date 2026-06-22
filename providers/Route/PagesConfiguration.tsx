@@ -53,13 +53,6 @@ export const PAGES: Page[] = [
         name: 'Redefinir Senha',
     },
     {
-        path: '/teste',
-        navbarEnabled: false,
-        requireRoles: [],
-        requireAuth: false,
-        name: 'Login',
-    },
-    {
         path: '/cadastro/aluno',
         navbarEnabled: false,
         requireRoles: [],
@@ -92,10 +85,10 @@ export const PAGES: Page[] = [
     {
         path: '/empresa/perfil',
         navbarEnabled: true,
-        requireAuth: false,
-        requireRoles: [],
-        name: 'Vagas',
-        icon: <WorkIcon className='sidebar-icon' />,
+        requireAuth: true,
+        requireRoles: [UserRole.COMPANY],
+        name: 'Perfil',
+        icon: <PersonIcon className='sidebar-icon' />,
     },
     {
         path: '/aluno/curriculo',

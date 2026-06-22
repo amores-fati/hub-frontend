@@ -23,7 +23,7 @@ export const useGetAdminStudents = (
             payload.search,
             payload.page,
             payload.city,
-            payload.limit,
+            payload.pageSize,
             payload.disabilityType,
             payload.modality,
         ],

@@ -5,9 +5,13 @@ import { toast } from 'react-toastify';
 import { companiesApi } from '.';
 import { ResponseDto } from '@/dtos/ResponseDto';
 import {
+    CompanyProfile,
     CompanyRegisterPayload,
     CompanyRegisterResponse,
+    UpdateCompanyProfilePayload,
 } from '@/dtos/CompanyDto';
+import { queryClient } from '@/services/query-client';
+import QUERY_KEYS from '@/utils/contants/queries';
 
 export const useCompanyRegister = (payload: CompanyRegisterPayload) =>
     useMutation({
@@ -39,5 +43,32 @@ export const useCompanyRegister = (payload: CompanyRegisterPayload) =>
                 return;
             }
             toast.error('Erro ao registrar empresa');
+        },
+    });
+
+export const useUpdateCompanyProfile = () =>
+    useMutation({
+        mutationFn: (payload: UpdateCompanyProfilePayload) =>
+            companiesApi
+                .put<CompanyProfile>('/me', payload)
+                .then((res) => res.data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.COMPANY_PROFILE],
+            });
+            toast.success('Perfil atualizado com sucesso');
+        },
+        onError: (error: AxiosError<{ message: string }>) => {
+            if (error.response?.status === 400) {
+                toast.error(
+                    'Campo inválido. Confira os dados e tente novamente.',
+                );
+                return;
+            }
+            if (error.response?.status === 409) {
+                toast.error(error.response.data.message);
+                return;
+            }
+            toast.error('Erro ao atualizar perfil');
         },
     });

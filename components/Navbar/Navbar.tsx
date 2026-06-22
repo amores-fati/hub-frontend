@@ -19,13 +19,13 @@ export default function Navbar() {
     const pathname = usePathname();
     const router = useRouter();
 
-    const role = user?.role || UserRole.ADMIN; // Se quiser testar, apenas mudar o valor default de GUEST para ADMIN
-    const navItems = NAVIGATION_MAP[role] || [];
+    const role = user?.role;
+    const navItems = role ? NAVIGATION_MAP[role] || [] : [];
 
     const roleContent =
         (role === UserRole.STUDENT || role === UserRole.COMPANY) && user?.email
             ? user.email
-            : role;
+            : (role ?? '');
 
     return (
         <nav className='navbar'>

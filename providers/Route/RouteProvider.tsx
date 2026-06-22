@@ -25,10 +25,12 @@ const RouteProvider: React.FC<{ children?: ReactNode }> = ({
     children?: ReactNode;
 }) => {
     const [currentPage, setCurrentPage] = useState<Page | null>(null);
+    const [isResolved, setIsResolved] = useState(false);
     const pathname = usePathname();
 
     useEffect(() => {
         setCurrentPage(PAGES.find((page) => page.path === pathname) || null);
+        setIsResolved(true);
     }, [pathname]);
 
     const value = {
@@ -36,9 +38,11 @@ const RouteProvider: React.FC<{ children?: ReactNode }> = ({
         setCurrentPage,
     };
 
+    // Mostra o Loader apenas enquanto a rota não foi resolvida. Rota fora do
+    // PAGES renderiza normalmente (não-guardada) em vez de travar no Loader.
     return (
         <RouteContext.Provider value={value}>
-            {currentPage ? children : <Loader />}
+            {isResolved ? children : <Loader />}
         </RouteContext.Provider>
     );
 };

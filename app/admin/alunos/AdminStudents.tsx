@@ -78,6 +78,7 @@ const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
     [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
     [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
     [AdminStudentDisabilityType.MULTIPLE]: 'Múltipla',
+    [AdminStudentDisabilityType.TEA]: 'TEA',
     [AdminStudentDisabilityType.OTHER]: 'Outra',
 };
 
@@ -88,6 +89,24 @@ const formatDisability = (
     return (
         disabilityType ? disabilityType : 'NENHUMA'
     ).toUpperCase() as AdminStudentDisabilityType;
+};
+
+// disabilityType pode vir como string com múltiplas deficiências separadas por
+// vírgula (relação N-para-N). Normaliza cada uma para um rótulo legível.
+const formatDisabilityList = (disabilityType?: string): string => {
+    if (!disabilityType) {
+        return disabilityLabels[AdminStudentDisabilityType.NONE];
+    }
+    return disabilityType
+        .split(',')
+        .map((d) => d.trim())
+        .filter(Boolean)
+        .map(
+            (d) =>
+                disabilityLabels[formatDisability(d)] ??
+                disabilityLabels[AdminStudentDisabilityType.OTHER],
+        )
+        .join(', ');
 };
 
 const genderLabels: Record<Gender, string> = {
@@ -173,6 +192,14 @@ const disabilityOptions: Option[] = [
     {
         value: AdminStudentDisabilityType.PSYCHOSOCIAL,
         label: disabilityLabels[AdminStudentDisabilityType.PSYCHOSOCIAL],
+    },
+    {
+        value: AdminStudentDisabilityType.MULTIPLE,
+        label: disabilityLabels[AdminStudentDisabilityType.MULTIPLE],
+    },
+    {
+        value: AdminStudentDisabilityType.TEA,
+        label: disabilityLabels[AdminStudentDisabilityType.TEA],
     },
     {
         value: AdminStudentDisabilityType.OTHER,
@@ -384,7 +411,7 @@ function AdminStudents() {
     const getParameters = (): AdminStudentsQueryParams => {
         return {
             page: paginator.page,
-            limit: paginator.rowsPerPage,
+            pageSize: paginator.rowsPerPage,
             search: filters.search || undefined,
             modality: filters.modality,
             disabilityType: filters.disabilityType,
@@ -567,7 +594,7 @@ function AdminStudents() {
         {
             key: 'course',
             header: 'Curso',
-            sortable: true,
+            sortable: false,
             render: (student: AdminStudentDto) => (
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     {(
@@ -615,7 +642,9 @@ function AdminStudents() {
         {
             key: 'isPcd',
             header: 'PCD',
-            sortable: true,
+            // Ordenação por PCD/curso não é suportada no backend (coluna de
+            // relação de coleção quebra a paginação) — coluna não-ordenável.
+            sortable: false,
             render: (student: AdminStudentDto) => {
                 const disabilities = student.disabilityType
                     ? student.disabilityType.split(',').map((d) => d.trim())
@@ -914,12 +943,9 @@ function AdminStudents() {
                                             />
                                         ))}
                                         <Chip
-                                            label={
-                                                disabilityLabels[
-                                                    selectedStudent
-                                                        .disabilityType
-                                                ]
-                                            }
+                                            label={formatDisabilityList(
+                                                selectedStudent.disabilityType,
+                                            )}
                                             className={getDisabilityBadgeClassName(
                                                 selectedStudent,
                                             )}
@@ -1193,12 +1219,9 @@ function AdminStudents() {
                                     <div>
                                         <strong>Status PCD</strong>
                                         <span>
-                                            {
-                                                disabilityLabels[
-                                                    selectedStudent
-                                                        .disabilityType
-                                                ]
-                                            }
+                                            {formatDisabilityList(
+                                                selectedStudent.disabilityType,
+                                            )}
                                         </span>
                                     </div>
                                     <div>

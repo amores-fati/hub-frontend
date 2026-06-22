@@ -28,6 +28,7 @@ import {
 } from '@/services/api/companies/vacancies/queries';
 import { useGetAdminVacancies } from '@/services/api/admin/vacancies/queries';
 import { useDeleteVacancy } from '@/services/api/companies/vacancies/mutations';
+import { useGetPublicSetting } from '@/services/api/settings/queries';
 import { VacancyModal } from './VacancyModal';
 import {
     Action,
@@ -102,6 +103,12 @@ export function CompanyVacancies() {
 function CompanyVacanciesContent() {
     const pathname = usePathname();
     const isAdminRoute = pathname?.includes('/admin');
+
+    const { data: whatsappSetting } = useGetPublicSetting('whatsapp_phone');
+    const whatsappDigits = whatsappSetting?.value?.replace(/\D/g, '');
+    const whatsappUrl = whatsappDigits
+        ? `https://wa.me/${whatsappDigits}`
+        : undefined;
 
     const [searchInput, setSearchInput] = useState('');
     const [draftPcd, setDraftPcd] = useState<Option | null>(null);
@@ -425,13 +432,13 @@ function CompanyVacanciesContent() {
                 </div>
 
                 <div className='company-vacancies__header-actions'>
-                    {!isAdminRoute && (
+                    {!isAdminRoute && whatsappUrl && (
                         <div className='company-vacancies__whatsapp-btn'>
                             <ButtonComponent
                                 variant='primary'
                                 onClick={() =>
                                     window.open(
-                                        'https://wa.me/555192669381',
+                                        whatsappUrl,
                                         '_blank',
                                         'noopener,noreferrer',
                                     )
