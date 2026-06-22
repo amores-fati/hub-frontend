@@ -48,6 +48,9 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
         course ? course.description : '',
     );
     const [address, setAddress] = useState(course ? course.location : '');
+    const [accessLink, setAccessLink] = useState(
+        course ? course.externalLink : '',
+    );
     const [vacancyCount, setVacancyCount] = useState(
         course ? course.vacancyCount.toString() : '',
     );
@@ -114,6 +117,7 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
         setName('');
         setDescription('');
         setAddress('');
+        setAccessLink('');
         setVacancyCount('');
         setModality(null);
         setShift(null);
@@ -178,6 +182,7 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
             bannerImage: bannerImageBase64,
             bannerImageMimeType: bannerImageMimeType,
             address: address.trim() || null,
+            linkAccess: accessLink || null,
             vacancyCount: vacancyCount ? Number(vacancyCount) : null,
             modality: modality.value as AdminCourseModality,
             shift: shift.value as AdminCourseShift,
@@ -324,6 +329,17 @@ export function AdminCourseFormModal({ open, onClose, course }: Props) {
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         placeholder='Ex: Instituto Caldeira, Tv. São José, 455 - Navegantes, Porto Alegre - RS, 90240-200'
+                    />
+                </div>
+
+                <div className='admin-course-form-modal__field'>
+                    <label className='admin-course-form-modal__label'>
+                        Link de Acesso
+                    </label>
+                    <Input
+                        value={accessLink}
+                        onChange={(e) => setAccessLink(e.target.value)}
+                        placeholder='Ex: https://www.amoresfati.org.br'
                     />
                 </div>
 

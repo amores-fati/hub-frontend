@@ -6,12 +6,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-
 import Paper from '@mui/material/Paper';
 import { Cells, CellType } from './types';
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import TablePaginator from './Paginator/paginator';
 import {
     Action,
@@ -38,50 +35,52 @@ export default function BasicTable<T>() {
     if (!data) return <></>;
 
     return (
-        <TableContainer
-            component={Paper}
-            sx={{ maxHeight: '53vh', overflowY: 'auto' }}
-        >
-            <Table
-                sx={{ minWidth: 650 }}
-                aria-label='simple table'
-                stickyHeader
+        <>
+            <TableContainer
+                component={Paper}
+                sx={{ maxHeight: '53vh', overflowY: 'auto' }}
             >
-                <TableHead>
-                    <TableRow>
-                        {cells.map((cell: Cells<T>) => (
-                            <HeaderCell
-                                key={`table-head-cell-${String(cell.key)}`}
-                                cell={cell}
-                            />
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {data.map(
-                        (row: T & { id: number | string; actions: any }) => (
-                            <TableRow
-                                key={`table-body-row-${row.id}`}
-                                sx={{
-                                    '&:last-child td, &:last-child th': {
-                                        border: 0,
-                                    },
-                                }}
-                            >
-                                {cells.map((cell: Cells<T>) => (
-                                    <Cell
-                                        key={`table-body-row-${row.id}-cell-${String(cell.key)}`}
-                                        cell={cell}
-                                        row={row}
-                                    />
-                                ))}
-                            </TableRow>
-                        ),
-                    )}
-                </TableBody>
-            </Table>
+                <Table
+                    sx={{ minWidth: 650 }}
+                    aria-label='simple table'
+                    stickyHeader
+                >
+                    <TableHead>
+                        <TableRow>
+                            {cells.map((cell: Cells<T>) => (
+                                <HeaderCell
+                                    key={`table-head-cell-${String(cell.key)}`}
+                                    cell={cell}
+                                />
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {data.map(
+                            (row: T & { id: number | string; actions: any }) => (
+                                <TableRow
+                                    key={`table-body-row-${row.id}`}
+                                    sx={{
+                                        '&:last-child td, &:last-child th': {
+                                            border: 0,
+                                        },
+                                    }}
+                                >
+                                    {cells.map((cell: Cells<T>) => (
+                                        <Cell
+                                            key={`table-body-row-${row.id}-cell-${String(cell.key)}`}
+                                            cell={cell}
+                                            row={row}
+                                        />
+                                    ))}
+                                </TableRow>
+                            ),
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
             <TablePaginator />
-        </TableContainer>
+        </>
     );
 }
 

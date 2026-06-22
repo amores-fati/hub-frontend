@@ -44,7 +44,8 @@ export function EChart({
     }, [opts]);
 
     useEffect(() => {
-        instanceRef.current?.setOption(option, settings);
+        if (!instanceRef.current || instanceRef.current.isDisposed()) return;
+        instanceRef.current.setOption(option, settings);
     }, [option, settings]);
 
     return (

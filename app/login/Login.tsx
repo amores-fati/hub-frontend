@@ -10,6 +10,7 @@ import { AuthPayload } from '@/dtos/AuthDto';
 import { UserProfileDto, UserRole } from '@/dtos/UserDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useLoginMutation } from '@/services/auth/login/mutations';
+import { useForgotPasswordMutation } from '@/services/auth/password-reset/mutations';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { ChangeEventHandler, useEffect, useState } from 'react';
@@ -30,6 +31,10 @@ export default function Login() {
         'login' | 'registerRole' | 'forgotPassword'
     >('login');
     const { mutate: login, data: loginData } = useLoginMutation(form);
+    const {
+        mutate: requestPasswordReset,
+        isPending: isRequestingPasswordReset,
+    } = useForgotPasswordMutation();
 
     const handleClick = () => {
         setDisabled(true);
@@ -70,13 +75,21 @@ export default function Login() {
     };
 
     const handleForgotPasswordSubmit = () => {
-        setDisabled(true);
-        // mock do envio do email de recuperação
-        setTimeout(() => {
-            setDisabled(false);
-            toast.success('Link de redefinição enviado com sucesso!');
-            setView('login');
-        }, 1000);
+        const email = form.email.trim();
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            toast.error('Informe um e-mail válido.');
+            return;
+        }
+
+        requestPasswordReset(
+            { email },
+            {
+                onSuccess: () => {
+                    setView('login');
+                },
+            },
+        );
     };
 
     return (
@@ -100,7 +113,7 @@ export default function Login() {
                             {view === 'forgotPassword' && (
                                 <ForgotPassword
                                     email={form.email}
-                                    disabled={disabled}
+                                    disabled={isRequestingPasswordReset}
                                     onEmailChange={onEmailChange}
                                     onBack={() => setView('login')}
                                     onSubmit={handleForgotPasswordSubmit}

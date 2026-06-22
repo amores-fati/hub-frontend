@@ -1,0 +1,52 @@
+name: Deploy Frontend
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Create .env file
+              run: |
+                  echo "API_BASE_URL=https://hub.amoresfati.org.br" > .env
+                  echo "ENVIRONMENT=production" >> .env
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build the project
+              run: npm run build
+
+            - name: Copy files to VPS via SCP
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  port: ${{ secrets.SERVER_PORT }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SERVER_SSH_KEY }}
+                  source: 'out/'
+                  target: '/opt/amoresfati/frontend/'
+                  strip_components: 1
+
+            - name: Reload Nginx on VPS
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  port: ${{ secrets.SERVER_PORT }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SERVER_SSH_KEY }}
+                  script: |
+                      docker exec amoresfati-nginx nginx -s reload

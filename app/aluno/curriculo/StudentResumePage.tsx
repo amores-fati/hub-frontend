@@ -1,6 +1,7 @@
 'use client';
 
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from '@mui/icons-material/Close';
 import CodeIcon from '@mui/icons-material/Code';
 import EditIcon from '@mui/icons-material/Edit';
@@ -10,6 +11,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import UploadIcon from '@mui/icons-material/Upload';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 import {
     ChangeEvent,
     FormEvent,
@@ -20,7 +22,8 @@ import {
 } from 'react';
 import { toast } from 'react-toastify';
 
-import { Loading } from '@/components/base';
+import { Loading, Select } from '@/components/base';
+import { Option } from '@/components/base/Select/select';
 import {
     ApiErrorDto,
     ResumeSkill,
@@ -36,6 +39,7 @@ import {
 import { useGetStudentResume } from '@/services/api/students/resume/queries';
 import { useUpdateStudentProfile } from '@/services/api/students/mutations';
 import { useGetStudentProfile } from '@/services/api/students/queries';
+import { useGetSkills } from '@/services/api/skills/queries';
 import { UserRole } from '@/dtos/UserDto';
 import './index.scss';
 import { StudentProfile } from '@/dtos/StudentProfileDto';
@@ -131,6 +135,16 @@ const getApiErrorMessage = (error: unknown, fallback: string) => {
     return fallback;
 };
 
+const EMPTY_RESUME: StudentResume = {
+    id: '',
+    about: null,
+    linkedinUrl: null,
+    githubUrl: null,
+    videoPresentationUrl: null,
+    photoUrl: null,
+    skills: [],
+};
+
 export default function Index() {
     const { user } = useAuth();
     const studentId = user?.sub || user?.userId;
@@ -145,13 +159,17 @@ export default function Index() {
         isError: isErrorProfile,
     } = useGetStudentProfile();
 
-    if (!resume || !profile) return <></>;
+    if (isLoadingResume || isLoadingProfile) {
+        return <Loading />;
+    }
+
+    if (!profile) return <></>;
 
     return (
         <StudentResumePage
             studentId={studentId}
             profile={profile}
-            resume={resume}
+            resume={resume ?? EMPTY_RESUME}
             isLoading={isLoadingProfile || isLoadingResume}
             isError={isErrorProfile || isErrorResume}
         />
@@ -171,6 +189,7 @@ export function StudentResumePage({
     isLoading: boolean;
     studentId?: string;
 }) {
+    const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { user } = useAuth();
@@ -182,6 +201,8 @@ export function StudentResumePage({
     const uploadPhoto = useUploadStudentResumePhoto();
     const addSkill = useAddStudentResumeSkill();
     const removeSkill = useRemoveStudentResumeSkill();
+    const { data: skillCatalog, isLoading: isLoadingSkillCatalog } =
+        useGetSkills();
 
     const [profileName, setProfileName] = useState('');
     const [disabilityType, setDisabilityType] = useState('');
@@ -190,7 +211,7 @@ export function StudentResumePage({
     const [githubUrl, setGithubUrl] = useState('');
     const [videoPresentationUrl, setVideoPresentationUrl] = useState('');
     const [isEditingResume, setIsEditingResume] = useState(false);
-    const [skillInput, setSkillInput] = useState('');
+    const [selectedSkill, setSelectedSkill] = useState<Option | null>(null);
     const [skills, setSkills] = useState<ResumeSkill[]>([]);
     const [selectedPhotoFile, setSelectedPhotoFile] = useState<File | null>(
         null,
@@ -219,12 +240,26 @@ export function StudentResumePage({
         [resume?.photoUrl],
     );
 
-    const currentPhotoUrl = selectedPhotoPreview;
+    const currentPhotoUrl = selectedPhotoPreview || persistedPhotoUrl;
     const isSaving =
         updateResume.isPending ||
         updateStudentProfile.isPending ||
         uploadPhoto.isPending;
     const isManagingSkill = addSkill.isPending || removeSkill.isPending;
+    const availableSkillOptions = useMemo<Option[]>(
+        () =>
+            (skillCatalog ?? [])
+                .filter(
+                    (option) =>
+                        !skills.some(
+                            (skill) =>
+                                normalizeSkillName(skill.skillName) ===
+                                normalizeSkillName(option.name),
+                        ),
+                )
+                .map((option) => ({ value: option.id, label: option.name })),
+        [skillCatalog, skills],
+    );
 
     useEffect(() => {
         if (isEditingResume) return;
@@ -381,15 +416,10 @@ export function StudentResumePage({
     const handleAddSkill = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const skillName = skillInput.trim();
+        const skillName = selectedSkill?.label.trim() ?? '';
 
         if (!skillName) {
-            toast.error('Digite uma habilidade para adicionar.');
-            return;
-        }
-
-        if (skillName.length > 100) {
-            toast.error('A habilidade deve ter no máximo 100 caracteres.');
+            toast.error('Selecione uma habilidade para adicionar.');
             return;
         }
 
@@ -407,7 +437,7 @@ export function StudentResumePage({
         try {
             const createdSkill = await addSkill.mutateAsync({ skillName });
             setSkills((currentSkills) => [...currentSkills, createdSkill]);
-            setSkillInput('');
+            setSelectedSkill(null);
             toast.success('Habilidade adicionada.');
         } catch (error) {
             toast.error(
@@ -698,13 +728,23 @@ export function StudentResumePage({
                                 className='student-resume-skill-form'
                                 onSubmit={(event) => void handleAddSkill(event)}
                             >
-                                <input
-                                    value={skillInput}
-                                    onChange={(event) =>
-                                        setSkillInput(event.target.value)
+                                <Select
+                                    placeholder={
+                                        isLoadingSkillCatalog
+                                            ? 'Carregando habilidades...'
+                                            : 'Digite para buscar uma habilidade'
                                     }
-                                    placeholder='Adicionar habilidade'
-                                    maxLength={100}
+                                    options={availableSkillOptions}
+                                    value={selectedSkill}
+                                    onChange={(option) =>
+                                        setSelectedSkill(option)
+                                    }
+                                    disabled={
+                                        isManagingSkill || isLoadingSkillCatalog
+                                    }
+                                    isLoading={isLoadingSkillCatalog}
+                                    isSearchable
+                                    isClearable
                                 />
                                 <button
                                     className='student-resume-button student-resume-button--primary'
@@ -718,6 +758,15 @@ export function StudentResumePage({
                         )}
                     </div>
                 </aside>
+
+                <button
+                    className='student-resume-button student-resume-button--ghost'
+                    type='button'
+                    onClick={() => router.back()}
+                >
+                    <ArrowBackIcon fontSize='small' />
+                    Voltar
+                </button>
             </div>
         </section>
     );

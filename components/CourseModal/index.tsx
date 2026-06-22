@@ -194,10 +194,11 @@ export function CourseModal({
                         {action === 'inscrito' && (
                             <button
                                 className='course-modal__btn course-modal__btn--primary'
-                                disabled
+                                onClick={handleAction}
+                                disabled={disabled}
                             >
                                 <CheckIcon sx={{ fontSize: 16 }} />
-                                Inscrito
+                                Remover Inscrição
                             </button>
                         )}
                         {action === 'inscrever' && (
@@ -223,10 +224,27 @@ export function CourseModal({
                         {action === 'interessado' && (
                             <button
                                 className='course-modal__btn course-modal__btn--yellow'
-                                disabled
+                                onClick={handleAction}
+                                disabled={disabled}
                             >
                                 <FavoriteIcon sx={{ fontSize: 16 }} />
-                                Interesse manifestado
+                                Remover Interesse
+                            </button>
+                        )}
+                        {course.modality === 'online' && (
+                            <button
+                                className='course-modal__btn course-modal__btn--outline'
+                                onClick={() =>
+                                    course.externalLink &&
+                                    window.open(course.externalLink, '_blank')
+                                }
+                                disabled={
+                                    action !== 'interessado' ||
+                                    !course.externalLink
+                                }
+                            >
+                                <OpenInNewIcon sx={{ fontSize: 16 }} />
+                                Acessar curso
                             </button>
                         )}
                     </div>

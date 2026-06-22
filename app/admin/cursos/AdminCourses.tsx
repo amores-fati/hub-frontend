@@ -1,34 +1,20 @@
 'use client';
 
-import { Input, Loading, MultSelect, Select, Table } from '@/components/base';
-import { useAuth } from '@/providers/Auth/AuthProvider';
+import { Input, Loading, Select } from '@/components/base';
 import { Option } from '@/components/base/Select/select';
-import {
-    Avatar,
-    Chip,
-    CircularProgress,
-    Collapse,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-} from '@mui/material';
+import { Chip, Collapse, IconButton } from '@mui/material';
 import {
     SearchRounded as SearchRoundedIcon,
     FilterListRounded as FilterListRoundedIcon,
-    DeleteOutlineRounded as DeleteOutlineRoundedIcon,
-    WhatsApp as WhatsAppIcon,
     PictureAsPdfRounded as PictureAsPdfRoundedIcon,
     RestartAltRounded as RestartAltRoundedIcon,
-    FileDownloadOutlined as FileDownloadOutlinedIcon,
     KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
     KeyboardArrowUpRounded as KeyboardArrowUpRoundedIcon,
     AddRounded as AddRoundedIcon,
     DeleteOutlineRounded,
 } from '@mui/icons-material';
 import { ButtonComponent } from '@/components/base/Button/button';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './index.scss';
 import {
@@ -49,15 +35,10 @@ import {
     useGetAdminCourseById,
     useGetAdminCourses,
 } from '@/services/api/admin/courses/queries';
-import { formatDate, formatDateToBR } from '@/utils/shared-functions/date';
-import { AdminStudentCourseType } from '@/dtos/AdminStudentDto';
-import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
-import { dateRegex } from '@/utils/regex';
+import { formatDateToBR } from '@/utils/shared-functions/date';
 import LoadingModal from '@/components/Modal';
 import { AdminCourseFormModal } from '@/components/AdminCourseFormModal';
 import { useDeleteCourseMutation } from '@/services/api/courses/mutations';
-
-const PAGE_SIZE = 20;
 
 const modalityFilterOptions: Option[] = [
     { value: AdminCourseModality.PRESENTIAL, label: 'Presencial' },
@@ -306,8 +287,7 @@ function AdminStudents() {
             header: 'Status',
             sortable: false,
             render: (course: AdminCourseDto) => {
-                const isActive =
-                    `${course.status}`.toUpperCase() === 'ATIVO';
+                const isActive = `${course.status}`.toUpperCase() === 'ATIVO';
                 return (
                     <Chip
                         label={isActive ? 'Ativo' : 'Inativo'}
@@ -531,6 +511,7 @@ function AdminStudents() {
                                 value={modality}
                                 onChange={(option) => setModality(option)}
                                 isSearchable
+                                isClearable
                             />
                         </div>
                     </div>
@@ -555,19 +536,6 @@ function AdminStudents() {
                             <PictureAsPdfRoundedIcon fontSize='small' />
                             Exportar selecionados
                         </button>
-
-                        {/* <button
-                            type='button'
-                            onClick={() => {
-                                void deleteConfirmation(
-                                    deleteCoursesMutation,
-                                    Object.keys(selectedCourses),
-                                );
-                            }}
-                        >
-                            <DeleteOutlineRoundedIcon fontSize='small' />
-                            Excluir selecionados
-                        </button> */}
                     </div>
                 </div>
             )}

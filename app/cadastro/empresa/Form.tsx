@@ -219,6 +219,14 @@ export function Form({
         }));
     }
 
+    function onLgpdChange(newValue: ChangeEvent<HTMLInputElement> | undefined) {
+        const checked = newValue?.target?.checked ?? false;
+        setForm((prevState: CompanyRegisterPayload) => ({
+            ...prevState,
+            lgpd: { ...prevState.lgpd, terms: checked },
+        }));
+    }
+
     return (
         <div className='register-steps'>
             <div className='register-steps__section-title'>
@@ -355,6 +363,20 @@ export function Form({
                     />
                 </div>
             </div>
+
+            <div className='register-steps__grid-full'>
+                <label className='register-steps__lgpd'>
+                    <input
+                        type='checkbox'
+                        checked={form.lgpd.terms}
+                        onChange={onLgpdChange}
+                    />
+                    <span>
+                        Li e aceito os termos de uso e a política de privacidade
+                        (LGPD). <span className='required'>*</span>
+                    </span>
+                </label>
+            </div>
         </div>
     );
 }
@@ -386,6 +408,10 @@ export function validateForm(form: CompanyRegisterPayload) {
     }
     if (form.password !== form.passwordConfirmation) {
         toast.error('Confirmação de senha está diferente da senha');
+        throw new Error('Missing parameter');
+    }
+    if (!form.lgpd.terms) {
+        toast.error('É necessário aceitar os termos (LGPD) para continuar');
         throw new Error('Missing parameter');
     }
 }

@@ -21,9 +21,6 @@ export type SelectProps = {
 export const style = {
     valueContainer: (provided: any) => ({
         ...provided,
-        maxHeight: '2rem',
-        overflow: 'auto',
-        padding: '1 1',
     }),
     placeholder: (provided: any) => ({
         ...provided,
@@ -36,6 +33,36 @@ export const style = {
     control: (provided: any) => ({
         ...provided,
         paddingLeft: '1rem',
+        minHeight: '2.0rem',
+    }),
+    menuPortal: (provided: any) => ({
+        ...provided,
+        zIndex: 9999,
+    }),
+};
+
+export const multiStyle = {
+    valueContainer: (provided: any) => ({
+        ...provided,
+        display: 'flex',
+        flexWrap: 'wrap' as const,
+        maxHeight: '5rem',
+        overflow: 'auto',
+        gap: '4px',
+    }),
+    placeholder: (provided: any) => ({
+        ...provided,
+        fontSize: '0.75rem',
+    }),
+    menu: (provided: any) => ({
+        ...provided,
+        fontSize: '1rem',
+    }),
+    control: (provided: any) => ({
+        ...provided,
+        paddingLeft: '1rem',
+        height: 'auto',
+        minHeight: '2.5rem',
     }),
     menuPortal: (provided: any) => ({
         ...provided,
@@ -115,7 +142,7 @@ export function CustomMultSelect({
             isMulti={true}
             options={options}
             noOptionsMessage={() => 'Nenhuma opção disponível'}
-            styles={style}
+            styles={multiStyle}
         />
     );
 }

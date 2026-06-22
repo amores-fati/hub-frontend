@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Loading, MultSelect, Table } from '@/components/base';
+import { Input, Loading, MultSelect, Select } from '@/components/base';
 import {
     FamilyIncome,
     Gender,
@@ -15,15 +15,16 @@ import {
     AdminStudentDto,
     AdminStudentsQueryParams,
 } from '@/dtos/AdminStudentDto';
-import { useAuth } from '@/providers/Auth/AuthProvider';
 import { useDeleteAdminStudents } from '@/services/api/admin/students/mutations';
 import { useGetAdminStudents } from '@/services/api/admin/students/queries';
 import { useGetAdminLocations } from '@/services/api/admin/locations/queries';
 import {
     downloadStudentsReport,
     ExportStudentsReportPayload,
+    ReportFormat,
     StudentReportStatus,
 } from '@/services/api/admin/reports';
+import { ExportFormatModal } from '@/components/ExportFormatModal/ExportFormatModal';
 import { Option } from '@/components/base/Select/select';
 import {
     Avatar,
@@ -59,6 +60,7 @@ import {
 import { Cells, CellType } from '@/components/base/Table2/types';
 import BasicTable from '@/components/base/Table2/table';
 import { deleteConfirmation } from './Swal';
+import { resolveImageUrl } from '@/utils/shared-functions/image';
 
 const PAGE_SIZE = 20;
 
@@ -76,6 +78,7 @@ const disabilityLabels: Record<AdminStudentDisabilityType, string> = {
     [AdminStudentDisabilityType.INTELLECTUAL]: 'Intelectual',
     [AdminStudentDisabilityType.PSYCHOSOCIAL]: 'Psicossocial',
     [AdminStudentDisabilityType.MULTIPLE]: 'Múltipla',
+    [AdminStudentDisabilityType.TEA]: 'TEA',
     [AdminStudentDisabilityType.OTHER]: 'Outra',
 };
 
@@ -86,6 +89,24 @@ const formatDisability = (
     return (
         disabilityType ? disabilityType : 'NENHUMA'
     ).toUpperCase() as AdminStudentDisabilityType;
+};
+
+// disabilityType pode vir como string com múltiplas deficiências separadas por
+// vírgula (relação N-para-N). Normaliza cada uma para um rótulo legível.
+const formatDisabilityList = (disabilityType?: string): string => {
+    if (!disabilityType) {
+        return disabilityLabels[AdminStudentDisabilityType.NONE];
+    }
+    return disabilityType
+        .split(',')
+        .map((d) => d.trim())
+        .filter(Boolean)
+        .map(
+            (d) =>
+                disabilityLabels[formatDisability(d)] ??
+                disabilityLabels[AdminStudentDisabilityType.OTHER],
+        )
+        .join(', ');
 };
 
 const genderLabels: Record<Gender, string> = {
@@ -173,6 +194,14 @@ const disabilityOptions: Option[] = [
         label: disabilityLabels[AdminStudentDisabilityType.PSYCHOSOCIAL],
     },
     {
+        value: AdminStudentDisabilityType.MULTIPLE,
+        label: disabilityLabels[AdminStudentDisabilityType.MULTIPLE],
+    },
+    {
+        value: AdminStudentDisabilityType.TEA,
+        label: disabilityLabels[AdminStudentDisabilityType.TEA],
+    },
+    {
         value: AdminStudentDisabilityType.OTHER,
         label: disabilityLabels[AdminStudentDisabilityType.OTHER],
     },
@@ -194,11 +223,22 @@ const initialFiltersState: AppliedFiltersState = {
 
 const STUDENT_REPORT_LIMIT = 1000;
 
-const normalizeText = (value: string) =>
-    value
+const normalizeText = (value?: string | null) =>
+    (value ?? '')
         .normalize('NFD')
         .replaceAll(/[\u0300-\u036f]/g, '')
         .trim();
+
+const formatLocation = (city?: string | null, state?: string | null) => {
+    const normalizedCity = normalizeText(city);
+    const normalizedState = state?.trim();
+
+    if (normalizedCity && normalizedState) {
+        return `${normalizedCity}/${normalizedState}`;
+    }
+
+    return normalizedCity || normalizedState || 'Nao informado';
+};
 
 const formatCpf = (cpf: string) =>
     cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -239,12 +279,7 @@ const buildWhatsAppLink = (phone: string) => {
 const getBooleanLabel = (value?: boolean) =>
     value === undefined ? 'Não informado' : value ? 'Sim' : 'Não';
 
-const getCourseType = (student: AdminStudentDto) =>
-    student.enrolledCourse?.modality ?? AdminStudentCourseType.NOT_ENROLLED;
-
-const getCourseBadgeClassName = (student: AdminStudentDto) => {
-    const courseType = getCourseType(student);
-
+const getCourseBadgeClassName = (courseType: AdminStudentCourseType) => {
     if (courseType === AdminStudentCourseType.PRESENTIAL) {
         return 'admin-students__badge admin-students__badge--presential';
     }
@@ -346,7 +381,9 @@ function AdminStudents() {
     const setSelectedStudents = useTableStore((state) => state.setSelectedRows);
 
     const [searchInput, setSearchInput] = useState('');
-    const [draftCourseTypes, setDraftCourseTypes] = useState<Option[]>([]);
+    const [draftCourseTypes, setDraftCourseTypes] = useState<Option | null>(
+        null,
+    );
     const [draftLocations, setDraftLocations] = useState<Option[]>([]);
     const [draftDisabilityTypes, setDraftDisabilityTypes] = useState<Option[]>(
         [],
@@ -358,6 +395,9 @@ function AdminStudents() {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isExportingSelected, setIsExportingSelected] = useState(false);
+    const [exportModalOpen, setExportModalOpen] = useState<
+        'all' | 'selected' | null
+    >(null);
 
     const { data: locationsData } = useGetAdminLocations({ scope: 'STUDENT' });
 
@@ -371,7 +411,7 @@ function AdminStudents() {
     const getParameters = (): AdminStudentsQueryParams => {
         return {
             page: paginator.page,
-            limit: paginator.rowsPerPage,
+            pageSize: paginator.rowsPerPage,
             search: filters.search || undefined,
             modality: filters.modality,
             disabilityType: filters.disabilityType,
@@ -410,7 +450,7 @@ function AdminStudents() {
         Object.keys(selectedStudents).length === 1 ? '' : 's'
     } selecionado${Object.keys(selectedStudents).length === 1 ? '' : 's'}`;
 
-    const handleExportAll = async () => {
+    const handleExportAll = async (format: ReportFormat) => {
         const unsupportedFilterMessage =
             getUnsupportedStudentReportFilterMessage(filters);
 
@@ -428,10 +468,11 @@ function AdminStudents() {
 
         setIsExporting(true);
         try {
-            await downloadStudentsReport({
-                mode: 'all',
-                filters: buildStudentReportFilters(filters),
-            });
+            await downloadStudentsReport(
+                { mode: 'all', filters: buildStudentReportFilters(filters) },
+                format,
+            );
+            setExportModalOpen(null);
         } catch (error) {
             toast.error(
                 getErrorMessage(
@@ -444,7 +485,7 @@ function AdminStudents() {
         }
     };
 
-    const handleExportSelected = async () => {
+    const handleExportSelected = async (format: ReportFormat) => {
         const selectedIds = Object.keys(selectedStudents);
 
         if (selectedIds.length === 0) {
@@ -461,10 +502,11 @@ function AdminStudents() {
 
         setIsExportingSelected(true);
         try {
-            await downloadStudentsReport({
-                mode: 'selected',
-                ids: selectedIds,
-            });
+            await downloadStudentsReport(
+                { mode: 'selected', ids: selectedIds },
+                format,
+            );
+            setExportModalOpen(null);
         } catch (error) {
             toast.error(
                 getErrorMessage(
@@ -477,11 +519,17 @@ function AdminStudents() {
         }
     };
 
+    const handleExportWithFormat = (format: ReportFormat) => {
+        if (exportModalOpen === 'all') void handleExportAll(format);
+        else if (exportModalOpen === 'selected')
+            void handleExportSelected(format);
+    };
+
     const handleApplyAllFilters = () => {
         setPaginator({ page: 1 });
         setFilters({
             search: searchInput.trim(),
-            modality: draftCourseTypes.map((option) => String(option.value))[0],
+            modality: draftCourseTypes ? String(draftCourseTypes.value) : '',
             city: draftLocations.map((option) => String(option.value)),
             disabilityType: draftDisabilityTypes.map((option) =>
                 String(option.value),
@@ -491,7 +539,7 @@ function AdminStudents() {
 
     const handleClearFilters = () => {
         setSearchInput('');
-        setDraftCourseTypes([]);
+        setDraftCourseTypes(null);
         setDraftLocations([]);
         setDraftDisabilityTypes([]);
         setPaginator({ page: 1 });
@@ -520,7 +568,7 @@ function AdminStudents() {
             render: (student: AdminStudentDto) => (
                 <div className='admin-students__student-cell'>
                     <Avatar
-                        src={student.photoUrl || undefined}
+                        src={resolveImageUrl(student.photoUrl) || undefined}
                         className='admin-students__avatar'
                     >
                         {student.fullName
@@ -546,12 +594,21 @@ function AdminStudents() {
         {
             key: 'course',
             header: 'Curso',
-            sortable: true,
+            sortable: false,
             render: (student: AdminStudentDto) => (
-                <Chip
-                    label={courseTypeLabels[getCourseType(student)]}
-                    className={getCourseBadgeClassName(student)}
-                />
+                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                    {(
+                        student.enrollmentStatus ?? [
+                            AdminStudentCourseType.NOT_ENROLLED,
+                        ]
+                    ).map((status) => (
+                        <Chip
+                            key={status}
+                            label={courseTypeLabels[status]}
+                            className={getCourseBadgeClassName(status)}
+                        />
+                    ))}
+                </div>
             ),
         },
         {
@@ -579,15 +636,15 @@ function AdminStudents() {
             header: 'Localização',
             sortable: true,
             render: (student: AdminStudentDto) => (
-                <>
-                    {normalizeText(student.city)}/{student.state}
-                </>
+                <>{formatLocation(student.city, student.state)}</>
             ),
         },
         {
             key: 'isPcd',
             header: 'PCD',
-            sortable: true,
+            // Ordenação por PCD/curso não é suportada no backend (coluna de
+            // relação de coleção quebra a paginação) — coluna não-ordenável.
+            sortable: false,
             render: (student: AdminStudentDto) => {
                 const disabilities = student.disabilityType
                     ? student.disabilityType.split(',').map((d) => d.trim())
@@ -648,9 +705,7 @@ function AdminStudents() {
                 <div className='admin-students__header-action'>
                     <ButtonComponent
                         variant='secondary'
-                        onClick={() => {
-                            void handleExportAll();
-                        }}
+                        onClick={() => setExportModalOpen('all')}
                         disabled={isExporting || isLoading}
                     >
                         <span className='admin-students__button-content'>
@@ -730,15 +785,11 @@ function AdminStudents() {
                             <label className='admin-students__field-label'>
                                 Modalidade do curso
                             </label>
-                            <MultSelect
+                            <Select
                                 placeholder='Selecione uma modalidade'
                                 options={courseTypeOptions}
-                                value={draftCourseTypes}
-                                onChange={(options) =>
-                                    setDraftCourseTypes(
-                                        limitToSingleOption(options),
-                                    )
-                                }
+                                defaultValue={draftCourseTypes ?? undefined}
+                                onChange={(e) => setDraftCourseTypes(e)}
                                 isClearable
                                 isSearchable
                             />
@@ -754,7 +805,7 @@ function AdminStudents() {
                                 value={draftLocations}
                                 onChange={(options) =>
                                     setDraftLocations(
-                                        limitToSingleOption(options),
+                                        options ? (options as Option[]) : [],
                                     )
                                 }
                                 isClearable
@@ -771,9 +822,9 @@ function AdminStudents() {
                                 options={disabilityOptions}
                                 value={draftDisabilityTypes}
                                 onChange={(options) =>
-                                    setDraftDisabilityTypes([
-                                        ...limitToSingleOption(options),
-                                    ])
+                                    setDraftDisabilityTypes(
+                                        options ? (options as Option[]) : [],
+                                    )
                                 }
                                 isClearable
                                 isSearchable
@@ -790,9 +841,7 @@ function AdminStudents() {
                     <div className='admin-students__bulk-actions'>
                         <button
                             type='button'
-                            onClick={() => {
-                                void handleExportSelected();
-                            }}
+                            onClick={() => setExportModalOpen('selected')}
                             disabled={isExportingSelected}
                         >
                             {isExportingSelected ? (
@@ -862,7 +911,11 @@ function AdminStudents() {
                         <div className='admin-students__details'>
                             <div className='admin-students__details-header'>
                                 <Avatar
-                                    src={selectedStudent.photoUrl || undefined}
+                                    src={
+                                        resolveImageUrl(
+                                            selectedStudent.photoUrl,
+                                        ) || undefined
+                                    }
                                     className='admin-students__avatar admin-students__avatar--large'
                                 >
                                     {selectedStudent.fullName
@@ -876,25 +929,23 @@ function AdminStudents() {
                                     <h3>{selectedStudent.fullName}</h3>
                                     <p>{selectedStudent.email}</p>
                                     <div className='admin-students__details-badges'>
+                                        {(
+                                            selectedStudent.enrollmentStatus ?? [
+                                                AdminStudentCourseType.NOT_ENROLLED,
+                                            ]
+                                        ).map((status) => (
+                                            <Chip
+                                                key={status}
+                                                label={courseTypeLabels[status]}
+                                                className={getCourseBadgeClassName(
+                                                    status,
+                                                )}
+                                            />
+                                        ))}
                                         <Chip
-                                            label={
-                                                courseTypeLabels[
-                                                    getCourseType(
-                                                        selectedStudent,
-                                                    )
-                                                ]
-                                            }
-                                            className={getCourseBadgeClassName(
-                                                selectedStudent,
+                                            label={formatDisabilityList(
+                                                selectedStudent.disabilityType,
                                             )}
-                                        />
-                                        <Chip
-                                            label={
-                                                disabilityLabels[
-                                                    selectedStudent
-                                                        .disabilityType
-                                                ]
-                                            }
                                             className={getDisabilityBadgeClassName(
                                                 selectedStudent,
                                             )}
@@ -983,8 +1034,10 @@ function AdminStudents() {
                                     <div>
                                         <strong>Cidade / Estado</strong>
                                         <span>
-                                            {selectedStudent.city}/
-                                            {selectedStudent.state}
+                                            {formatLocation(
+                                                selectedStudent.city,
+                                                selectedStudent.state,
+                                            )}
                                         </span>
                                     </div>
                                     <div className='admin-students__details-grid-item--full'>
@@ -1029,8 +1082,8 @@ function AdminStudents() {
                                     <div>
                                         <strong>Curso atual</strong>
                                         <span>
-                                            {selectedStudent.enrolledCourse
-                                                ?.name || 'Não inscrito'}
+                                            {selectedStudent.course ||
+                                                'Não inscrito'}
                                         </span>
                                     </div>
                                 </div>
@@ -1166,12 +1219,9 @@ function AdminStudents() {
                                     <div>
                                         <strong>Status PCD</strong>
                                         <span>
-                                            {
-                                                disabilityLabels[
-                                                    selectedStudent
-                                                        .disabilityType
-                                                ]
-                                            }
+                                            {formatDisabilityList(
+                                                selectedStudent.disabilityType,
+                                            )}
                                         </span>
                                     </div>
                                     <div>
@@ -1210,6 +1260,14 @@ function AdminStudents() {
                     </ButtonComponent>
                 </DialogActions>
             </Dialog>
+
+            <ExportFormatModal
+                open={exportModalOpen !== null}
+                loading={isExporting || isExportingSelected}
+                onClose={() => setExportModalOpen(null)}
+                onExport={handleExportWithFormat}
+                formats={['xlsx', 'pdf']}
+            />
         </section>
     );
 }

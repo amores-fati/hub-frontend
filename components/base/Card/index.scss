@@ -4,3 +4,7 @@
 
     padding: 1.5rem;
 }
+
+html[data-contrast='high'] .custom-card {
+    background-color: #0d0d0d !important;
+}

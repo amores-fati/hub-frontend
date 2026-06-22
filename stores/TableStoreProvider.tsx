@@ -22,6 +22,7 @@ export type Paginator = {
     from: number;
     to: number;
     isLoading: boolean;
+    itemsLabel?: string;
 };
 
 export type RowsPerPage = {
@@ -86,7 +87,12 @@ export function createTableStoreProvider<T>() {
             set({ allPagesSelected: allPagesSelected }),
         setSort: (orderColumn, orderDirection) =>
             set((state) => ({
-                paginator: { ...state.paginator, orderColumn, orderDirection },
+                paginator: {
+                    ...state.paginator,
+                    orderColumn,
+                    orderDirection,
+                    page: 1,
+                },
             })),
         setError: () =>
             set((state) => ({

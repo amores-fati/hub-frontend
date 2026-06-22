@@ -1,0 +1,93 @@
+.bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-a11y-bar, 9999);
+    // min-height (em rem) escala com a fonte e mantém a barra sincronizada com
+    // o padding-top do body. nowrap + scroll horizontal evita que a barra cresça
+    // em duas linhas (o que dessincronizaria a altura) em telas estreitas.
+    min-height: var(--a11y-bar-height, 2.25rem);
+    background-color: var(--preto-2);
+    color: var(--branco);
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    align-items: center;
+    padding: 0 1rem;
+    gap: 0.375rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cinza-4);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.divider {
+    width: 1px;
+    height: 18px;
+    background-color: rgba(255, 255, 255, 0.12);
+    flex-shrink: 0;
+    margin: 0 0.125rem;
+}
+
+.group {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: transparent;
+    border: none;
+    color: var(--cinza-4);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.6875rem;
+    font-family: inherit;
+    font-weight: 500;
+    transition:
+        background-color 150ms ease,
+        color 150ms ease;
+    white-space: nowrap;
+    line-height: 1;
+
+    &:hover:not(:disabled) {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--branco);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 1px;
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    span {
+        font-size: 0.6875rem;
+        font-weight: 500;
+    }
+}
+
+.active {
+    background-color: rgba(255, 209, 0, 0.15) !important;
+    color: var(--primary-color) !important;
+
+    &:hover:not(:disabled) {
+        background-color: rgba(255, 209, 0, 0.25) !important;
+    }
+}

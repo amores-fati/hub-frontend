@@ -7,6 +7,8 @@ import {
     MenuBook as MenuBookIcon,
     Person as PersonIcon,
     Work as WorkIcon,
+    Business as BusinessIcon,
+    Settings as SettingsIcon,
 } from '@mui/icons-material';
 import React, { JSX } from 'react';
 
@@ -37,11 +39,18 @@ export const PAGES: Page[] = [
         name: 'Login',
     },
     {
-        path: '/teste',
+        path: '/redefinir-senha',
         navbarEnabled: false,
         requireRoles: [],
         requireAuth: false,
-        name: 'Login',
+        name: 'Redefinir Senha',
+    },
+    {
+        path: '/reset-password',
+        navbarEnabled: false,
+        requireRoles: [],
+        requireAuth: false,
+        name: 'Redefinir Senha',
     },
     {
         path: '/cadastro/aluno',
@@ -72,6 +81,14 @@ export const PAGES: Page[] = [
         requireAuth: true,
         name: 'Gestão de Alunos',
         icon: <GroupIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/empresa/perfil',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.COMPANY],
+        name: 'Perfil',
+        icon: <PersonIcon className='sidebar-icon' />,
     },
     {
         path: '/aluno/curriculo',
@@ -105,6 +122,15 @@ export const PAGES: Page[] = [
         name: 'Gestão de Currículos',
         icon: <AssignmentIndIcon className='sidebar-icon' />,
     },
+
+    {
+        path: '/admin/configuracoes',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Configurações',
+        icon: <SettingsIcon className='sidebar-icon' />,
+    },
     {
         path: '/aluno/perfil',
         navbarEnabled: true,
@@ -112,6 +138,30 @@ export const PAGES: Page[] = [
         requireAuth: true,
         name: 'Perfil',
         icon: <PersonIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/admin/empresas',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Gestão de Empresas',
+        icon: <BusinessIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/admin/vagas',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Gestão de Vagas',
+        icon: <WorkIcon className='sidebar-icon' />,
+    },
+    {
+        path: '/admin/configuracoes',
+        navbarEnabled: true,
+        requireAuth: true,
+        requireRoles: [UserRole.ADMIN],
+        name: 'Configurações',
+        icon: <WorkIcon className='sidebar-icon' />,
     },
 ];
 
@@ -125,11 +175,26 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
     [UserRole.ADMIN]: [
         { title: 'Dashboard', icon: <DashboardIcon />, expectedPath: '/' },
         { title: 'Alunos', icon: <GroupIcon />, expectedPath: '/admin/alunos' },
-        { title: 'Cursos', icon: <MenuBookIcon />, expectedPath: '/admin/cursos' },
+        {
+            title: 'Cursos',
+            icon: <MenuBookIcon />,
+            expectedPath: '/admin/cursos',
+        },
         {
             title: 'Currículos',
             icon: <AssignmentIndIcon />,
             expectedPath: '/admin/curriculos',
+        },
+        {
+            title: 'Empresas',
+            icon: <BusinessIcon />,
+            expectedPath: '/admin/empresas',
+        },
+        { title: 'Vagas', icon: <WorkIcon />, expectedPath: '/admin/vagas' },
+        {
+            title: 'Configurações',
+            icon: <SettingsIcon />,
+            expectedPath: '/admin/configuracoes',
         },
     ],
     [UserRole.STUDENT]: [
@@ -151,7 +216,10 @@ export const NAVIGATION_MAP: Record<string, NavItem[]> = {
     ],
     [UserRole.COMPANY]: [
         { title: 'Home', icon: <HomeFilled />, expectedPath: '/' },
-        { title: 'Vagas', icon: <WorkIcon />, expectedPath: '/vagas' },
-        { title: 'Perfil', icon: <PersonIcon />, expectedPath: '/perfil' },
+        {
+            title: 'Perfil',
+            icon: <PersonIcon />,
+            expectedPath: '/empresa/perfil',
+        },
     ],
 };

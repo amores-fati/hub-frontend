@@ -63,4 +63,5 @@ export type CreateAdminCourseDto = {
     endDate: string | null;
     startRegistrations: string | null;
     endRegistrations: string | null;
+    linkAccess: string | null;
 };

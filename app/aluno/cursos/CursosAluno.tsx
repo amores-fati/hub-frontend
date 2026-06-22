@@ -5,7 +5,12 @@ import { Loading } from '@/components/base';
 import { CourseDto } from '@/dtos/CourseDto';
 import { UserRole } from '@/dtos/UserDto';
 import { useAuth } from '@/providers/Auth/AuthProvider';
-import { useRegisterInterest } from '@/services/api/courses/mutations';
+import {
+    useEnrollInCourse,
+    useRegisterInterest,
+    useUnenrollFromCourse,
+    useRemoveInterest,
+} from '@/services/api/courses/mutations';
 import {
     useGetCourses,
     useGetMyEnrollments,
@@ -35,7 +40,14 @@ export default function CursosAluno() {
     const { data: studentProfile } = useGetStudentProfile();
 
     const interest = useRegisterInterest();
-    const isMutating = interest.isPending;
+    const removeInterest = useRemoveInterest();
+    const enroll = useEnrollInCourse();
+    const unenroll = useUnenrollFromCourse();
+    const isMutating =
+        interest.isPending ||
+        enroll.isPending ||
+        removeInterest.isPending ||
+        unenroll.isPending;
 
     const [modal, setModal] = useState<ModalState>(null);
     const [enrollConfirm, setEnrollConfirm] = useState<CourseDto | null>(null);
@@ -79,14 +91,20 @@ export default function CursosAluno() {
     }
 
     function handleAskEnroll(course: CourseDto) {
-        if (!course.externalLink) {
-            toast.error(
-                'Link de inscrição do parceiro indisponível para este curso.',
-            );
-            return;
+        if (course.modality === 'online') {
+            if (!course.externalLink) {
+                toast.error(
+                    'Link de inscrição do parceiro indisponível para este curso.',
+                );
+                return;
+            }
+            setModal(null);
+            setEnrollConfirm(course);
+        } else {
+            enroll.mutate(course.id, {
+                onSuccess: () => setModal(null),
+            });
         }
-        setModal(null);
-        setEnrollConfirm(course);
     }
 
     function handleConfirmEnroll() {
@@ -102,6 +120,18 @@ export default function CursosAluno() {
 
     function handleInterest(course: CourseDto) {
         interest.mutate(course.id, {
+            onSuccess: () => setModal(null),
+        });
+    }
+
+    function handleUnenroll(course: CourseDto) {
+        unenroll.mutate(course.id, {
+            onSuccess: () => setModal(null),
+        });
+    }
+
+    function handleRemoveInterest(course: CourseDto) {
+        removeInterest.mutate(course.id, {
             onSuccess: () => setModal(null),
         });
     }
@@ -176,9 +206,11 @@ export default function CursosAluno() {
                                     key={course.id}
                                     course={course}
                                     action='inscrito'
+                                    disabled={isMutating}
                                     onSaibaMais={() =>
                                         openModal(course, 'inscrito')
                                     }
+                                    onAction={() => handleUnenroll(course)}
                                 />
                             ))}
                         </div>
@@ -197,8 +229,12 @@ export default function CursosAluno() {
                                     key={course.id}
                                     course={course}
                                     action='interessado'
+                                    disabled={isMutating}
                                     onSaibaMais={() =>
                                         openModal(course, 'interessado')
+                                    }
+                                    onAction={() =>
+                                        handleRemoveInterest(course)
                                     }
                                 />
                             ))}
@@ -213,17 +249,28 @@ export default function CursosAluno() {
                             Cursos Disponíveis
                         </h2>
                         <div className='ca-grid'>
-                            {availableCourses.map((course) => (
-                                <CourseCard
-                                    key={course.id}
-                                    course={course}
-                                    action='inscrever'
-                                    onSaibaMais={() =>
-                                        openModal(course, 'inscrever')
-                                    }
-                                    onAction={() => handleAskEnroll(course)}
-                                />
-                            ))}
+                            {availableCourses.map((course) => {
+                                const actionType =
+                                    course.modality === 'online'
+                                        ? 'interesse'
+                                        : 'inscrever';
+                                return (
+                                    <CourseCard
+                                        key={course.id}
+                                        course={course}
+                                        action={actionType}
+                                        disabled={isMutating}
+                                        onSaibaMais={() =>
+                                            openModal(course, actionType)
+                                        }
+                                        onAction={
+                                            actionType === 'interesse'
+                                                ? () => handleInterest(course)
+                                                : () => handleAskEnroll(course)
+                                        }
+                                    />
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -293,7 +340,11 @@ export default function CursosAluno() {
                             ? () => handleAskEnroll(modal.course)
                             : modal.action === 'interesse'
                               ? () => handleInterest(modal.course)
-                              : undefined
+                              : modal.action === 'inscrito'
+                                ? () => handleUnenroll(modal.course)
+                                : modal.action === 'interessado'
+                                  ? () => handleRemoveInterest(modal.course)
+                                  : undefined
                     }
                 />
             )}

@@ -207,3 +207,15 @@
         font-size: 18px;
     }
 }
+
+html[data-contrast='high'] {
+    .course-modal {
+        background: #0d0d0d;
+        box-shadow: 0 0 0 2px #ffffff;
+    }
+
+    .course-modal__btn--outline {
+        background: transparent;
+        border-color: #888888;
+    }
+}

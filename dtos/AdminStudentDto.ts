@@ -22,6 +22,7 @@ export enum AdminStudentDisabilityType {
     INTELLECTUAL = 'INTELECTUAL',
     PSYCHOSOCIAL = 'PSICOSSOCIAL',
     MULTIPLE = 'MULTIPLA',
+    TEA = 'TEA',
     OTHER = 'OUTRA',
 }
 
@@ -50,7 +51,7 @@ export type AdminStudentDto = {
     neighbourhood?: string | null;
     isPcd: boolean;
     disabilityType: AdminStudentDisabilityType;
-    enrolledCourse: AdminStudentCourseDto | null;
+    enrollmentStatus: AdminStudentCourseType[];
     scholarship?: Scholarship | null;
     institution?: string | null;
     whyJoinFatiLab?: string | null;
@@ -75,6 +76,9 @@ export type AdminStudentDto = {
 
 export type AdminStudentsQueryParams = {
     page?: number;
+    // Alunos usam `pageSize` (GetAdminStudentsDto); o grid de empresas reaproveita
+    // este tipo e usa `limit` (FilterCompaniesDto). Ambos opcionais.
+    pageSize?: number;
     limit?: number;
     search?: string;
     disabilityType?: string[];

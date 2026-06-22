@@ -1,11 +1,4 @@
-import {
-    KeyboardArrowLeft,
-    KeyboardDoubleArrowLeft,
-    KeyboardArrowRight,
-    KeyboardDoubleArrowRight,
-} from '@mui/icons-material';
 import React, { useEffect } from 'react';
-import Select from 'react-select';
 
 import './index.scss';
 import { useTableStore, Paginator } from '@/stores/TableStoreProvider';
@@ -30,11 +23,22 @@ const getTo = (paginator: Paginator, page: number) => {
     return value;
 };
 
+const getVisiblePages = (currentPage: number, totalPages: number): number[] => {
+    const maxVisible = 3;
+    let start = Math.max(1, currentPage - 1);
+    const end = Math.min(totalPages, start + maxVisible - 1);
+    if (end - start < maxVisible - 1) {
+        start = Math.max(1, end - maxVisible + 1);
+    }
+    const pages: number[] = [];
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+};
+
 export default function TablePaginator() {
     const paginator = useTableStore((state) => state.paginator);
     const setPaginator = useTableStore((state) => state.setPaginator);
 
-    // Validação do campo "de" do paginador
     useEffect(() => {
         setPaginator({
             ...paginator,
@@ -42,7 +46,6 @@ export default function TablePaginator() {
         });
     }, [paginator.page, paginator.itemsCount]);
 
-    // Validação do campo "até" do paginador
     useEffect(() => {
         setPaginator({
             ...paginator,
@@ -65,126 +68,59 @@ export default function TablePaginator() {
         });
     }, [paginator.page, paginator.rowsPerPage, paginator.itemsCount]);
 
-    const setPageNext = () => {
-        if (paginator.to === paginator.itemsCount) return;
-        setPaginator({
-            ...paginator,
-            page: paginator.page + 1,
-        });
-    };
+    const totalPages = Math.ceil(paginator.itemsCount / paginator.rowsPerPage) || 1;
+    const isFirst = paginator.page === 1 || paginator.page === undefined;
+    const isLast = paginator.to === paginator.itemsCount;
 
-    const setLastPage = () => {
-        if (paginator.to === paginator.itemsCount) return;
-        setPaginator({
-            ...paginator,
-            page: Math.ceil(paginator.itemsCount / paginator.rowsPerPage),
-        });
+    const setPage = (page: number) => {
+        setPaginator({ ...paginator, page });
     };
 
     const setPagePrevious = () => {
-        if (paginator.page === 1 || paginator.page === undefined) return;
-        setPaginator({
-            ...paginator,
-            page: paginator.page - 1,
-        });
+        if (isFirst) return;
+        setPaginator({ ...paginator, page: paginator.page - 1 });
     };
 
-    const setFirstPage = () => {
-        if (paginator.page === 1 || paginator.page === undefined) return;
-        setPaginator({
-            ...paginator,
-            page: 1,
-            from: 1,
-            to: paginator.rowsPerPage,
-        });
+    const setPageNext = () => {
+        if (isLast) return;
+        setPaginator({ ...paginator, page: paginator.page + 1 });
     };
 
-    // CSS do campo select
-    const styles = {
-        control: (base: any) => ({
-            ...base,
-            minHeight: 18,
-        }),
-        dropdownIndicator: (base: any) => ({
-            ...base,
-            padding: 0,
-        }),
-        clearIndicator: (base: any) => ({
-            ...base,
-            padding: 0,
-        }),
-        valueContainer: (base: any) => ({
-            ...base,
-            padding: '2px 2px',
-        }),
-    };
-
-    const handleChange = (event: any) => {
-        setPaginator({
-            ...paginator,
-            rowsPerPage: event.value,
-            page: 1,
-        });
-    };
+    const visiblePages = getVisiblePages(paginator.page, totalPages);
+    const itemsLabel = paginator.itemsLabel ?? 'itens';
 
     return (
-        <div className='sass-paginator'>
-            <p className='sass-showing'>Linhas por página:</p>
-            <div>
-                <Select
-                    menuPlacement='top'
-                    isDisabled={paginator.isLoading}
-                    styles={styles}
-                    components={{ IndicatorSeparator: () => null }}
-                    isClearable={false}
-                    isSearchable={false}
-                    options={ROWS_PER_PAGE_OPTIONS}
-                    onChange={handleChange}
-                    value={{
-                        value: paginator.rowsPerPage,
-                        label: paginator.rowsPerPage + '',
-                    }}
-                />
-            </div>
-
-            <p className='sass-showing'>Exibindo:</p>
-            <p className='sass-showing'>
-                {paginator.from}-{paginator.to} de {paginator.itemsCount} itens
+        <div className='paginator'>
+            <p className='paginator__count'>
+                Exibindo {paginator.from} a {paginator.to} de {paginator.itemsCount} {itemsLabel}
             </p>
-            <div
-                className='sass-arrow'
-                aria-disabled={
-                    paginator.page === 1 || paginator.page === undefined
-                }
-            >
-                <button onClick={setFirstPage}>
-                    <KeyboardDoubleArrowLeft />
+
+            <div className='paginator__controls'>
+                <button
+                    className='paginator__nav-btn'
+                    onClick={setPagePrevious}
+                    disabled={isFirst || paginator.isLoading}
+                >
+                    Anterior
                 </button>
-            </div>
-            <div
-                className='sass-arrow'
-                aria-disabled={
-                    paginator.page === 1 || paginator.page === undefined
-                }
-            >
-                <button onClick={setPagePrevious}>
-                    <KeyboardArrowLeft />
-                </button>
-            </div>
-            <div
-                className='sass-arrow'
-                aria-disabled={paginator.to === paginator.itemsCount}
-            >
-                <button onClick={setPageNext}>
-                    <KeyboardArrowRight />
-                </button>
-            </div>
-            <div
-                className='sass-arrow'
-                aria-disabled={paginator.to === paginator.itemsCount}
-            >
-                <button onClick={setLastPage}>
-                    <KeyboardDoubleArrowRight />
+
+                {visiblePages.map((num) => (
+                    <button
+                        key={num}
+                        className={`paginator__page-btn${num === paginator.page ? ' paginator__page-btn--active' : ''}`}
+                        onClick={() => setPage(num)}
+                        disabled={paginator.isLoading}
+                    >
+                        {num}
+                    </button>
+                ))}
+
+                <button
+                    className='paginator__nav-btn'
+                    onClick={setPageNext}
+                    disabled={isLast || paginator.isLoading}
+                >
+                    Próximo
                 </button>
             </div>
         </div>

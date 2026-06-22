@@ -1,7 +1,7 @@
 .student-resume-page {
     width: min(1440px, calc(100% - 2rem));
     margin: 0 auto;
-    padding: clamp(1.5rem, 3vw, 3rem) 0;
+    padding: clamp(1rem, 2vw, 1.5rem) 0;
 }
 
 .student-resume-page--centered {
@@ -16,8 +16,8 @@
 
 .student-resume-page__grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.9fr) minmax(320px, 0.95fr);
-    gap: clamp(1.5rem, 3vw, 4rem);
+    grid-template-columns: minmax(0, 1.9fr) minmax(320px, 0.95fr) auto;
+    gap: clamp(1rem, 2vw, 2rem);
     align-items: start;
 }
 
@@ -142,8 +142,8 @@
 
 .student-resume-form {
     display: grid;
-    gap: 1.35rem;
-    padding: clamp(1.25rem, 3vw, 2rem);
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
 }
 
 .student-resume-form__links,
@@ -269,12 +269,12 @@
 
 .student-resume-sidebar {
     display: grid;
-    gap: 1.5rem;
+    gap: 0.75rem;
 }
 
 .student-resume-panel,
 .student-resume-feedback {
-    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+    padding: clamp(1rem, 2vw, 1.25rem);
 }
 
 .student-resume-panel__title {
@@ -347,21 +347,24 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.75rem;
     margin-top: 1.35rem;
+    align-items: center;
 
-    input {
+    .custom-select .select__control {
         min-width: 0;
         min-height: 2.75rem;
-        padding: 0 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        outline: none;
+        border-color: var(--border-color);
         background: var(--background-2);
+        box-shadow: none;
 
-        &:focus {
+        &:hover {
             border-color: var(--tertiary-color);
-            background: var(--surface);
-            box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.14);
         }
+    }
+
+    .custom-select .select__control--is-focused {
+        border-color: var(--tertiary-color);
+        background: var(--surface);
+        box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.14);
     }
 }
 
