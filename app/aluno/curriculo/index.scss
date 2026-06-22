@@ -347,21 +347,24 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.75rem;
     margin-top: 1.35rem;
+    align-items: center;
 
-    input {
+    .custom-select .select__control {
         min-width: 0;
         min-height: 2.75rem;
-        padding: 0 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        outline: none;
+        border-color: var(--border-color);
         background: var(--background-2);
+        box-shadow: none;
 
-        &:focus {
+        &:hover {
             border-color: var(--tertiary-color);
-            background: var(--surface);
-            box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.14);
         }
+    }
+
+    .custom-select .select__control--is-focused {
+        border-color: var(--tertiary-color);
+        background: var(--surface);
+        box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.14);
     }
 }
 
